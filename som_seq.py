@@ -188,6 +188,9 @@ if __name__ == '__main__':
     parser.add_argument("-o", "--out_name", default='som.p', help="name of pickle to dump (default som.p)")
     parser.add_argument('--noplot', help='Do not plot the resulting U-matrix', action='store_false', dest='doplot')
     parser.add_argument('--periodic', help='Periodic toroidal SOM', action='store_true')
+    parser.add_argument('--scheduler',
+                        help='Which scheduler to use, can be linear, exp or half (exp by default)',
+                        default='exp')
     args = parser.parse_args()
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -217,7 +220,8 @@ if __name__ == '__main__':
                   sigma=args.sigma,
                   device=device,
                   periodic=args.periodic,
-                  metric=seqmetric)
+                  metric=seqmetric,
+                  sched=args.scheduler)
     print('batch_size:', batch_size)
     print('sigma:', som.sigma)
     if som.alpha is not None:
