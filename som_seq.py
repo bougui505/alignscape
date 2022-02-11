@@ -182,8 +182,8 @@ if __name__ == '__main__':
     parser.add_argument('-a', '--aln', help='Alignment file', required=True)
     parser.add_argument('-b', '--batch', help='Batch size (default: 100)', default=100, type=int)
     parser.add_argument('--somside', help='Size of the side of the square SOM', default=50, type=int)
-    parser.add_argument('--alpha', help='learning rate', default=.5, type=float)
-    parser.add_argument('--sigma', help='Learning radius for the SOM (default: somsize/8.)', default=None, type=float)
+    parser.add_argument('--alpha', help='learning rate', default=None, type=float)
+    parser.add_argument('--sigma', help='Learning radius for the SOM', default=None, type=float)
     parser.add_argument('--nepochs', help='Number of SOM epochs', default=2, type=int)
     parser.add_argument("-o", "--out_name", default='som.p', help="name of pickle to dump (default som.p)")
     parser.add_argument('--noplot', help='Do not plot the resulting U-matrix', action='store_false', dest='doplot')
@@ -208,22 +208,16 @@ if __name__ == '__main__':
     inputvectors = torchify(inputvectors)
 
     somsize = args.somside**2
-    alpha = args.alpha
-    if args.sigma is None:
-        sigma = args.somside / 8.
-    else:
-        sigma = args.sigma
-    print('alpha:', alpha)
-    print('sigma', sigma)
-    print('batch_size', batch_size)
     som = som.SOM(args.somside,
                   args.somside,
                   niter=args.nepochs,
                   dim=dim,
-                  alpha=alpha,
-                  sigma=sigma,
+                  alpha=args.alpha,
+                  sigma=args.sigma,
                   device=device,
                   metric=seqmetric)
+    print('batch_size', batch_size)
+    print('sigma', som.sigma)
     som.fit(inputvectors, batch_size=batch_size, do_compute_all_dists=False)
     print('Computing BMUS')
     som.bmus, som.error = som.predict(inputvectors, batch_size=batch_size)
