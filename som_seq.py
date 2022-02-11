@@ -142,6 +142,10 @@ def score_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC
         matrix = NUC44
     else:
         raise ValueError("dtype must be 'prot' or 'nucl'")
+    device1 = vec1.device.type
+    device2 = matrix.device.type
+    if device1 != device2:
+        matrix = matrix.to(device1)
     if vec1.ndim == 2:
         vec1 = vec1[None, ...]
     if vec2.ndim == 2:
