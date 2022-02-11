@@ -187,6 +187,7 @@ if __name__ == '__main__':
     parser.add_argument('--nepochs', help='Number of SOM epochs', default=2, type=int)
     parser.add_argument("-o", "--out_name", default='som.p', help="name of pickle to dump (default som.p)")
     parser.add_argument('--noplot', help='Do not plot the resulting U-matrix', action='store_false', dest='doplot')
+    parser.add_argument('--periodic', help='Periodic toroidal SOM', action='store_true')
     args = parser.parse_args()
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -215,6 +216,7 @@ if __name__ == '__main__':
                   alpha=args.alpha,
                   sigma=args.sigma,
                   device=device,
+                  periodic=args.periodic,
                   metric=seqmetric)
     print('batch_size:', batch_size)
     print('sigma:', som.sigma)
