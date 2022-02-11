@@ -216,8 +216,10 @@ if __name__ == '__main__':
                   sigma=args.sigma,
                   device=device,
                   metric=seqmetric)
-    print('batch_size', batch_size)
-    print('sigma', som.sigma)
+    print('batch_size:', batch_size)
+    print('sigma:', som.sigma)
+    if som.alpha is not None:
+        print('alpha:', som.alpha)
     som.fit(inputvectors, batch_size=batch_size, do_compute_all_dists=False)
     print('Computing BMUS')
     som.bmus, som.error = som.predict(inputvectors, batch_size=batch_size)
