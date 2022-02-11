@@ -195,7 +195,9 @@ if __name__ == '__main__':
     b62 = torchify(b62)
 
     seqnames, sequences = read_fasta(ali)
+    seqnames = np.asarray(seqnames)
     inputvectors = vectorize(sequences, dtype=dtype)
+    n_inp = inputvectors.shape[0]
     print('inputvectors.shape:', inputvectors.shape)
     n, dim = inputvectors.shape
     inputvectors = torchify(inputvectors)
@@ -221,7 +223,12 @@ if __name__ == '__main__':
     print('Computing BMUS')
     som.bmus, som.error = som.predict(inputvectors, batch_size=batch_size)
     index = np.arange(len(som.bmus))
-    out_arr = np.c_[som.bmus, som.error, index, np.asarray(seqnames)]
+    out_arr = np.zeros(n_inp, dtype=[('bmu1', int), ('bmu2', int), ('error', float), ('index', int), ('label', 'U512')])
+    out_arr['bmu1'] = som.bmus[:, 0]
+    out_arr['bmu2'] = som.bmus[:, 1]
+    out_arr['error'] = som.error
+    out_arr['index'] = index
+    out_arr['label'] = seqnames
     out_fmt = ['%d', '%d', '%.4g', '%d', '%s']
     out_header = '#bmu1 #bmu2 #error #index #label'
     np.savetxt(f"{os.path.splitext(args.out_name)[0]}_bmus.txt", out_arr, fmt=out_fmt, header=out_header, comments='')
