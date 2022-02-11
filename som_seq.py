@@ -182,6 +182,7 @@ if __name__ == '__main__':
     parser.add_argument('--sigma', help='Learning radius for the SOM (default: somsize/8.)', default=None, type=float)
     parser.add_argument('--nepochs', help='Number of SOM epochs', default=2, type=int)
     parser.add_argument("-o", "--out_name", default='som.p', help="name of pickle to dump (default som.p)")
+    parser.add_argument('--noplot', help='Do not plot the resulting U-matrix', action='store_false', dest='doplot')
     args = parser.parse_args()
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -231,6 +232,12 @@ if __name__ == '__main__':
     out_arr['label'] = seqnames
     out_fmt = ['%d', '%d', '%.4g', '%d', '%s']
     out_header = '#bmu1 #bmu2 #error #index #label'
-    np.savetxt(f"{os.path.splitext(args.out_name)[0]}_bmus.txt", out_arr, fmt=out_fmt, header=out_header, comments='')
+    baseoutname = os.path.splitext(args.out_name)[0]
+    np.savetxt(f"{baseoutname}_bmus.txt", out_arr, fmt=out_fmt, header=out_header, comments='')
     som.to_device('cpu')
+    if args.doplot:
+        import matplotlib.pyplot as plt
+        plt.matshow(som.umat)
+        plt.colorbar()
+        plt.savefig(f'{baseoutname}_umat.pdf')
     pickle.dump(som, open(args.out_name, 'wb'))
