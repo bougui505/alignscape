@@ -218,6 +218,7 @@ if __name__ == '__main__':
             som = pickle.load(somfile)
             print(dir(som))
             somsize = som.m * som.n
+            som.to_device(device)
     else:
         somsize = args.somside**2
         som = quicksom.som.SOM(args.somside,
