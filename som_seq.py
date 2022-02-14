@@ -36,10 +36,11 @@
 #                                                                           #
 #############################################################################
 
+import sys
 import re
 import os
 import pickle
-from quicksom import som
+import quicksom
 from Bio.SubsMat import MatrixInfo
 import numpy as np
 import torch
@@ -191,6 +192,7 @@ if __name__ == '__main__':
     parser.add_argument('--scheduler',
                         help='Which scheduler to use, can be linear, exp or half (exp by default)',
                         default='exp')
+    parser.add_argument('--load', help='Load the given som pickle file and use it as starting point for a new training')
     args = parser.parse_args()
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -211,17 +213,23 @@ if __name__ == '__main__':
     n, dim = inputvectors.shape
     inputvectors = torchify(inputvectors)
 
-    somsize = args.somside**2
-    som = som.SOM(args.somside,
-                  args.somside,
-                  niter=args.nepochs,
-                  dim=dim,
-                  alpha=args.alpha,
-                  sigma=args.sigma,
-                  device=device,
-                  periodic=args.periodic,
-                  metric=seqmetric,
-                  sched=args.scheduler)
+    if args.load is not None:
+        with open(args.load, 'rb') as somfile:
+            som = pickle.load(somfile)
+            print(dir(som))
+            somsize = som.m * som.n
+    else:
+        somsize = args.somside**2
+        som = quicksom.som.SOM(args.somside,
+                               args.somside,
+                               niter=args.nepochs,
+                               dim=dim,
+                               alpha=args.alpha,
+                               sigma=args.sigma,
+                               device=device,
+                               periodic=args.periodic,
+                               metric=seqmetric,
+                               sched=args.scheduler)
     print('batch_size:', batch_size)
     print('sigma:', som.sigma)
     if som.alpha is not None:
