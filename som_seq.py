@@ -40,7 +40,7 @@ import sys
 import re
 import os
 import pickle
-import quicksom
+import quicksom.som
 from Bio.SubsMat import MatrixInfo
 import numpy as np
 import torch
