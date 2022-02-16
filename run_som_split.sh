@@ -85,9 +85,9 @@ for ALN in $(ls -v -d $ALNDIR/*); do
     (( i+=1 ))
     echo $i $ALN
     if [ $i -eq 1 ]; then
-        CMD=$SOMCMD" --nrun $NFILES --aln $ALN -o som_$i.p > logs/som_$i.log"
+        CMD="python3 -u "$SOMCMD" --nrun $NFILES --aln $ALN -o som_$i.p > logs/som_$i.log"
     else
-        CMD=$SOMCMD" --nrun $NFILES --aln $ALN -o som_$i.p --load som_$iprev.p > logs/som_$i.log"
+        CMD="python3 -u "$SOMCMD" --nrun $NFILES --aln $ALN -o som_$i.p --load som_$iprev.p > logs/som_$i.log"
     fi
     echo "\nRunning $CMD\nSee output in logs/som_$i.log\n"
     eval "$CMD"
