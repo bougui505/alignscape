@@ -193,6 +193,10 @@ if __name__ == '__main__':
                         help='Which scheduler to use, can be linear, exp or half (exp by default)',
                         default='exp')
     parser.add_argument('--load', help='Load the given som pickle file and use it as starting point for a new training')
+    parser.add_argument('--nrun',
+                        help='Number of run that will be run. Useful to compute the scheduler decay.',
+                        type=int,
+                        default=1)
     args = parser.parse_args()
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -235,7 +239,12 @@ if __name__ == '__main__':
     print('sigma:', som.sigma)
     if som.alpha is not None:
         print('alpha:', som.alpha)
-    som.fit(inputvectors, batch_size=batch_size, do_compute_all_dists=False, unfold=False, normalize_umat=False)
+    som.fit(inputvectors,
+            batch_size=batch_size,
+            do_compute_all_dists=False,
+            unfold=False,
+            normalize_umat=False,
+            nrun=args.nrun)
     print('Computing BMUS')
     som.bmus, som.error = som.predict(inputvectors, batch_size=batch_size)
     index = np.arange(len(som.bmus))
