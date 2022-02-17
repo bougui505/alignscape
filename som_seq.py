@@ -262,7 +262,7 @@ if __name__ == '__main__':
     som.to_device('cpu')
     if args.doplot:
         import matplotlib.pyplot as plt
-        plt.matshow(som.umat)
+        plt.matshow(som.umat, vmax=0.)  # All 'distance=-score' should be negative
         plt.colorbar()
         plt.savefig(f'{baseoutname}_umat.{args.plot_ext}')
     pickle.dump(som, open(args.out_name, 'wb'))
