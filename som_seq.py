@@ -245,7 +245,9 @@ if __name__ == '__main__':
             do_compute_all_dists=False,
             unfold=False,
             normalize_umat=False,
-            nrun=args.nrun)
+            nrun=args.nrun,
+            sigma=args.sigma,
+            alpha=args.alpha)
     print('Computing BMUS')
     som.bmus, som.error = som.predict(inputvectors, batch_size=batch_size)
     index = np.arange(len(som.bmus))
