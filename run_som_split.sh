@@ -50,22 +50,29 @@ Help message
     -a, --alndir directory with alignments
     --somcmd SOM command to run
     -r, --reset reset the scheduler for each run
+    --sigma, sigma for the SOM
 EOF
 }
 
 ALNDIR='None'  # Default value
 SOMCMD='None'
 RESET=0
+SIGMA='None'
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -a|--alndir) ALNDIR="$2"; shift ;;
         -s|--somcmd) SOMCMD="$2"; shift ;;
         -r|--reset) RESET=1;;
+        --sigma) SIGMA="$2"; shift ;;
         -h|--help) usage; exit 0 ;;
         *) usage; exit 1 ;;
     esac
     shift
 done
+
+function calc () {
+    python3 -c "print($@)"
+}
 
 if [ $ALNDIR = 'None' ]; then
     echo "\nYou must specify the directory with alignment files with -a, --alndir option\n"
@@ -95,6 +102,10 @@ for ALN in $(ls -v -d $ALNDIR/*); do
     fi
     if [ $RESET -eq 0 ]; then
         CMD="$CMD --nrun $NFILES"
+    fi
+    if [ $SIGMA != 'None' ]; then
+        _SIGMA_=$(calc "$SIGMA-($i-1)/$NFILES")
+        CMD="$CMD --sigma $_SIGMA_"
     fi
     CMD="$CMD > logs/som_$i.log"
     echo "\nRunning $CMD\nSee output in logs/som_$i.log\n"
