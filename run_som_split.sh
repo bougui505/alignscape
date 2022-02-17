@@ -71,7 +71,7 @@ while [[ "$#" -gt 0 ]]; do
 done
 
 function calc () {
-    python3 -c "print($@)"
+    python3 -c "import numpy as np; print($@)"
 }
 
 if [ $ALNDIR = 'None' ]; then
@@ -104,7 +104,7 @@ for ALN in $(ls -v -d $ALNDIR/*); do
         CMD="$CMD --nrun $NFILES"
     fi
     if [ $SIGMA != 'None' ]; then
-        _SIGMA_=$(calc "$SIGMA-($i-1)/$NFILES")
+        _SIGMA_=$(calc "$SIGMA*np.exp(-np.log($SIGMA)*$iprev/$NFILES)")
         CMD="$CMD --sigma $_SIGMA_"
     fi
     CMD="$CMD > logs/som_$i.log"
