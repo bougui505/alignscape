@@ -58,8 +58,10 @@ def get_order(infile):
 def get_filelist(indir):
     filelist = glob.glob(f'{indir}/*')
     filelist.sort(key=get_order)
-    outprintlist = '\n'.join(filelist)
-    print(f"Sorted list of file:\n{outprintlist}")
+    outprintlist = '\n'.join([f"{i}\t\t{f}" for i, f in enumerate(filelist)])
+    print("#" * 80)
+    print(f"\nSorted list of file:\n\n{outprintlist}\n")
+    print("#" * 80)
     return filelist
 
 
