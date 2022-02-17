@@ -188,6 +188,7 @@ if __name__ == '__main__':
     parser.add_argument('--nepochs', help='Number of SOM epochs', default=2, type=int)
     parser.add_argument("-o", "--out_name", default='som.p', help="name of pickle to dump (default som.p)")
     parser.add_argument('--noplot', help='Do not plot the resulting U-matrix', action='store_false', dest='doplot')
+    parser.add_argument('--plot_ext', help='Filetype extension for the U-matrix plot (default: pdf)', default='pdf')
     parser.add_argument('--periodic', help='Periodic toroidal SOM', action='store_true')
     parser.add_argument('--scheduler',
                         help='Which scheduler to use, can be linear, exp or half (exp by default)',
@@ -263,5 +264,5 @@ if __name__ == '__main__':
         import matplotlib.pyplot as plt
         plt.matshow(som.umat)
         plt.colorbar()
-        plt.savefig(f'{baseoutname}_umat.pdf')
+        plt.savefig(f'{baseoutname}_umat.{args.plot_ext}')
     pickle.dump(som, open(args.out_name, 'wb'))

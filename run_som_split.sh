@@ -79,15 +79,16 @@ fi
 i=0
 NFILES=$(ls $ALNDIR | wc -l)
 [ ! -d logs ] && mkdir logs
+[ ! -d soms ] && mkdir soms
 echo "Running SOM for $NFILES files"
 for ALN in $(ls -v -d $ALNDIR/*); do
     iprev=$i
     (( i+=1 ))
     echo $i $ALN
     if [ $i -eq 1 ]; then
-        CMD="python3 -u "$SOMCMD" --nrun $NFILES --aln $ALN -o som_$i.p > logs/som_$i.log"
+        CMD="python3 -u "$SOMCMD" --nrun $NFILES --aln $ALN -o soms/som_$i.p --plot_ext png > logs/som_$i.log"
     else
-        CMD="python3 -u "$SOMCMD" --nrun $NFILES --aln $ALN -o som_$i.p --load som_$iprev.p > logs/som_$i.log"
+        CMD="python3 -u "$SOMCMD" --nrun $NFILES --aln $ALN -o soms/som_$i.p --load soms/som_$iprev.p --plot_ext png > logs/som_$i.log"
     fi
     echo "\nRunning $CMD\nSee output in logs/som_$i.log\n"
     eval "$CMD"
