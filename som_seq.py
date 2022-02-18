@@ -164,7 +164,7 @@ def score_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC
         return scores
 
 
-def seqmetric(seqs1, seqs2):
+def seqmetric(seqs1, seqs2, b62):
     nchar = 25
     batch_size = seqs1.shape[0]
     seqlenght = seqs1.shape[-1] // nchar
@@ -173,6 +173,75 @@ def seqmetric(seqs1, seqs2):
     seqs2 = seqs2.reshape((n2, seqlenght, nchar))
     scores = score_matrix_vec(seqs1, seqs2, b62=b62)
     return -scores
+
+
+def main(ali, batch_size, somside, nepochs, alpha, sigma, load, periodic, scheduler, nrun, outname, doplot, plot_ext):
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    print('Running on', device)
+
+    dtype = 'prot'
+
+    b62 = get_blosum62()
+    b62 = torchify(b62)
+
+    seqnames, sequences = read_fasta(ali)
+    seqnames = np.asarray(seqnames)
+    inputvectors = vectorize(sequences, dtype=dtype)
+    n_inp = inputvectors.shape[0]
+    print('inputvectors.shape:', inputvectors.shape)
+    n, dim = inputvectors.shape
+    inputvectors = torchify(inputvectors)
+
+    if load is not None:
+        with open(load, 'rb') as somfile:
+            som = pickle.load(somfile)
+            print(dir(som))
+            # somsize = som.m * som.n
+            som.to_device(device)
+    else:
+        # somsize = somside**2
+        som = quicksom.som.SOM(somside,
+                               somside,
+                               niter=nepochs,
+                               dim=dim,
+                               alpha=alpha,
+                               sigma=sigma,
+                               device=device,
+                               periodic=periodic,
+                               metric=lambda s1, s2: seqmetric(s1, s2, b62),
+                               sched=scheduler)
+    print('batch_size:', batch_size)
+    print('sigma:', som.sigma)
+    if som.alpha is not None:
+        print('alpha:', som.alpha)
+    som.fit(inputvectors,
+            batch_size=batch_size,
+            do_compute_all_dists=False,
+            unfold=False,
+            normalize_umat=False,
+            nrun=nrun,
+            sigma=sigma,
+            alpha=alpha)
+    print('Computing BMUS')
+    som.bmus, som.error = som.predict(inputvectors, batch_size=batch_size)
+    index = np.arange(len(som.bmus))
+    out_arr = np.zeros(n_inp, dtype=[('bmu1', int), ('bmu2', int), ('error', float), ('index', int), ('label', 'U512')])
+    out_arr['bmu1'] = som.bmus[:, 0]
+    out_arr['bmu2'] = som.bmus[:, 1]
+    out_arr['error'] = som.error
+    out_arr['index'] = index
+    out_arr['label'] = seqnames
+    out_fmt = ['%d', '%d', '%.4g', '%d', '%s']
+    out_header = '#bmu1 #bmu2 #error #index #label'
+    baseoutname = os.path.splitext(outname)[0]
+    np.savetxt(f"{baseoutname}_bmus.txt", out_arr, fmt=out_fmt, header=out_header, comments='')
+    som.to_device('cpu')
+    if doplot:
+        import matplotlib.pyplot as plt
+        plt.matshow(som.umat)
+        plt.colorbar()
+        plt.savefig(f'{baseoutname}_umat.{plot_ext}')
+    pickle.dump(som, open(outname, 'wb'))
 
 
 if __name__ == '__main__':
@@ -200,71 +269,16 @@ if __name__ == '__main__':
                         default=1)
     args = parser.parse_args()
 
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    print('Running on', device)
-
-    ali = args.aln
-    dtype = 'prot'
-    batch_size = args.batch
-
-    b62 = get_blosum62()
-    b62 = torchify(b62)
-
-    seqnames, sequences = read_fasta(ali)
-    seqnames = np.asarray(seqnames)
-    inputvectors = vectorize(sequences, dtype=dtype)
-    n_inp = inputvectors.shape[0]
-    print('inputvectors.shape:', inputvectors.shape)
-    n, dim = inputvectors.shape
-    inputvectors = torchify(inputvectors)
-
-    if args.load is not None:
-        with open(args.load, 'rb') as somfile:
-            som = pickle.load(somfile)
-            print(dir(som))
-            somsize = som.m * som.n
-            som.to_device(device)
-    else:
-        somsize = args.somside**2
-        som = quicksom.som.SOM(args.somside,
-                               args.somside,
-                               niter=args.nepochs,
-                               dim=dim,
-                               alpha=args.alpha,
-                               sigma=args.sigma,
-                               device=device,
-                               periodic=args.periodic,
-                               metric=seqmetric,
-                               sched=args.scheduler)
-    print('batch_size:', batch_size)
-    print('sigma:', som.sigma)
-    if som.alpha is not None:
-        print('alpha:', som.alpha)
-    som.fit(inputvectors,
-            batch_size=batch_size,
-            do_compute_all_dists=False,
-            unfold=False,
-            normalize_umat=False,
-            nrun=args.nrun,
-            sigma=args.sigma,
-            alpha=args.alpha)
-    print('Computing BMUS')
-    som.bmus, som.error = som.predict(inputvectors, batch_size=batch_size)
-    index = np.arange(len(som.bmus))
-    out_arr = np.zeros(n_inp, dtype=[('bmu1', int), ('bmu2', int), ('error', float), ('index', int), ('label', 'U512')])
-    out_arr['bmu1'] = som.bmus[:, 0]
-    out_arr['bmu2'] = som.bmus[:, 1]
-    out_arr['error'] = som.error
-    out_arr['index'] = index
-    out_arr['label'] = seqnames
-    out_fmt = ['%d', '%d', '%.4g', '%d', '%s']
-    out_header = '#bmu1 #bmu2 #error #index #label'
-    baseoutname = os.path.splitext(args.out_name)[0]
-    np.savetxt(f"{baseoutname}_bmus.txt", out_arr, fmt=out_fmt, header=out_header, comments='')
-    som.to_device('cpu')
-    if args.doplot:
-        import matplotlib.pyplot as plt
-        plt.matshow(som.umat)
-        plt.colorbar()
-        plt.savefig(f'{baseoutname}_umat.{args.plot_ext}')
-    pickle.dump(som, open(args.out_name, 'wb'))
+    main(ali=args.aln,
+         batch_size=args.batch,
+         somside=args.somside,
+         nepochs=args.nepochs,
+         alpha=args.alpha,
+         sigma=args.sigma,
+         load=args.load,
+         periodic=args.periodic,
+         scheduler=args.scheduler,
+         nrun=args.nrun,
+         outname=args.out_name,
+         doplot=args.doplot,
+         plot_ext=args.plot_ext)

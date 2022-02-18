@@ -38,6 +38,7 @@
 
 import glob
 import numpy as np
+import torch
 from pathlib import Path
 import re
 
@@ -71,6 +72,15 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='')
     # parser.add_argument(name or flags...[, action][, nargs][, const][, default][, type][, choices][, required][, help][, metavar][, dest])
     parser.add_argument('-a', '--alndir', help='directory with alignments')
+    parser.add_argument('-b', '--batch', help='Batch size (default: 100)', default=100, type=int)
+    parser.add_argument('--somside', help='Size of the side of the square SOM', default=50, type=int)
+    parser.add_argument('--alpha', help='learning rate', default=None, type=float)
+    parser.add_argument('--sigma', help='Learning radius for the SOM', default=None, type=float)
+    parser.add_argument('--nepochs', help='Number of SOM epochs', default=2, type=int)
+    parser.add_argument("-o", "--out_name", default='som.p', help="name of pickle to dump (default som.p)")
     args = parser.parse_args()
+
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    print('Running on', device)
 
     filelist = get_filelist(args.alndir)
