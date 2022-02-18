@@ -69,19 +69,29 @@ def get_filelist(indir):
     return filelist
 
 
-def get_centroids_dataset(som_centroids, npts):
+def get_probs(umat):
+    probs = umat - umat.min()  # The min is now 0.
+    probs /= abs(umat.max())  # and the max 1.
+    probs = np.exp(-probs)
+    probs /= probs.sum()
+    return probs
+
+
+def get_centroids_dataset(somobj, npts):
     """
     Build a list of codebooks vectors extracted from the given som centroids
     npts: number of points to return
     """
+    som_centroids = somobj.centroids
     somsize, dim = som_centroids.shape
-    inds = np.random.choice(somsize, size=npts)
+    probs = get_probs(somobj.umat).flatten()
+    inds = np.random.choice(somsize, size=npts, p=probs)
     centroidnames = [f'som_{i}' for i in inds]
     return som_centroids[inds], centroidnames
 
 
 def get_trainset(somobj, dataset, seqnames):
-    som_centroids, centroidnames = get_centroids_dataset(som_centroids=som.centroids, npts=len(dataset))
+    som_centroids, centroidnames = get_centroids_dataset(somobj=somobj, npts=len(dataset))
     som_centroids = som_centroids.numpy()
     trainset = np.concatenate((som_centroids, dataset))
     trainseqnames = np.concatenate((centroidnames, seqnames))
