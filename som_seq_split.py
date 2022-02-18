@@ -93,6 +93,8 @@ if __name__ == '__main__':
     filelist = get_filelist(args.alndir)
     if os.path.isdir('soms'):
         raise OSError('soms directory already exists. Remove it or rename it for a new run')
+    else:
+        os.mkdir('soms')
     for i, ali in enumerate(filelist):
         outname = f'soms/{baseoutname}_{i}.p'
         som_seq.main(ali=ali,
