@@ -36,7 +36,6 @@
 #                                                                           #
 #############################################################################
 
-import sys
 import re
 import os
 import dill as pickle  # For tricky pickles
@@ -176,7 +175,34 @@ def seqmetric(seqs1, seqs2, b62):
     return -scores
 
 
-def main(ali, batch_size, somside, nepochs, alpha, sigma, load, periodic, scheduler, nrun, outname, doplot, plot_ext):
+def main(ali=None,
+         inputvectors=None,
+         seqnames=None,
+         batch_size=None,
+         somside=None,
+         nepochs=None,
+         alpha=None,
+         sigma=None,
+         load=None,
+         somobj=None,
+         periodic=None,
+         scheduler=None,
+         nrun=None,
+         outname=None,
+         doplot=None,
+         plot_ext=None):
+    if inputvectors is None and ali is None:
+        raise ValueError('inputvectors or ali argument must be set. Both are None.')
+    if inputvectors is not None and ali is not None:
+        raise ValueError('inputvectors and ali arguments are given. Only one must be set.')
+    if inputvectors is not None and seqnames is None:
+        raise ValueError('When inputvectors argument is given, seqnames argument must be given too.')
+    if inputvectors is not None and seqnames is not None:
+        if len(inputvectors) != len(seqnames):
+            raise ValueError(
+                f'inputvectors (len: {len(inputvectors)}) and seqnames (len: {len(seqnames)}) have different length.')
+    if load is not None and somobj is not None:
+        raise ValueError('load and somobj cannot be both set')
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print('Running on', device)
 
@@ -185,9 +211,10 @@ def main(ali, batch_size, somside, nepochs, alpha, sigma, load, periodic, schedu
     b62 = get_blosum62()
     b62 = torchify(b62)
 
-    seqnames, sequences = read_fasta(ali)
-    seqnames = np.asarray(seqnames)
-    inputvectors = vectorize(sequences, dtype=dtype)
+    if ali is not None:
+        seqnames, sequences = read_fasta(ali)
+        seqnames = np.asarray(seqnames)
+        inputvectors = vectorize(sequences, dtype=dtype)
     n_inp = inputvectors.shape[0]
     print('inputvectors.shape:', inputvectors.shape)
     n, dim = inputvectors.shape
@@ -195,11 +222,15 @@ def main(ali, batch_size, somside, nepochs, alpha, sigma, load, periodic, schedu
     baseoutname = os.path.splitext(outname)[0]
 
     if load is not None:
+        print(f'Loading {load}')
         with open(load, 'rb') as somfile:
             som = pickle.load(somfile)
-            print(dir(som))
             # somsize = som.m * som.n
             som.to_device(device)
+    elif somobj is not None:
+        print(f'Using given som object: {somobj}')
+        som = somobj
+        som.to_device(device)
     else:
         # somsize = somside**2
         som = quicksom.som.SOM(somside,

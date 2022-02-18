@@ -37,6 +37,7 @@
 #############################################################################
 
 import glob
+import dill as pickle  # For tricky pickles
 import os
 import numpy as np
 import torch
@@ -68,6 +69,25 @@ def get_filelist(indir):
     return filelist
 
 
+def get_centroids_dataset(som_centroids, npts):
+    """
+    Build a list of codebooks vectors extracted from the given som centroids
+    npts: number of points to return
+    """
+    somsize, dim = som_centroids.shape
+    inds = np.random.choice(somsize, size=npts)
+    centroidnames = [f'som_{i}' for i in inds]
+    return som_centroids[inds], centroidnames
+
+
+def get_trainset(somobj, dataset, seqnames):
+    som_centroids, centroidnames = get_centroids_dataset(som_centroids=som.centroids, npts=len(dataset))
+    som_centroids = som_centroids.numpy()
+    trainset = np.concatenate((som_centroids, dataset))
+    trainseqnames = np.concatenate((centroidnames, seqnames))
+    return trainset, trainseqnames
+
+
 if __name__ == '__main__':
     import argparse
     # argparse.ArgumentParser(prog=None, usage=None, description=None, epilog=None, parents=[], formatter_class=argparse.HelpFormatter, prefix_chars='-', fromfile_prefix_chars=None, argument_default=None, conflict_handler='error', add_help=True, allow_abbrev=True, exit_on_error=True)
@@ -97,16 +117,39 @@ if __name__ == '__main__':
         os.mkdir('soms')
     for i, ali in enumerate(filelist):
         outname = f'soms/{baseoutname}_{i}.p'
-        som_seq.main(ali=ali,
-                     batch_size=args.batch,
-                     somside=args.somside,
-                     nepochs=args.nepochs,
-                     alpha=args.alpha,
-                     sigma=args.sigma,
-                     load=None,
-                     periodic=args.periodic,
-                     scheduler=args.scheduler,
-                     nrun=1,
-                     outname=outname,
-                     doplot=True,
-                     plot_ext='png')
+        if i == 0:
+            som_seq.main(ali=ali,
+                         batch_size=args.batch,
+                         somside=args.somside,
+                         nepochs=args.nepochs,
+                         alpha=args.alpha,
+                         sigma=args.sigma,
+                         load=None,
+                         periodic=args.periodic,
+                         scheduler=args.scheduler,
+                         nrun=1,
+                         outname=outname,
+                         doplot=True,
+                         plot_ext='png')
+        else:
+            # load previous SOM as starting point
+            prev_som = f'soms/{baseoutname}_{i-1}.p'
+            som = pickle.load(open(prev_som, 'rb'))
+            seqnames, sequences = som_seq.read_fasta(ali)
+            seqnames = np.asarray(seqnames)
+            inputvectors = som_seq.vectorize(sequences, dtype='prot')
+            inputvectors, seqnames = get_trainset(somobj=som, dataset=inputvectors, seqnames=seqnames)
+            som_seq.main(inputvectors=inputvectors,
+                         seqnames=seqnames,
+                         batch_size=args.batch,
+                         somside=args.somside,
+                         nepochs=args.nepochs,
+                         alpha=args.alpha,
+                         sigma=args.sigma,
+                         somobj=som,
+                         periodic=args.periodic,
+                         scheduler=args.scheduler,
+                         nrun=1,
+                         outname=outname,
+                         doplot=True,
+                         plot_ext='png')
