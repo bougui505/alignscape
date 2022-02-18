@@ -191,6 +191,7 @@ def main(ali, batch_size, somside, nepochs, alpha, sigma, load, periodic, schedu
     print('inputvectors.shape:', inputvectors.shape)
     n, dim = inputvectors.shape
     inputvectors = torchify(inputvectors)
+    baseoutname = os.path.splitext(outname)[0]
 
     if load is not None:
         with open(load, 'rb') as somfile:
@@ -221,7 +222,8 @@ def main(ali, batch_size, somside, nepochs, alpha, sigma, load, periodic, schedu
             normalize_umat=False,
             nrun=nrun,
             sigma=sigma,
-            alpha=alpha)
+            alpha=alpha,
+            logfile=f'{baseoutname}.log')
     print('Computing BMUS')
     som.bmus, som.error = som.predict(inputvectors, batch_size=batch_size)
     index = np.arange(len(som.bmus))
@@ -233,7 +235,6 @@ def main(ali, batch_size, somside, nepochs, alpha, sigma, load, periodic, schedu
     out_arr['label'] = seqnames
     out_fmt = ['%d', '%d', '%.4g', '%d', '%s']
     out_header = '#bmu1 #bmu2 #error #index #label'
-    baseoutname = os.path.splitext(outname)[0]
     np.savetxt(f"{baseoutname}_bmus.txt", out_arr, fmt=out_fmt, header=out_header, comments='')
     som.to_device('cpu')
     if doplot:
