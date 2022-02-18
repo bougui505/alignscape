@@ -37,10 +37,12 @@
 #############################################################################
 
 import glob
+import os
 import numpy as np
 import torch
 from pathlib import Path
 import re
+import som_seq
 
 file_pattern = re.compile(r'.*?(\d+).*?')
 
@@ -71,16 +73,38 @@ if __name__ == '__main__':
     # argparse.ArgumentParser(prog=None, usage=None, description=None, epilog=None, parents=[], formatter_class=argparse.HelpFormatter, prefix_chars='-', fromfile_prefix_chars=None, argument_default=None, conflict_handler='error', add_help=True, allow_abbrev=True, exit_on_error=True)
     parser = argparse.ArgumentParser(description='')
     # parser.add_argument(name or flags...[, action][, nargs][, const][, default][, type][, choices][, required][, help][, metavar][, dest])
-    parser.add_argument('-a', '--alndir', help='directory with alignments')
+    parser.add_argument('-a', '--alndir', help='directory with alignments', required=True)
     parser.add_argument('-b', '--batch', help='Batch size (default: 100)', default=100, type=int)
     parser.add_argument('--somside', help='Size of the side of the square SOM', default=50, type=int)
     parser.add_argument('--alpha', help='learning rate', default=None, type=float)
     parser.add_argument('--sigma', help='Learning radius for the SOM', default=None, type=float)
     parser.add_argument('--nepochs', help='Number of SOM epochs', default=2, type=int)
     parser.add_argument("-o", "--out_name", default='som.p', help="name of pickle to dump (default som.p)")
+    parser.add_argument('--periodic', help='Periodic toroidal SOM', action='store_true')
+    parser.add_argument('--scheduler',
+                        help='Which scheduler to use, can be linear, exp or half (exp by default)',
+                        default='exp')
     args = parser.parse_args()
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print('Running on', device)
 
+    baseoutname = os.path.splitext(args.out_name)[0]
     filelist = get_filelist(args.alndir)
+    if os.path.isdir('soms'):
+        raise OSError('soms directory already exists. Remove it or rename it for a new run')
+    for i, ali in enumerate(filelist):
+        outname = f'soms/{baseoutname}_{i}.p'
+        som_seq.main(ali=ali,
+                     batch_size=args.batch,
+                     somside=args.somside,
+                     nepochs=args.nepochs,
+                     alpha=args.alpha,
+                     sigma=args.sigma,
+                     load=None,
+                     periodic=args.periodic,
+                     scheduler=args.scheduler,
+                     nrun=1,
+                     outname=outname,
+                     doplot=True,
+                     plot_ext='png')
