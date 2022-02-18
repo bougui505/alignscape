@@ -90,12 +90,16 @@ def get_centroids_dataset(somobj, npts):
     return som_centroids[inds], centroidnames
 
 
-def get_trainset(somobj, dataset, seqnames):
-    som_centroids, centroidnames = get_centroids_dataset(somobj=somobj, npts=len(dataset))
-    som_centroids = som_centroids.numpy()
-    trainset = np.concatenate((som_centroids, dataset))
-    trainseqnames = np.concatenate((centroidnames, seqnames))
-    return trainset, trainseqnames
+def get_trainset(somobj, dataset, seqnames, memory=1.):
+    npts = int(len(dataset) * memory)
+    if npts == 0:
+        return dataset, seqnames
+    else:
+        som_centroids, centroidnames = get_centroids_dataset(somobj=somobj, npts=npts)
+        som_centroids = som_centroids.numpy()
+        trainset = np.concatenate((som_centroids, dataset))
+        trainseqnames = np.concatenate((centroidnames, seqnames))
+        return trainset, trainseqnames
 
 
 if __name__ == '__main__':
@@ -114,8 +118,13 @@ if __name__ == '__main__':
     parser.add_argument('--scheduler',
                         help='Which scheduler to use, can be linear, exp or half (exp by default)',
                         default='exp')
+    parser.add_argument(
+        '--memory',
+        help=
+        'Proportion (relative to training set) to keep from the previous SOM map for the new training set (default=1.)',
+        default=1.,
+        type=float)
     args = parser.parse_args()
-
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print('Running on', device)
 
@@ -148,7 +157,10 @@ if __name__ == '__main__':
             seqnames, sequences = som_seq.read_fasta(ali)
             seqnames = np.asarray(seqnames)
             inputvectors = som_seq.vectorize(sequences, dtype='prot')
-            inputvectors, seqnames = get_trainset(somobj=som, dataset=inputvectors, seqnames=seqnames)
+            inputvectors, seqnames = get_trainset(somobj=som,
+                                                  dataset=inputvectors,
+                                                  seqnames=seqnames,
+                                                  memory=args.memory)
             som_seq.main(inputvectors=inputvectors,
                          seqnames=seqnames,
                          batch_size=args.batch,
