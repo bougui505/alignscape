@@ -268,12 +268,12 @@ def main(ali=None,
     out_fmt = ['%d', '%d', '%.4g', '%d', '%s']
     out_header = '#bmu1 #bmu2 #error #index #label'
     np.savetxt(f"{baseoutname}_bmus.txt", out_arr, fmt=out_fmt, header=out_header, comments='')
-    som.to_device('cpu')
     if doplot:
         import matplotlib.pyplot as plt
         plt.matshow(som.umat)
         plt.colorbar()
         plt.savefig(f'{baseoutname}_umat.{plot_ext}')
+    som = som.to_device('cpu')
     pickle.dump(som, open(outname, 'wb'))
 
 
