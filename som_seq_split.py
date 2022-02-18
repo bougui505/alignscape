@@ -70,9 +70,9 @@ def get_filelist(indir):
 
 
 def get_probs(umat):
-    probs = umat - umat.min()  # The min is now 0.
-    probs /= abs(umat.max())  # and the max 1.
-    probs = np.exp(-probs)
+    probs = -umat
+    probs = probs - probs.min()  # The min is now 0.
+    probs /= abs(probs.max())  # and the max 1.
     probs /= probs.sum()
     return probs
 
