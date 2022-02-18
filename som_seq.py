@@ -39,7 +39,8 @@
 import sys
 import re
 import os
-import pickle
+import dill as pickle  # For tricky pickles
+# import pickle
 import quicksom.som
 from Bio.SubsMat import MatrixInfo
 import numpy as np
