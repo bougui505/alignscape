@@ -257,7 +257,7 @@ def main(ali=None,
             alpha=alpha,
             logfile=f'{baseoutname}.log')
     print('Computing BMUS')
-    som.bmus, som.error = som.predict(inputvectors, batch_size=batch_size)
+    som.bmus, som.error, som.density = som.predict(inputvectors, batch_size=batch_size, return_density=True)
     index = np.arange(len(som.bmus))
     out_arr = np.zeros(n_inp, dtype=[('bmu1', int), ('bmu2', int), ('error', float), ('index', int), ('label', 'U512')])
     out_arr['bmu1'] = som.bmus[:, 0]

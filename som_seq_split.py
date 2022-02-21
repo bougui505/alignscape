@@ -69,14 +69,6 @@ def get_filelist(indir):
     return filelist
 
 
-def get_probs(umat):
-    probs = -umat
-    probs = probs - probs.min()  # The min is now 0.
-    probs /= abs(probs.max())  # and the max 1.
-    probs /= probs.sum()
-    return probs
-
-
 def get_centroids_dataset(somobj, npts):
     """
     Build a list of codebooks vectors extracted from the given som centroids
@@ -84,7 +76,7 @@ def get_centroids_dataset(somobj, npts):
     """
     som_centroids = somobj.centroids
     somsize, dim = som_centroids.shape
-    probs = get_probs(somobj.umat).flatten()
+    probs = som.density.flatten()
     inds = np.random.choice(somsize, size=npts, p=probs)
     centroidnames = [f'som_{i}' for i in inds]
     return som_centroids[inds], centroidnames
