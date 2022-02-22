@@ -37,7 +37,7 @@
 #############################################################################
 
 import torch
-from som_seq import vectorize, torchify
+from som_seq import vectorize
 
 
 class Dataset(torch.utils.data.Dataset):
@@ -100,7 +100,6 @@ class Dataset(torch.utils.data.Dataset):
         inputvector = vectorize([
             sequence,
         ]).squeeze()
-        inputvector = torchify(inputvector)
         return seqname.strip(), inputvector
 
     def __getitem__(self, index):
