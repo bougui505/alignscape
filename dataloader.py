@@ -37,7 +37,7 @@
 #############################################################################
 
 import torch
-from som_seq import vectorize
+from som_seq import vectorize, torchify
 
 
 class Dataset(torch.utils.data.Dataset):
@@ -81,6 +81,10 @@ class Dataset(torch.utils.data.Dataset):
         self.fastafile.seek(0)
         return nseq
 
+    def __dim__(self):
+        seqname, inputvector = self.get_seqs(0)
+        return len(inputvector)
+
     def get_seqs(self, seqid):
         infile = open(self.fastafilename, 'r')
         lineid = self.mapping[seqid]
@@ -96,6 +100,7 @@ class Dataset(torch.utils.data.Dataset):
         inputvector = vectorize([
             sequence,
         ]).squeeze()
+        inputvector = torchify(inputvector)
         return seqname.strip(), inputvector
 
     def __getitem__(self, index):

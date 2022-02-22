@@ -44,6 +44,7 @@ import quicksom.som
 from Bio.SubsMat import MatrixInfo
 import numpy as np
 import torch
+import dataloader
 
 
 def read_fasta(fastafilename, names=None):
@@ -212,13 +213,14 @@ def main(ali=None,
     b62 = torchify(b62)
 
     if ali is not None:
-        seqnames, sequences = read_fasta(ali)
-        seqnames = np.asarray(seqnames)
-        inputvectors = vectorize(sequences, dtype=dtype)
-    n_inp = inputvectors.shape[0]
-    print('inputvectors.shape:', inputvectors.shape)
-    n, dim = inputvectors.shape
-    inputvectors = torchify(inputvectors)
+        # seqnames, sequences = read_fasta(ali)
+        # seqnames = np.asarray(seqnames)
+        # inputvectors = vectorize(sequences, dtype=dtype)
+        dataset = dataloader.Dataset(ali)
+    n_inp = dataset.__len__()
+    print('n_input:', n_inp)
+    dim = dataset.__dim__()
+    # inputvectors = torchify(inputvectors)
     baseoutname = os.path.splitext(outname)[0]
 
     if load is not None:
@@ -247,7 +249,7 @@ def main(ali=None,
     print('sigma:', som.sigma)
     if som.alpha is not None:
         print('alpha:', som.alpha)
-    som.fit(inputvectors,
+    som.fit(dataset=dataset,
             batch_size=batch_size,
             do_compute_all_dists=False,
             unfold=False,
@@ -257,14 +259,16 @@ def main(ali=None,
             alpha=alpha,
             logfile=f'{baseoutname}.log')
     print('Computing BMUS')
-    som.bmus, som.error, som.density = som.predict(inputvectors, batch_size=batch_size, return_density=True)
+    som.bmus, som.error, som.density, som.labels = som.predict(dataset=dataset,
+                                                               batch_size=batch_size,
+                                                               return_density=True)
     index = np.arange(len(som.bmus))
     out_arr = np.zeros(n_inp, dtype=[('bmu1', int), ('bmu2', int), ('error', float), ('index', int), ('label', 'U512')])
     out_arr['bmu1'] = som.bmus[:, 0]
     out_arr['bmu2'] = som.bmus[:, 1]
     out_arr['error'] = som.error
     out_arr['index'] = index
-    out_arr['label'] = seqnames
+    out_arr['label'] = som.labels
     out_fmt = ['%d', '%d', '%.4g', '%d', '%s']
     out_header = '#bmu1 #bmu2 #error #index #label'
     np.savetxt(f"{baseoutname}_bmus.txt", out_arr, fmt=out_fmt, header=out_header, comments='')
