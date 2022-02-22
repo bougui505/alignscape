@@ -128,7 +128,10 @@ def get_blosum62():
 
 def torchify(x):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    x = torch.from_numpy(x)
+    try:
+        x = torch.from_numpy(x)
+    except TypeError:
+        pass
     x = x.to(device)
     x = x.float()
     return x
@@ -146,8 +149,12 @@ def score_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC
         raise ValueError("dtype must be 'prot' or 'nucl'")
     device1 = vec1.device.type
     device2 = matrix.device.type
-    if device1 != device2:
-        matrix = matrix.to(device1)
+    device3 = vec2.device.type
+    devices = [device1, device2, device3]
+    if 'cuda' in devices and 'cpu' in devices:
+        vec1 = torchify(vec1)
+        vec2 = torchify(vec2)
+        matrix = torchify(matrix)
     if vec1.ndim == 2:
         vec1 = vec1[None, ...]
     if vec2.ndim == 2:
@@ -159,6 +166,8 @@ def score_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC
         scores[i] += torch.maximum(vec1[i, ..., -2], vec2[..., -2]).sum(axis=1) * gap_s
         scores[i] += torch.maximum(vec1[i, ..., -1], vec2[..., -1]).sum(axis=1) * gap_e
     # scores = list(scores.to('cpu').numpy())
+    if 'cpu' in devices:
+        scores = scores.to('cpu')
     if len(scores) == 1:
         return scores[0]
     else:
