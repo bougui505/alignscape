@@ -39,6 +39,7 @@
 import re
 import torch
 import numpy as np
+import itertools
 
 
 # add a character for gap opening
@@ -157,6 +158,8 @@ class Dataset(torch.utils.data.Dataset):
         offset = self.mapping[seqid]
         self.fastafile.seek(offset)
         seqname = self.fastafile.readline().decode()
+        if seqname[0] != '>':
+            raise ValueError(f'Incorrect name for sequence with name {seqname}')
         sequence = ''
         for line in self.fastafile:
             if line.decode()[0] == '>':
@@ -180,10 +183,10 @@ class Dataset(torch.utils.data.Dataset):
 def test_parallel(num_workers, batch_size=10, nloop=100):
     dataset = Dataset('data/TssB.aln')
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
-    dataloader_iter = iter(dataloader)
     t0 = time.time()
+    dataiter = itertools.cycle(dataloader)
     for i in range(nloop):
-        seqnames, inputvectors = next(dataloader_iter)
+        seqname, inputvectors = next(dataiter)
     deltat = time.time() - t0
     print(f'Timing for {num_workers} worker(s), batch_size {batch_size} and {nloop} loops: {deltat:.3f} s')
     return deltat
