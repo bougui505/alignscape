@@ -71,50 +71,6 @@ def read_fasta(fastafilename, names=None):
     return seqnames, sequences
 
 
-# add a character for gap opening
-def _substitute_opening_gap_char(seq):
-    rex = re.compile('[A-Z]-')
-    newseq = list(seq)
-    if newseq[0] == "-":
-        newseq[0] = "|"
-    iterator = rex.finditer(seq)
-    for match in iterator:
-        try:
-            newseq[match.span()[1] - 1] = "|"
-        except:
-            continue
-    return "".join(newseq)
-
-
-# transform a sequence to a vector
-def seq2vec(sequence, dtype='prot'):
-    """
-    - sequence: string
-    """
-    aalist = list('ABCDEFGHIKLMNPQRSTVWXYZ|-')
-    nucllist = list('ATGCSWRYKMBVHDN|-')
-    if dtype == 'prot':
-        mapper = dict([(r, i) for i, r in enumerate(aalist)])
-        naa_types = len(aalist)
-    elif dtype == 'nucl':
-        mapper = dict([(r, i) for i, r in enumerate(nucllist)])
-        naa_types = len(nucllist)
-    else:
-        raise ValueError("dtype must be 'prot' or 'nucl'")
-    sequence = _substitute_opening_gap_char(sequence)
-    naa = len(sequence)
-    vec = np.zeros((naa, naa_types))
-    for i, res in enumerate(list(sequence)):
-        ind = mapper[res]
-        vec[i, ind] = 1.
-    return vec
-
-
-def vectorize(sequences, dtype='prot'):
-    vectors = np.asarray([seq2vec(s, dtype).flatten() for s in sequences])
-    return vectors
-
-
 def get_blosum62():
     aalist = list('ABCDEFGHIKLMNPQRSTVWXYZ|-')
     b62 = np.zeros((23, 23))
