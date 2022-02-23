@@ -91,6 +91,7 @@ class Dataset(torch.utils.data.Dataset):
     >>> print(dataset.__len__())
     2916
     >>> seqname, inputvector = dataset.get_seq(23)
+    opening data/TssB.aln
     >>> print(seqname)
     >A0A6I3XKS6
     >>> seqname, inputvector = dataset.get_seq(10)
@@ -113,33 +114,36 @@ class Dataset(torch.utils.data.Dataset):
         fastafile
         """
         self.fastafilename = fastafilename
-        self.fastafile = open(fastafilename, 'rb')
+        self.fastafile = None
         self.mapping = self.seqmapping()
         self.dim = None
+        self.len = self.get_len()
 
     def seqmapping(self):
         """
         Returns a dictionnary that give the line number for a given sequence index
         """
-        self.fastafile.seek(0)
-        mapping = dict()
-        seqid = 0
-        offset = 0
-        for i, line in enumerate(self.fastafile):
-            if line.decode()[0] == '>':
-                mapping[seqid] = offset
-                seqid += 1
-            offset += len(line)
-        self.fastafile.seek(0)
+        with open(self.fastafilename, 'rb') as fastafile:
+            mapping = dict()
+            seqid = 0
+            offset = 0
+            for i, line in enumerate(fastafile):
+                if line.decode()[0] == '>':
+                    mapping[seqid] = offset
+                    seqid += 1
+                offset += len(line)
         return mapping
 
     def __del__(self):
-        self.fastafile.close()
+        if self.fastafile is not None:
+            self.fastafile.close()
 
     def __len__(self):
-        self.fastafile.seek(0)
-        nseq = sum(1 for line in self.fastafile if line.decode()[0] == '>')
-        self.fastafile.seek(0)
+        return self.len
+
+    def get_len(self):
+        with open(self.fastafilename, 'rb') as fastafile:
+            nseq = sum(1 for line in fastafile if line.decode()[0] == '>')
         return nseq
 
     def __dim__(self):
@@ -147,12 +151,14 @@ class Dataset(torch.utils.data.Dataset):
         return len(inputvector)
 
     def get_seq(self, seqid):
-        fastafile = open(self.fastafilename, 'rb')
+        if self.fastafile is None:
+            print(f'opening {self.fastafilename}')
+            self.fastafile = open(self.fastafilename, 'rb')
         offset = self.mapping[seqid]
-        fastafile.seek(offset)
-        seqname = fastafile.readline().decode()
+        self.fastafile.seek(offset)
+        seqname = self.fastafile.readline().decode()
         sequence = ''
-        for line in fastafile:
+        for line in self.fastafile:
             if line.decode()[0] == '>':
                 break
             sequence += line.decode().strip()
