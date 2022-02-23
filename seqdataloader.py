@@ -86,9 +86,9 @@ def vectorize(sequences, dtype='prot'):
     return vectors
 
 
-class Dataset(torch.utils.data.Dataset):
+class SeqDataset(torch.utils.data.Dataset):
     """
-    >>> dataset = Dataset('data/TssB.aln')
+    >>> dataset = SeqDataset('data/TssB.aln')
     >>> print(dataset.__len__())
     2916
     >>> seqname, inputvector = dataset.get_seq(23)
@@ -181,7 +181,7 @@ class Dataset(torch.utils.data.Dataset):
 
 
 def test_parallel(num_workers, batch_size=10, nloop=100, fastafilename='data/TssB.aln'):
-    dataset = Dataset(fastafilename)
+    dataset = SeqDataset(fastafilename)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
     t0 = time.time()
     dataiter = itertools.cycle(dataloader)

@@ -44,7 +44,7 @@ import quicksom.som
 from Bio.SubsMat import MatrixInfo
 import numpy as np
 import torch
-import dataloader
+import seqdataloader
 
 
 def read_fasta(fastafilename, names=None):
@@ -184,7 +184,7 @@ def main(ali=None,
         # seqnames, sequences = read_fasta(ali)
         # seqnames = np.asarray(seqnames)
         # inputvectors = vectorize(sequences, dtype=dtype)
-        dataset = dataloader.Dataset(ali)
+        dataset = seqdataloader.SeqDataset(ali)
     n_inp = dataset.__len__()
     print('n_input:', n_inp)
     dim = dataset.__dim__()
