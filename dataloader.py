@@ -180,8 +180,8 @@ class Dataset(torch.utils.data.Dataset):
         return seq
 
 
-def test_parallel(num_workers, batch_size=10, nloop=100):
-    dataset = Dataset('data/TssB.aln')
+def test_parallel(num_workers, batch_size=10, nloop=100, fastafilename='data/TssB.aln'):
+    dataset = Dataset(fastafilename)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
     t0 = time.time()
     dataiter = itertools.cycle(dataloader)
@@ -200,7 +200,10 @@ if __name__ == '__main__':
     # argparse.ArgumentParser(prog=None, usage=None, description=None, epilog=None, parents=[], formatter_class=argparse.HelpFormatter, prefix_chars='-', fromfile_prefix_chars=None, argument_default=None, conflict_handler='error', add_help=True, allow_abbrev=True, exit_on_error=True)
     parser = argparse.ArgumentParser(description='')
     # parser.add_argument(name or flags...[, action][, nargs][, const][, default][, type][, choices][, required][, help][, metavar][, dest])
-    parser.add_argument('-a', '--arg1')
+    parser.add_argument(
+        '--fasta',
+        help='Fasta file to test the parallel data loader -- see --test_parallel -- (default: data/TssB.aln)',
+        default='data/TssB.aln')
     parser.add_argument('--test', help='Test the code', action='store_true')
     parser.add_argument('--test_parallel', help='Test the code for parallel execution', action='store_true')
     args = parser.parse_args()
@@ -209,7 +212,7 @@ if __name__ == '__main__':
         doctest.testmod(optionflags=doctest.ELLIPSIS | doctest.REPORT_ONLY_FIRST_FAILURE)
         sys.exit()
     if args.test_parallel:
-        t1 = test_parallel(1, nloop=500, batch_size=5)
-        t4 = test_parallel(4, nloop=500, batch_size=5)
+        t1 = test_parallel(1, nloop=500, batch_size=5, fastafilename=args.fasta)
+        t4 = test_parallel(4, nloop=500, batch_size=5, fastafilename=args.fasta)
         speedup = t1 / t4
         print(f'Speedup: {speedup:.4f}')
