@@ -111,6 +111,9 @@ def score_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC
         vec1 = torchify(vec1)
         vec2 = torchify(vec2)
         matrix = torchify(matrix)
+    vec1 = vec1.float()
+    vec2 = vec2.float()
+    matrix = matrix.float()
     if vec1.ndim == 2:
         vec1 = vec1[None, ...]
     if vec2.ndim == 2:
