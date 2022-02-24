@@ -211,7 +211,7 @@ def main(ali=None,
         # somsize = somside**2
         som = quicksom.som.SOM(somside,
                                somside,
-                               niter=nepochs,
+                               n_epoch=nepochs,
                                dim=dim,
                                alpha=alpha,
                                sigma=sigma,
