@@ -36,7 +36,7 @@
 #                                                                           #
 #############################################################################
 
-import re
+import functools
 import os
 import dill as pickle  # For tricky pickles
 # import pickle
@@ -156,7 +156,6 @@ def main(ali=None,
          somobj=None,
          periodic=None,
          scheduler=None,
-         nrun=None,
          outname=None,
          doplot=None,
          plot_ext=None):
@@ -185,6 +184,13 @@ def main(ali=None,
         # seqnames = np.asarray(seqnames)
         # inputvectors = vectorize(sequences, dtype=dtype)
         dataset = seqdataloader.SeqDataset(ali)
+        num_workers = os.cpu_count()
+        dataloader = torch.utils.data.DataLoader(dataset,
+                                                 batch_size=batch_size,
+                                                 shuffle=True,
+                                                 num_workers=num_workers,
+                                                 worker_init_fn=functools.partial(seqdataloader.workinit,
+                                                                                  fastafilename=ali))
     n_inp = dataset.__len__()
     print('n_input:', n_inp)
     dim = dataset.__dim__()
@@ -217,12 +223,11 @@ def main(ali=None,
     print('sigma:', som.sigma)
     if som.alpha is not None:
         print('alpha:', som.alpha)
-    som.fit(dataset=dataset,
+    som.fit(dataset=dataloader,
             batch_size=batch_size,
             do_compute_all_dists=False,
             unfold=False,
             normalize_umat=False,
-            nrun=nrun,
             sigma=sigma,
             alpha=alpha,
             logfile=f'{baseoutname}.log')
@@ -268,10 +273,6 @@ if __name__ == '__main__':
                         help='Which scheduler to use, can be linear, exp or half (exp by default)',
                         default='exp')
     parser.add_argument('--load', help='Load the given som pickle file and use it as starting point for a new training')
-    parser.add_argument('--nrun',
-                        help='Number of run that will be run. Useful to compute the scheduler decay.',
-                        type=int,
-                        default=1)
     args = parser.parse_args()
 
     main(ali=args.aln,
@@ -283,7 +284,6 @@ if __name__ == '__main__':
          load=args.load,
          periodic=args.periodic,
          scheduler=args.scheduler,
-         nrun=args.nrun,
          outname=args.out_name,
          doplot=args.doplot,
          plot_ext=args.plot_ext)

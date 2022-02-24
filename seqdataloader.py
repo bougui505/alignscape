@@ -40,6 +40,7 @@ import re
 import torch
 import numpy as np
 import itertools
+import functools
 
 
 # add a character for gap opening
@@ -180,9 +181,19 @@ class SeqDataset(torch.utils.data.Dataset):
         return seq
 
 
+def workinit(workerid, fastafilename):
+    work_dataset = torch.utils.data.get_worker_info().dataset
+    work_dataset.fastafile = open(fastafilename, 'rb')
+    print(f'{fastafilename} opened with object id {id(work_dataset.fastafile)} for worker {workerid}')
+
+
 def test_parallel(num_workers, batch_size=10, nloop=100, fastafilename='data/TssB.aln'):
     dataset = SeqDataset(fastafilename)
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
+    dataloader = torch.utils.data.DataLoader(dataset,
+                                             batch_size=batch_size,
+                                             shuffle=True,
+                                             num_workers=num_workers,
+                                             worker_init_fn=functools.partial(workinit, fastafilename=fastafilename))
     t0 = time.time()
     dataiter = itertools.cycle(dataloader)
     for i in range(nloop):
