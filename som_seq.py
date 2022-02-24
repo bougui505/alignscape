@@ -189,6 +189,7 @@ def main(ali=None,
                                                  batch_size=batch_size,
                                                  shuffle=True,
                                                  num_workers=num_workers,
+                                                 pin_memory=True,
                                                  worker_init_fn=functools.partial(seqdataloader.workinit,
                                                                                   fastafilename=ali))
     n_inp = dataset.__len__()
