@@ -232,6 +232,10 @@ def main(ali=None,
             sigma=sigma,
             alpha=alpha,
             logfile=f'{baseoutname}.log')
+    print('Saving SOM object...')
+    som = som.to_device('cpu')
+    pickle.dump(som, open(outname, 'wb'))
+    som.to_device(device)
     print('Computing BMUS')
     som.bmus, som.error, som.density, som.labels = som.predict(dataset=dataset,
                                                                batch_size=batch_size,
@@ -251,6 +255,7 @@ def main(ali=None,
         plt.matshow(som.umat)
         plt.colorbar()
         plt.savefig(f'{baseoutname}_umat.{plot_ext}')
+    print('Saving SOM object...')
     som = som.to_device('cpu')
     pickle.dump(som, open(outname, 'wb'))
 
