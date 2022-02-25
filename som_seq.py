@@ -46,6 +46,13 @@ import numpy as np
 import torch
 import seqdataloader
 
+try:
+    import functorch
+    FUNCTORCH_AVAIL = True
+except ImportError:
+    print("Running without functorch, please install it")
+    FUNCTORCH_AVAIL = False
+
 
 def read_fasta(fastafilename, names=None):
     """
@@ -103,14 +110,6 @@ def score_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC
         matrix = NUC44
     else:
         raise ValueError("dtype must be 'prot' or 'nucl'")
-    device1 = vec1.device.type
-    device2 = matrix.device.type
-    device3 = vec2.device.type
-    devices = [device1, device2, device3]
-    if 'cuda' in devices and 'cpu' in devices:
-        vec1 = torchify(vec1)
-        vec2 = torchify(vec2)
-        matrix = torchify(matrix)
     vec1 = vec1.float()
     vec2 = vec2.float()
     matrix = matrix.float()
@@ -120,13 +119,21 @@ def score_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC
         vec2 = vec2[None, ...]
     matv2 = torch.matmul(matrix[None, ...], torch.swapaxes(vec2[..., :-2], 1, 2))
     scores = torch.einsum('aij,bji->ab', vec1[..., :-2], matv2)
-    for i in range(len(vec1)):
-        # scores.shape = (a, b) with a: size of batch and b size of SOM
-        scores[i] += torch.maximum(vec1[i, ..., -2], vec2[..., -2]).sum(axis=1) * gap_s
-        scores[i] += torch.maximum(vec1[i, ..., -1], vec2[..., -1]).sum(axis=1) * gap_e
-    # scores = list(scores.to('cpu').numpy())
-    if 'cpu' in devices:
-        scores = scores.to('cpu')
+    gaps1, gaps2 = vec1[..., -2], vec2[..., -2]
+    exts1, exts2 = vec1[..., -1], vec2[..., -1]
+    if FUNCTORCH_AVAIL:
+        vmax = functorch.vmap(torch.maximum, in_dims=(0, None))
+        max_gaps = vmax(gaps1, gaps2)
+        max_gaps_aggregated = max_gaps.sum(axis=2)
+        max_exts = vmax(exts1, exts2)
+        max_exts_aggregated = max_exts.sum(axis=2)
+        scores = scores + max_gaps_aggregated * gap_s + max_exts_aggregated * gap_e
+    else:
+        for i in range(len(vec1)):
+            # scores.shape = (a, b) with a: size of batch and b size of SOM
+            scores[i] += torch.maximum(gaps1[i, ...], gaps2).sum(axis=1) * gap_s
+            scores[i] += torch.maximum(exts1[i, ...], exts2).sum(axis=1) * gap_e
+        # scores = list(scores.to('cpu').numpy())
     if len(scores) == 1:
         return scores[0]
     else:
@@ -257,6 +264,7 @@ def main(ali=None,
 
 if __name__ == '__main__':
     import argparse
+
     # argparse.ArgumentParser(prog=None, usage=None, description=None, epilog=None, parents=[], formatter_class=argparse.HelpFormatter, prefix_chars='-', fromfile_prefix_chars=None, argument_default=None, conflict_handler='error', add_help=True, allow_abbrev=True, exit_on_error=True)
     parser = argparse.ArgumentParser(description='')
     # parser.add_argument(name or flags...[, action][, nargs][, const][, default][, type][, choices][, required][, help][, metavar][, dest])
