@@ -44,7 +44,7 @@ import quicksom.som
 from Bio.SubsMat import MatrixInfo
 import numpy as np
 import torch
-import seqdataloader
+import quicksom_seq.seqdataloader as seqdataloader
 
 
 def read_fasta(fastafilename, names=None):
