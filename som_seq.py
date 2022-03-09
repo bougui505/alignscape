@@ -225,6 +225,7 @@ def main(ali=None,
     if som.alpha is not None:
         print('alpha:', som.alpha)
     som.fit(dataset=dataloader,
+            n_epoch=nepochs,
             batch_size=batch_size,
             do_compute_all_dists=False,
             unfold=False,
@@ -239,7 +240,8 @@ def main(ali=None,
     print('Computing BMUS')
     som.bmus, som.error, som.density, som.labels = som.predict(dataset=dataset,
                                                                batch_size=batch_size,
-                                                               return_density=True)
+                                                               return_density=True,
+                                                               num_workers=1)
     index = np.arange(len(som.bmus))
     out_arr = np.zeros(n_inp, dtype=[('bmu1', int), ('bmu2', int), ('error', float), ('index', int), ('label', 'U512')])
     out_arr['bmu1'] = som.bmus[:, 0]
