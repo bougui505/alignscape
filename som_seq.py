@@ -237,21 +237,25 @@ def main(ali=None,
     som = som.to_device('cpu')
     pickle.dump(som, open(outname, 'wb'))
     som.to_device(device)
-    print('Computing BMUS')
-    som.bmus, som.error, som.density, som.labels = som.predict(dataset=dataset,
-                                                               batch_size=batch_size,
-                                                               return_density=True,
-                                                               num_workers=1)
-    index = np.arange(len(som.bmus))
-    out_arr = np.zeros(n_inp, dtype=[('bmu1', int), ('bmu2', int), ('error', float), ('index', int), ('label', 'U512')])
-    out_arr['bmu1'] = som.bmus[:, 0]
-    out_arr['bmu2'] = som.bmus[:, 1]
-    out_arr['error'] = som.error
-    out_arr['index'] = index
-    out_arr['label'] = som.labels
-    out_fmt = ['%d', '%d', '%.4g', '%d', '%s']
-    out_header = '#bmu1 #bmu2 #error #index #label'
-    np.savetxt(f"{baseoutname}_bmus.txt", out_arr, fmt=out_fmt, header=out_header, comments='')
+    if som.bmus is None:
+        print('Computing BMUS')
+        som.bmus, som.error, som.density, som.labels = som.predict(dataset=dataset,
+                                                                   batch_size=batch_size,
+                                                                   return_density=True,
+                                                                   num_workers=1)
+        index = np.arange(len(som.bmus))
+        out_arr = np.zeros(n_inp,
+                           dtype=[('bmu1', int), ('bmu2', int), ('error', float), ('index', int), ('label', 'U512')])
+        out_arr['bmu1'] = som.bmus[:, 0]
+        out_arr['bmu2'] = som.bmus[:, 1]
+        out_arr['error'] = som.error
+        out_arr['index'] = index
+        out_arr['label'] = som.labels
+        out_fmt = ['%d', '%d', '%.4g', '%d', '%s']
+        out_header = '#bmu1 #bmu2 #error #index #label'
+        np.savetxt(f"{baseoutname}_bmus.txt", out_arr, fmt=out_fmt, header=out_header, comments='')
+    if som.pairwise_dist is None:
+        som.get_pairwise_dist()
     if doplot:
         import matplotlib.pyplot as plt
         plt.matshow(som.umat)
