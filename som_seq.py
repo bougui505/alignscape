@@ -256,6 +256,8 @@ def main(ali=None,
         np.savetxt(f"{baseoutname}_bmus.txt", out_arr, fmt=out_fmt, header=out_header, comments='')
     if som.pairwise_dist is None:
         som.get_pairwise_dist()
+    if som.mds is None:
+        som.mds_embedding()
     if doplot:
         import matplotlib.pyplot as plt
         plt.matshow(som.umat)
