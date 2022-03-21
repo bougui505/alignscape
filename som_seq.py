@@ -239,7 +239,7 @@ def main(ali=None,
     som.to_device(device)
     if som.bmus is None:
         print('Computing BMUS')
-        som.bmus, som.error, som.density, som.labels = som.predict(dataset=dataset,
+        som.bmus, som.error, som.labels, som.density = som.predict(dataset=dataset,
                                                                    batch_size=batch_size,
                                                                    return_density=True,
                                                                    num_workers=1)
