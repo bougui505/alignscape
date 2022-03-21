@@ -3,4 +3,4 @@
 
 # Command line example for som_seq.py
 
-./som_seq.py -b 50 --nepochs 100 --periodic -a data/TssB.aln | tee som.log
+./som_seq.py --nepochs 1 -a data/TssB.aln -b 8 --alpha 0.5 | tee som.log

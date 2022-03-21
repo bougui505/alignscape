@@ -40,11 +40,10 @@ import functools
 import os
 import dill as pickle  # For tricky pickles
 # import pickle
-import quicksom.som
 from Bio.SubsMat import MatrixInfo
 import numpy as np
 import torch
-import seqdataloader
+import seqdataloader as seqdataloader
 
 try:
     import functorch
@@ -225,6 +224,7 @@ def main_old(ali=None,
     if som.alpha is not None:
         print('alpha:', som.alpha)
     som.fit(dataset=dataloader,
+            n_epoch=nepochs,
             batch_size=batch_size,
             do_compute_all_dists=False,
             unfold=False,
@@ -232,25 +232,34 @@ def main_old(ali=None,
             sigma=sigma,
             alpha=alpha,
             logfile=f'{baseoutname}.log')
-    print('Computing BMUS')
-    som.bmus, som.error, som.labels, som.density = som.predict(dataset=dataloader,
-                                                               batch_size=batch_size,
-                                                               return_density=True)
-    index = np.arange(len(som.bmus))
-    out_arr = np.zeros(n_inp, dtype=[('bmu1', int), ('bmu2', int), ('error', float), ('index', int), ('label', 'U512')])
-    out_arr['bmu1'] = som.bmus[:, 0]
-    out_arr['bmu2'] = som.bmus[:, 1]
-    out_arr['error'] = som.error
-    out_arr['index'] = index
-    out_arr['label'] = som.labels
-    out_fmt = ['%d', '%d', '%.4g', '%d', '%s']
-    out_header = '#bmu1 #bmu2 #error #index #label'
-    np.savetxt(f"{baseoutname}_bmus.txt", out_arr, fmt=out_fmt, header=out_header, comments='')
+
+    if som.bmus is None:
+        print('Computing BMUS')
+        som.bmus, som.error, som.labels, som.density = som.predict(dataset=dataset,
+                                                                   batch_size=batch_size,
+                                                                   return_density=True,
+                                                                   num_workers=1)
+        index = np.arange(len(som.bmus))
+        out_arr = np.zeros(n_inp,
+                           dtype=[('bmu1', int), ('bmu2', int), ('error', float), ('index', int), ('label', 'U512')])
+        out_arr['bmu1'] = som.bmus[:, 0]
+        out_arr['bmu2'] = som.bmus[:, 1]
+        out_arr['error'] = som.error
+        out_arr['index'] = index
+        out_arr['label'] = som.labels
+        out_fmt = ['%d', '%d', '%.4g', '%d', '%s']
+        out_header = '#bmu1 #bmu2 #error #index #label'
+        np.savetxt(f"{baseoutname}_bmus.txt", out_arr, fmt=out_fmt, header=out_header, comments='')
+    if som.pairwise_dist is None:
+        som.get_pairwise_dist()
+    if som.mds is None:
+        som.mds_embedding()
     if doplot:
         import matplotlib.pyplot as plt
         plt.matshow(som.umat)
         plt.colorbar()
         plt.savefig(f'{baseoutname}_umat.{plot_ext}')
+    print('Saving SOM object...')
     som = som.to_device('cpu')
     pickle.dump(som, open(outname, 'wb'))
 
@@ -288,9 +297,12 @@ def main(ali=None,
         import jax
         import jax_imports
         import quicksom.somax
+    else :
+        import quicksom.som
+
     # Get the data ready
     dataset = seqdataloader.SeqDataset(ali)
-    dataset.len = 20
+    # dataset.len = 20
     num_workers = os.cpu_count()
     dataloader = torch.utils.data.DataLoader(dataset,
                                              batch_size=batch_size,
