@@ -48,6 +48,7 @@ import seqdataloader
 
 try:
     import functorch
+
     FUNCTORCH_AVAIL = True
 except ImportError:
     print("Running without functorch, please install it")
@@ -89,8 +90,7 @@ def get_blosum62():
     return b62
 
 
-def torchify(x):
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+def torchify(x, device='cuda' if torch.cuda.is_available() else 'cpu'):
     try:
         x = torch.from_numpy(x)
     except TypeError:
@@ -151,21 +151,21 @@ def seqmetric(seqs1, seqs2, b62):
     return -scores
 
 
-def main(ali=None,
-         inputvectors=None,
-         seqnames=None,
-         batch_size=None,
-         somside=None,
-         nepochs=None,
-         alpha=None,
-         sigma=None,
-         load=None,
-         somobj=None,
-         periodic=None,
-         scheduler=None,
-         outname=None,
-         doplot=None,
-         plot_ext=None):
+def main_old(ali=None,
+             inputvectors=None,
+             seqnames=None,
+             batch_size=None,
+             somside=None,
+             nepochs=None,
+             alpha=None,
+             sigma=None,
+             load=None,
+             somobj=None,
+             periodic=None,
+             scheduler=None,
+             outname=None,
+             doplot=None,
+             plot_ext=None):
     if inputvectors is None and ali is None:
         raise ValueError('inputvectors or ali argument must be set. Both are None.')
     if inputvectors is not None and ali is not None:
@@ -180,25 +180,18 @@ def main(ali=None,
         raise ValueError('load and somobj cannot be both set')
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print('Running on', device)
-
-    dtype = 'prot'
-
     b62 = get_blosum62()
     b62 = torchify(b62)
 
-    if ali is not None:
-        # seqnames, sequences = read_fasta(ali)
-        # seqnames = np.asarray(seqnames)
-        # inputvectors = vectorize(sequences, dtype=dtype)
-        dataset = seqdataloader.SeqDataset(ali)
-        num_workers = os.cpu_count()
-        dataloader = torch.utils.data.DataLoader(dataset,
-                                                 batch_size=batch_size,
-                                                 shuffle=True,
-                                                 num_workers=num_workers,
-                                                 pin_memory=True,
-                                                 worker_init_fn=functools.partial(seqdataloader.workinit,
-                                                                                  fastafilename=ali))
+    dataset = seqdataloader.SeqDataset(ali)
+    num_workers = os.cpu_count()
+    dataloader = torch.utils.data.DataLoader(dataset,
+                                             batch_size=batch_size,
+                                             shuffle=True,
+                                             num_workers=num_workers,
+                                             pin_memory=True,
+                                             worker_init_fn=functools.partial(seqdataloader.workinit,
+                                                                              fastafilename=ali))
     n_inp = dataset.__len__()
     print('n_input:', n_inp)
     dim = dataset.__dim__()
@@ -240,7 +233,7 @@ def main(ali=None,
             alpha=alpha,
             logfile=f'{baseoutname}.log')
     print('Computing BMUS')
-    som.bmus, som.error, som.density, som.labels = som.predict(dataset=dataset,
+    som.bmus, som.error, som.labels, som.density = som.predict(dataset=dataloader,
                                                                batch_size=batch_size,
                                                                return_density=True)
     index = np.arange(len(som.bmus))
@@ -262,6 +255,131 @@ def main(ali=None,
     pickle.dump(som, open(outname, 'wb'))
 
 
+def main(ali=None,
+         inputvectors=None,
+         seqnames=None,
+         batch_size=None,
+         somside=None,
+         nepochs=None,
+         alpha=None,
+         sigma=None,
+         load=None,
+         somobj=None,
+         periodic=None,
+         scheduler=None,
+         outname=None,
+         doplot=None,
+         use_jax=False,
+         plot_ext=None):
+    if inputvectors is None and ali is None:
+        raise ValueError('inputvectors or ali argument must be set. Both are None.')
+    if inputvectors is not None and ali is not None:
+        raise ValueError('inputvectors and ali arguments are given. Only one must be set.')
+    if inputvectors is not None and seqnames is None:
+        raise ValueError('When inputvectors argument is given, seqnames argument must be given too.')
+    if inputvectors is not None and seqnames is not None:
+        if len(inputvectors) != len(seqnames):
+            raise ValueError(
+                f'inputvectors (len: {len(inputvectors)}) and seqnames (len: {len(seqnames)}) have different length.')
+    if load is not None and somobj is not None:
+        raise ValueError('load and somobj cannot be both set')
+
+    if use_jax:
+        import jax
+        import jax_imports
+        import quicksom.somax
+    # Get the data ready
+    dataset = seqdataloader.SeqDataset(ali)
+    dataset.len = 20
+    num_workers = os.cpu_count()
+    dataloader = torch.utils.data.DataLoader(dataset,
+                                             batch_size=batch_size,
+                                             shuffle=True,
+                                             num_workers=num_workers,
+                                             pin_memory=True,
+                                             worker_init_fn=functools.partial(seqdataloader.workinit,
+                                                                              fastafilename=ali))
+    n_inp = dataset.__len__()
+    print('n_input:', n_inp)
+    dim = dataset.__dim__()
+    baseoutname = os.path.splitext(outname)[0]
+
+    # Now get the SOM ready, with the right computation function
+    b62 = get_blosum62()
+    if use_jax:
+        b62 = jax.device_put(b62)
+    else:
+        b62 = torchify(b62)
+
+    if load is not None:
+        print(f'Loading {load}')
+        with open(load, 'rb') as somfile:
+            som = pickle.load(somfile)
+    elif somobj is not None:
+        print(f'Using given som object: {somobj}')
+        som = somobj
+    else:
+        if use_jax:
+            som = quicksom.somax.SOM(somside,
+                                     somside,
+                                     n_epoch=nepochs,
+                                     dim=dim,
+                                     alpha=alpha,
+                                     sigma=sigma,
+                                     periodic=periodic,
+                                     metric=lambda s1, s2: jax_imports.seqmetric_jax(s1, s2, b62),
+                                     sched=scheduler)
+        else:
+            som = quicksom.som.SOM(somside,
+                                   somside,
+                                   n_epoch=nepochs,
+                                   dim=dim,
+                                   alpha=alpha,
+                                   sigma=sigma,
+                                   periodic=periodic,
+                                   metric=lambda s1, s2: seqmetric(s1, s2, b62),
+                                   sched=scheduler)
+    if not use_jax:
+        device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        som.to_device(device)
+
+    print('batch_size:', batch_size)
+    print('sigma:', som.sigma)
+    if som.alpha is not None:
+        print('alpha:', som.alpha)
+    som.fit(dataset=dataloader,
+            batch_size=batch_size,
+            do_compute_all_dists=False,
+            unfold=False,
+            normalize_umat=False,
+            sigma=sigma,
+            alpha=alpha,
+            logfile=f'{baseoutname}.log')
+    print('Computing BMUS')
+    som.bmus, som.error, som.labels, som.density = som.predict(dataset=dataset,
+                                                               batch_size=batch_size,
+                                                               return_density=True)
+    index = np.arange(len(som.bmus))
+    out_arr = np.zeros(n_inp, dtype=[('bmu1', int), ('bmu2', int), ('error', float), ('index', int), ('label', 'U512')])
+    out_arr['bmu1'] = som.bmus[:, 0]
+    out_arr['bmu2'] = som.bmus[:, 1]
+    out_arr['error'] = som.error
+    out_arr['index'] = index
+    out_arr['label'] = som.labels
+    out_fmt = ['%d', '%d', '%.4g', '%d', '%s']
+    out_header = '#bmu1 #bmu2 #error #index #label'
+    np.savetxt(f"{baseoutname}_bmus.txt", out_arr, fmt=out_fmt, header=out_header, comments='')
+    if doplot:
+        import matplotlib.pyplot as plt
+        plt.matshow(som.umat)
+        plt.colorbar()
+        plt.savefig(f'{baseoutname}_umat.{plot_ext}')
+    if not use_jax:
+        # TODO deal with the pickling in jax
+        som = som.to_device('cpu')
+        pickle.dump(som, open(outname, 'wb'))
+
+
 if __name__ == '__main__':
     import argparse
 
@@ -281,6 +399,7 @@ if __name__ == '__main__':
     parser.add_argument('--scheduler',
                         help='Which scheduler to use, can be linear, exp or half (exp by default)',
                         default='exp')
+    parser.add_argument('-j', '--jax', help='To use the jax version', action='store_true')
     parser.add_argument('--load', help='Load the given som pickle file and use it as starting point for a new training')
     args = parser.parse_args()
 
@@ -295,4 +414,5 @@ if __name__ == '__main__':
          scheduler=args.scheduler,
          outname=args.out_name,
          doplot=args.doplot,
-         plot_ext=args.plot_ext)
+         plot_ext=args.plot_ext,
+         use_jax=args.jax)

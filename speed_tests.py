@@ -179,7 +179,7 @@ def torchify(x):
     return x
 
 
-def score_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC44=None):
+def torch_score_novmap(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC44=None):
     """
     PyTorch Implementation, the old way
     """
@@ -271,7 +271,8 @@ def torch_score_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=Non
     else:
         return scores
 
-def somseqscore_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC44=None):
+
+def torch_score_vmap(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC44=None):
     """
     PyTorch Implementation
     """
@@ -288,6 +289,12 @@ def somseqscore_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=Non
         vec1 = vec1[None, ...]
     if vec2.ndim == 2:
         vec2 = vec2[None, ...]
+
+    print(vec1.shape)
+    print(vec2.shape)
+    print(b62.shape)
+    sys.exit()
+
     matv2 = torch.matmul(matrix[None, ...], torch.swapaxes(vec2[..., :-2], 1, 2))
     scores = torch.einsum('aij,bji->ab', vec1[..., :-2], matv2)
     gaps1, gaps2 = vec1[..., -2], vec2[..., -2]
@@ -333,6 +340,7 @@ def jax_score_matrix_vec(vec1, vec2, b62):
         vec1 = vec1[None, ...]
     if vec2.ndim == 2:
         vec2 = vec2[None, ...]
+
     matv2 = jnp.matmul(b62[None, ...], jnp.swapaxes(vec2[..., :-2], 1, 2))
     scores = jnp.einsum('aij,bji->ab', vec1[..., :-2], matv2)
     gaps1, gaps2 = vec1[..., -2], vec2[..., -2]
@@ -359,8 +367,6 @@ def shape_seq(seqs1, seqs2):
 def torch_test(torch_batch_vecs, torch_centroid_vecs, torch_b62):
     n_reps = 10
     assert n_reps >= 1
-    print(torch_batch_vecs.shape)
-    print(torch_centroid_vecs.shape)
 
     # There is a weird phenomenon that makes this first loop much slower than the rest on GPU (probs kernel loading)
     # torch.Size([100, 203, 25])
@@ -376,20 +382,27 @@ def torch_test(torch_batch_vecs, torch_centroid_vecs, torch_b62):
     # native time double check:  0.05283069610595703
     # vec time double check:  0.04572415351867676
 
+    global FUNCTORCH_AVAIL
     a = time.time()
     for i in range(n_reps):
         vec_scores = torch_score_matrix_vec(torch_batch_vecs, torch_centroid_vecs, b62=torch_b62)
     if torch.cuda.is_available():
         torch.cuda.synchronize()
-    print('vec time : ', (time.time() - a)/n_reps)
+    print('vec time : ', (time.time() - a) / n_reps)
 
-    global FUNCTORCH_AVAIL
     a = time.time()
     for i in range(n_reps):
-        scores = score_matrix_vec(torch_batch_vecs, torch_centroid_vecs, b62=torch_b62)
+        scores = torch_score_novmap(torch_batch_vecs, torch_centroid_vecs, b62=torch_b62)
     if torch.cuda.is_available():
         torch.cuda.synchronize()
-    print('native time : ', (time.time() - a)/n_reps)
+    print('no vmap time : ', (time.time() - a) / n_reps)
+
+    a = time.time()
+    for i in range(n_reps):
+        vec_scores = torch_score_vmap(torch_batch_vecs, torch_centroid_vecs, b62=torch_b62)
+    if torch.cuda.is_available():
+        torch.cuda.synchronize()
+    print('vmap time: ', (time.time() - a) / n_reps)
 
     FUNCTORCH_AVAIL = False
     a = time.time()
@@ -397,7 +410,7 @@ def torch_test(torch_batch_vecs, torch_centroid_vecs, torch_b62):
         vec_scores = torch_score_matrix_vec(torch_batch_vecs, torch_centroid_vecs, b62=torch_b62)
     if torch.cuda.is_available():
         torch.cuda.synchronize()
-    print('native time double check: ', (time.time() - a)/n_reps)
+    print('no vmap double check: ', (time.time() - a) / n_reps)
 
     FUNCTORCH_AVAIL = True
     a = time.time()
@@ -405,25 +418,16 @@ def torch_test(torch_batch_vecs, torch_centroid_vecs, torch_b62):
         vec_scores = torch_score_matrix_vec(torch_batch_vecs, torch_centroid_vecs, b62=torch_b62)
     if torch.cuda.is_available():
         torch.cuda.synchronize()
-    print('vec time double check: ', (time.time() - a)/n_reps)
+    print('vmap double check: ', (time.time() - a) / n_reps)
 
-    print(torch_batch_vecs.shape)
-    print(torch_centroid_vecs.shape)
-    print(torch_batch_vecs.device)
-    print(torch_centroid_vecs.device)
-    print(torch_b62.device)
-    a = time.time()
-    for i in range(n_reps):
-        vec_scores = somseqscore_matrix_vec(torch_batch_vecs, torch_centroid_vecs, b62=torch_b62)
-    if torch.cuda.is_available():
-        torch.cuda.synchronize()
-    print('vec time triple check: ', (time.time() - a)/n_reps)
     # TODO : This result is very surprising !
     #  The matrices have the same shape as in the SOM, there are on the GPU exactly the same
     #  The distance code is a copy from the one run by som_seq.
     #  However, on the gpu, functorch is MUCH faster for the som (0.0110 vs 0.00075)
     #    and approx the same here (native time double check:  0.0168, vec time triple check:  0.0151)
     #  I don't get it !
+
+    sys.exit()
 
     a = time.time()
     traced = torch.jit.trace(to_compile_torch_score_matrix_vec, (torch_batch_vecs, torch_centroid_vecs, torch_b62))
@@ -442,11 +446,11 @@ def jax_test(jax_score_matrix_vec=jax_score_matrix_vec):
     jax_inputvectors = device_put(inputvectors)
     jax_targets = device_put(centroid_vecs)
 
-    torch_b62 = torchify(B62)
-    torch_inputvectors = torchify(inputvectors)
-    torch_targets = torchify(centroid_vecs)
-    torch_scores = torch_score_matrix_vec(torch_inputvectors, torch_targets, b62=torch_b62)
-    jax_scores = jax_score_matrix_vec(jax_inputvectors, jax_targets, jax_b62)
+    # torch_b62 = torchify(B62)
+    # torch_inputvectors = torchify(inputvectors)
+    # torch_targets = torchify(centroid_vecs)
+    # torch_scores = torch_score_matrix_vec(torch_inputvectors, torch_targets, b62=torch_b62)
+    # jax_scores = jax_score_matrix_vec(jax_inputvectors, jax_targets, jax_b62)
 
     # No jit, just jax
     a = time.time()
@@ -492,7 +496,5 @@ if __name__ == '__main__':
     torch_b62 = torchify(B62)
 
     # Make a Pytorch competition !
-    torch_test(torch_batch_vecs=torch_batch_vecs, torch_centroid_vecs=torch_centroid_vecs, torch_b62=torch_b62)
-    # jax_test()
-
-
+    # torch_test(torch_batch_vecs=torch_batch_vecs, torch_centroid_vecs=torch_centroid_vecs, torch_b62=torch_b62)
+    jax_test()
