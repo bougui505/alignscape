@@ -44,6 +44,7 @@ from Bio.SubsMat import MatrixInfo
 import numpy as np
 import torch
 import seqdataloader as seqdataloader
+aalist = list('ABCDEFGHIKLMNPQRSTVWXYZ|-')
 
 try:
     import functorch
@@ -79,7 +80,6 @@ def read_fasta(fastafilename, names=None):
 
 
 def get_blosum62():
-    aalist = list('ABCDEFGHIKLMNPQRSTVWXYZ|-')
     b62 = np.zeros((23, 23))
     for k in MatrixInfo.blosum62:
         i0 = aalist.index(k[0])
@@ -98,6 +98,27 @@ def torchify(x, device='cuda' if torch.cuda.is_available() else 'cpu'):
     x = x.float()
     return x
 
+def rscore_matrix_vec(vec1, vec2, dtype = 'prot', gap_s=5, gap_e=1, b62=None, NUC44=None):
+    """
+    PyTorch Implementation
+    """
+    if dtype == 'prot':
+        matrix = b62
+    elif dtype == 'nucl':
+        matrix = NUC44
+    else:
+        raise ValueError("dtype must be 'prot' or 'nucl'")
+    vec1 = vec1.float()
+    vec2 = vec2.float()
+    matrix = matrix.float()
+    if vec1.ndim == 2:
+        vec1 = vec1[None, ...]
+    if vec2.ndim == 2:
+        vec2 = vec2[None, ...]
+    nchars = len(aalist)
+    rscore = np.shape(vec1)[1] * ((matrix.sum())+nchars*(gap_s+gap_e))/(np.shape(matrix)[0]*np.shape(matrix)[1]+nchars*2)
+    rscores = torch.tile(rscore,(np.shape(vec1)[0],np.shape(vec2)[0]))
+    return rscores
 
 def score_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC44=None):
     """
@@ -147,7 +168,20 @@ def seqmetric(seqs1, seqs2, b62):
     seqs1 = seqs1.reshape((batch_size, seqlenght, nchar))
     seqs2 = seqs2.reshape((n2, seqlenght, nchar))
     scores = score_matrix_vec(seqs1, seqs2, b62=b62)
-    return -scores
+    #return -scores
+    rscores = rscore_matrix_vec(seqs1, seqs2, b62=b62)
+    iscores = score_matrix_vec(seqs1, seqs1, b62=b62)
+    iscores = torch.diagonal(iscores)
+    iscores = iscores.repeat_interleave(np.shape(seqs2)[0]).reshape(np.shape(seqs1)[0],np.shape(seqs2)[0])
+    
+    #Compute the B62 based distance
+    denominators = iscores-rscores
+    nominators = scores-rscores
+    nominators[nominators<0] = 0.001
+    dists = (nominators)/(denominators)
+    dists = -torch.log(dists)*100
+    
+    return dists
 
 
 def main(ali=None,
@@ -255,7 +289,7 @@ def main(ali=None,
             alpha=alpha,
             logfile=f'{baseoutname}.log')
     print('Computing BMUS')
-    som.bmus, som.error, som.labels, som.density = som.predict(dataset=dataset,
+    som.bmus, som.error, som.labels, som.density, quantification_error, topo_error= som.predict(dataset=dataset,
                                                                batch_size=batch_size,
                                                                return_density=True)
     index = np.arange(len(som.bmus))
@@ -268,12 +302,14 @@ def main(ali=None,
     out_fmt = ['%d', '%d', '%.4g', '%d', '%s']
     out_header = '#bmu1 #bmu2 #error #index #label'
     np.savetxt(f"{baseoutname}_bmus.txt", out_arr, fmt=out_fmt, header=out_header, comments='')
+    f = open(f"{baseoutname}_errors.txt", "w")
+    f.write("#quantification_error #topo_error\n%.8f %.8f"%(quantification_error,topo_error)) 
     if doplot:
         import matplotlib.pyplot as plt
         plt.matshow(som.umat)
         plt.colorbar()
         plt.savefig(f'{baseoutname}_umat.{plot_ext}')
-    som.save_pickle(outname)
+    som.save_pickle(outname+'.p')
 
 
 if __name__ == '__main__':
