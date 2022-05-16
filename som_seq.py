@@ -159,8 +159,28 @@ def score_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC
     else:
         return scores
 
+def iscore_matrix_vec(vec1, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC44=None):
+    if dtype == 'prot':
+        matrix = b62
+    elif dtype == 'nucl':
+        matrix = NUC44
+    else:
+        raise ValueError("dtype must be 'prot' or 'nucl'")
+    vec1 = vec1.float()
+    matrix = matrix.float()
+    if vec1.ndim == 2:
+        vec1 = vec1[None, ...]
+    matv2 = torch.matmul(matrix[None, ...], torch.swapaxes(vec1[..., :-2], 1, 2))
+    scores = torch.einsum('aij,bji->ab', vec1[..., :-2], matv2)
+    gaps = vec1[..., -2]
+    exts = vec1[..., -1]
+    gaps_aggregated = gaps.sum(axis=1)
+    exts_aggregated = exts.sum(axis=1)
+    scores += gaps_aggregated * gap_s + exts_aggregated * gap_e 
+    return scores
 
 def seqmetric(seqs1, seqs2, b62):
+    #seqs1 is the batch of input vectors and seqs2 the SOM
     nchar = 25
     batch_size = seqs1.shape[0]
     seqlenght = seqs1.shape[-1] // nchar
@@ -168,11 +188,17 @@ def seqmetric(seqs1, seqs2, b62):
     seqs1 = seqs1.reshape((batch_size, seqlenght, nchar))
     seqs2 = seqs2.reshape((n2, seqlenght, nchar))
     scores = score_matrix_vec(seqs1, seqs2, b62=b62)
-    #return -scores
     rscores = rscore_matrix_vec(seqs1, seqs2, b62=b62)
-    iscores = score_matrix_vec(seqs1, seqs1, b62=b62)
-    iscores = torch.diagonal(iscores)
-    iscores = iscores.repeat_interleave(np.shape(seqs2)[0]).reshape(np.shape(seqs1)[0],np.shape(seqs2)[0])
+    
+    iscores1 = iscore_matrix_vec(seqs1, b62=b62) 
+    iscores2 = iscore_matrix_vec(seqs2, b62=b62)
+    try:
+        iscores1 = torch.diagonal(iscores1)
+    except:
+        iscores1 = iscores1
+    iscores2 = torch.diagonal(iscores2)
+    
+    iscores = (iscores1.reshape(-1, 1) + iscores2)/2 
     
     #Compute the B62 based distance
     denominators = iscores-rscores
@@ -306,6 +332,7 @@ def main(ali=None,
     f.write("#quantification_error #topo_error\n%.8f %.8f"%(quantification_error,topo_error)) 
     if doplot:
         import matplotlib.pyplot as plt
+        np.save('%s_umat'%baseoutname,som.umat) 
         plt.matshow(som.umat)
         plt.colorbar()
         plt.savefig(f'{baseoutname}_umat.{plot_ext}')
