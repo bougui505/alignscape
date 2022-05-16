@@ -37,6 +37,21 @@ def jax_rscore_matrix_vec(vec1, vec2, b62, gap_s=-5, gap_e=-1):
     rscores = jnp.tile(rscore,(jnp.shape(vec1)[0],jnp.shape(vec2)[0]))
     return rscores
 
+def jax_iscore_matrix_vec(vec1, b62, gap_s=-5, gap_e=-1):
+    """
+    Jax Implementation
+    """
+    if vec1.ndim == 2:
+        vec1 = vec1[None, ...]
+    matv2 = jnp.matmul(b62[None, ...], jnp.swapaxes(vec1[..., :-2], 1, 2))
+    scores = jnp.einsum('aij,bji->ab', vec1[..., :-2], matv2)
+    gaps = vec1[..., -2]
+    exts = vec1[..., -1]
+    gaps_aggregated = gaps.sum(axis=1)
+    exts_aggregated = exts.sum(axis=1)
+    scores += gaps_aggregated * gap_s + exts_aggregated * gap_e
+    return scores
+
 @jax.jit
 def seqmetric_jax(seqs1, seqs2, b62):
     nchar = 25
@@ -46,12 +61,22 @@ def seqmetric_jax(seqs1, seqs2, b62):
     seqs1 = seqs1.reshape((batch_size, seqlenght, nchar))
     seqs2 = seqs2.reshape((n2, seqlenght, nchar))
     scores = jax_score_matrix_vec(seqs1, seqs2, b62=b62)
-    #return -scores
+    
     rscores = jax_rscore_matrix_vec(seqs1, seqs2, b62=b62)
-    iscores = jax_score_matrix_vec(seqs1, seqs1, b62=b62)
-    iscores = jnp.diagonal(iscores)
-    iscores = jnp.repeat(iscores,(jnp.shape(seqs2)[0]))
-    iscores = jnp.reshape(iscores, (jnp.shape(seqs1)[0],jnp.shape(seqs2)[0]))
+    
+    iscores1 = jax_iscore_matrix_vec(seqs1, b62=b62)
+    iscores2 = jax_iscore_matrix_vec(seqs2, b62=b62)
+    try:
+        iscores1 = jnp.diagonal(iscores1)
+    except:
+        iscores1 = iscores1
+    iscores2 = jnp.diagonal(iscores2)
+    iscores = (iscores1.reshape(-1, 1) + iscores2)/2
+
+    #iscores = jax_score_matrix_vec(seqs1, seqs1, b62=b62)
+    #iscores = jnp.diagonal(iscores)
+    #iscores = jnp.repeat(iscores,(jnp.shape(seqs2)[0]))
+    #iscores = jnp.reshape(iscores, (jnp.shape(seqs1)[0],jnp.shape(seqs2)[0]))
     
     #Compute the B62 based distance
     denominators = iscores-rscores
