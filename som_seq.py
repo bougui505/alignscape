@@ -44,6 +44,7 @@ from Bio.SubsMat import MatrixInfo
 import numpy as np
 import torch
 import seqdataloader as seqdataloader
+
 aalist = list('ABCDEFGHIKLMNPQRSTVWXYZ|-')
 
 try:
@@ -98,7 +99,8 @@ def torchify(x, device='cuda' if torch.cuda.is_available() else 'cpu'):
     x = x.float()
     return x
 
-def rscore_matrix_vec(vec1, vec2, dtype = 'prot', gap_s=5, gap_e=1, b62=None, NUC44=None):
+
+def rscore_matrix_vec(vec1, vec2, dtype='prot', gap_s=5, gap_e=1, b62=None, NUC44=None):
     """
     PyTorch Implementation
     """
@@ -116,9 +118,11 @@ def rscore_matrix_vec(vec1, vec2, dtype = 'prot', gap_s=5, gap_e=1, b62=None, NU
     if vec2.ndim == 2:
         vec2 = vec2[None, ...]
     nchars = len(aalist)
-    rscore = np.shape(vec1)[1] * ((matrix.sum())+nchars*(gap_s+gap_e))/(np.shape(matrix)[0]*np.shape(matrix)[1]+nchars*2)
-    rscores = torch.tile(rscore,(np.shape(vec1)[0],np.shape(vec2)[0]))
+    rscore = np.shape(vec1)[1] * ((matrix.sum()) + nchars *
+                                  (gap_s + gap_e)) / (np.shape(matrix)[0] * np.shape(matrix)[1] + nchars * 2)
+    rscores = torch.tile(rscore, (np.shape(vec1)[0], np.shape(vec2)[0]))
     return rscores
+
 
 def score_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC44=None):
     """
@@ -159,7 +163,19 @@ def score_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC
     else:
         return scores
 
-def iscore_matrix_vec(vec1, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC44=None):
+
+def iscore_matrix_vec(vec1, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC44=None, verbose=False):
+    """
+    >>> batch = 10
+    >>> sites = 750
+    >>> vec1 = torch.ones(batch, sites, 25)
+    >>> b62 = torchify(get_blosum62())
+    >>> scores = iscore_matrix_vec(vec1, b62=b62, verbose=True)
+    vec1[..., :-2]: torch.Size([10, 750, 23])
+    matv2.shape: torch.Size([10, 23, 750])
+    >>> scores.shape
+    torch.Size([10])
+    """
     if dtype == 'prot':
         matrix = b62
     elif dtype == 'nucl':
@@ -171,13 +187,17 @@ def iscore_matrix_vec(vec1, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC44=No
     if vec1.ndim == 2:
         vec1 = vec1[None, ...]
     matv2 = torch.matmul(matrix[None, ...], torch.swapaxes(vec1[..., :-2], 1, 2))
-    scores = torch.einsum('aij,bji->ab', vec1[..., :-2], matv2)
+    if verbose:
+        print(f"vec1[..., :-2]: {vec1[..., :-2].shape}")
+        print(f"matv2.shape: {matv2.shape}")
+    scores = torch.einsum('aij,aji->a', vec1[..., :-2], matv2)
     gaps = vec1[..., -2]
     exts = vec1[..., -1]
     gaps_aggregated = gaps.sum(axis=1)
     exts_aggregated = exts.sum(axis=1)
-    scores += gaps_aggregated * gap_s + exts_aggregated * gap_e 
+    scores += gaps_aggregated * gap_s + exts_aggregated * gap_e
     return scores
+
 
 def seqmetric(seqs1, seqs2, b62):
     #seqs1 is the batch of input vectors and seqs2 the SOM
@@ -189,24 +209,19 @@ def seqmetric(seqs1, seqs2, b62):
     seqs2 = seqs2.reshape((n2, seqlenght, nchar))
     scores = score_matrix_vec(seqs1, seqs2, b62=b62)
     rscores = rscore_matrix_vec(seqs1, seqs2, b62=b62)
-    
-    iscores1 = iscore_matrix_vec(seqs1, b62=b62) 
+
+    iscores1 = iscore_matrix_vec(seqs1, b62=b62)
     iscores2 = iscore_matrix_vec(seqs2, b62=b62)
-    try:
-        iscores1 = torch.diagonal(iscores1)
-    except:
-        iscores1 = iscores1
-    iscores2 = torch.diagonal(iscores2)
-    
-    iscores = (iscores1.reshape(-1, 1) + iscores2)/2 
-    
+
+    iscores = (iscores1.reshape(-1, 1) + iscores2) / 2
+
     #Compute the B62 based distance
-    denominators = iscores-rscores
-    nominators = scores-rscores
-    nominators[nominators<0] = 0.001
-    dists = (nominators)/(denominators)
-    dists = -torch.log(dists)*100
-    
+    denominators = iscores - rscores
+    nominators = scores - rscores
+    nominators[nominators < 0] = 0.001
+    dists = (nominators) / (denominators)
+    dists = -torch.log(dists) * 100
+
     return dists
 
 
@@ -315,9 +330,9 @@ def main(ali=None,
             alpha=alpha,
             logfile=f'{baseoutname}.log')
     print('Computing BMUS')
-    som.bmus, som.error, som.labels, som.density, quantification_error, topo_error= som.predict(dataset=dataset,
-                                                               batch_size=batch_size,
-                                                               return_density=True)
+    som.bmus, som.error, som.labels, som.density, quantification_error, topo_error = som.predict(dataset=dataset,
+                                                                                                 batch_size=batch_size,
+                                                                                                 return_density=True)
     index = np.arange(len(som.bmus))
     out_arr = np.zeros(n_inp, dtype=[('bmu1', int), ('bmu2', int), ('error', float), ('index', int), ('label', 'U512')])
     out_arr['bmu1'] = som.bmus[:, 0]
@@ -329,23 +344,25 @@ def main(ali=None,
     out_header = '#bmu1 #bmu2 #error #index #label'
     np.savetxt(f"{baseoutname}_bmus.txt", out_arr, fmt=out_fmt, header=out_header, comments='')
     f = open(f"{baseoutname}_errors.txt", "w")
-    f.write("#quantification_error #topo_error\n%.8f %.8f"%(quantification_error,topo_error)) 
+    f.write("#quantification_error #topo_error\n%.8f %.8f" % (quantification_error, topo_error))
     if doplot:
         import matplotlib.pyplot as plt
-        np.save('%s_umat'%baseoutname,som.umat) 
+        np.save('%s_umat' % baseoutname, som.umat)
         plt.matshow(som.umat)
         plt.colorbar()
         plt.savefig(f'{baseoutname}_umat.{plot_ext}')
-    som.save_pickle(outname+'.p')
+    som.save_pickle(outname + '.p')
 
 
 if __name__ == '__main__':
     import argparse
+    import doctest
+    import sys
 
     # argparse.ArgumentParser(prog=None, usage=None, description=None, epilog=None, parents=[], formatter_class=argparse.HelpFormatter, prefix_chars='-', fromfile_prefix_chars=None, argument_default=None, conflict_handler='error', add_help=True, allow_abbrev=True, exit_on_error=True)
     parser = argparse.ArgumentParser(description='')
     # parser.add_argument(name or flags...[, action][, nargs][, const][, default][, type][, choices][, required][, help][, metavar][, dest])
-    parser.add_argument('-a', '--aln', help='Alignment file', required=True)
+    parser.add_argument('-a', '--aln', help='Alignment file')
     parser.add_argument('-b', '--batch', help='Batch size (default: 100)', default=100, type=int)
     parser.add_argument('--somside', help='Size of the side of the square SOM', default=50, type=int)
     parser.add_argument('--alpha', help='learning rate', default=None, type=float)
@@ -360,7 +377,12 @@ if __name__ == '__main__':
                         default='exp')
     parser.add_argument('-j', '--jax', help='To use the jax version', action='store_true')
     parser.add_argument('--load', help='Load the given som pickle file and use it as starting point for a new training')
+    parser.add_argument('--test', help='Test the code', action='store_true')
     args = parser.parse_args()
+
+    if args.test:
+        doctest.testmod(optionflags=doctest.ELLIPSIS | doctest.REPORT_ONLY_FIRST_FAILURE)
+        sys.exit()
 
     main(ali=args.aln,
          batch_size=args.batch,
