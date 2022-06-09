@@ -43,7 +43,7 @@ import dill as pickle  # For tricky pickles
 from Bio.SubsMat import MatrixInfo
 import numpy as np
 import torch
-import seqdataloader as seqdataloader
+import quicksom_seq.seqdataloader as seqdataloader
 
 aalist = list('ABCDEFGHIKLMNPQRSTVWXYZ|-')
 
