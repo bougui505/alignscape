@@ -38,8 +38,8 @@
 
 import pickle
 import functools
-from quicksom_seq import jax_imports
-from quicksom_seq import som_seq
+import jax_imports
+import som_seq
 import matplotlib.pyplot as plt
 
 
