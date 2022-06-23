@@ -2,7 +2,7 @@ import quicksom.som
 import quicksom.somax
 import functools
 import os
-import seqdataloader as seqdataloader
+import sys
 import numpy as np
 import torch
 import dill as pickle
@@ -10,48 +10,24 @@ import matplotlib.pyplot as plt
 from adjustText import adjust_text
 import ast
 from random import randint
+sys.path.insert(1, '/work/ifilella/quicksom_seq')
+import seqdataloader as seqdataloader
 import som_seq
 import jax_imports
-import scipy
-import scipy.sparse.csgraph as csgraph
-import itertools
+import minsptree as msptree
 
 pltcolorlist = ['r','b','g','m','orange','y','m','w']
 
-def get_shortestPath(graph,start,end):
-    sdist, pred = csgraph.shortest_path(graph, directed=False, indices = (start,end), return_predecessors=True)
-    path=[]
-    prev = end
-    path.append(end)
-    while prev != start:
-        prev = pred[0][prev]
-        path.append(prev)
-    return path
+#def seqmetric(seqs1, seqs2, b62):
+#    nchar = 25
+#    batch_size = seqs1.shape[0]
+#    seqlenght = seqs1.shape[-1] // nchar
+#    n2 = seqs2.shape[0]
+#    seqs1 = seqs1.reshape((batch_size, seqlenght, nchar))
+#    seqs2 = seqs2.reshape((n2, seqlenght, nchar))
+#    scores = score_matrix_vec(seqs1, seqs2, b62=b62)
+#    return -scores
 
-def get_pathDist(graph,path):
-    dist = 0
-    for step in zip(path, path[1:]):
-        dist += graph.todok()[step[0],step[1]]
-    return dist
-
-def seqmetric(seqs1, seqs2, b62):
-    nchar = 25
-    batch_size = seqs1.shape[0]
-    seqlenght = seqs1.shape[-1] // nchar
-    n2 = seqs2.shape[0]
-    seqs1 = seqs1.reshape((batch_size, seqlenght, nchar))
-    seqs2 = seqs2.reshape((n2, seqlenght, nchar))
-    scores = score_matrix_vec(seqs1, seqs2, b62=b62)
-    return -scores
-
-def highlight_cell(x,y, ax=None, **kwargs):
-    rect = plt.Rectangle((x-.5, y-.5), 1,1, fill=False, **kwargs)
-    ax = ax or plt.gca()
-    ax.add_patch(rect)
-    return rect
-
-def _main_unfold():
-    pass
 
 def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtypes=None,allinp=False,unfold=False,minsptree=False):
 
@@ -90,83 +66,36 @@ def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtyp
                 labels.append(aux)
                 bmus.append((int(bmu[0]),int(bmu[1])))
 
+    #Define variables according if unfold or fold
     if unfold:
-        som.compute_umat(unfold=True)
+        som.compute_umat(unfold=True,normalize=False)
+        auxumat = som.uumat
         unfbmus = [som.mapping[bmu] for bmu in bmus]
         auxbmus = unfbmus
-        plt.matshow(som.uumat)
+        som._get_unfold_adj()
+        auxadj = som.uadj 
     else:
         auxbmus = bmus
-        plt.matshow(som.umat)
-    
+        auxumat = som.umat
+        auxadj = som.adj
+
+    n1, n2 = auxumat.shape
+    plt.matshow(auxumat)
     plt.colorbar()
     
     if minsptree:
-        #Get all paths and path distances for all combinations of queries and generate a new graph of shortest distances between queries
-        if unfold:
-            n1, n2 = som.uumat.shape
-            som._get_unfold_adj()
-        else:
-            n1, n2 = som.umat.shape
-        
-        indxbmus = [np.ravel_multi_index(bmu,(n1,n2)) for bmu in auxbmus]
-      
-       #Get a pair:index:label dicctionary
-        labeldic = {}
-        for i,auxbmu in enumerate(auxbmus):
-            labeldic[indxbmus[i]] = (labels[i],auxbmu)
-       
-        #Get a local graph representing the shortest distances between queries
-        localadj= {'data': [], 'row': [], 'col': []}
-        paths = {}
-        checkpairs = []
-        for pair in itertools.permutations(indxbmus, 2):
-            if pair not in checkpairs and (pair[1],pair[0]) not in checkpairs:
-                #print(pair,labeldic[pair[0]][0],labeldic[pair[1]][0],labeldic[pair[0]][1],labeldic[pair[1]][1])
-                checkpairs.append(pair)
-            else:
-                continue
-            localadj['row'].extend([pair[0],pair[1]])
-            localadj['col'].extend([pair[1],pair[0]])
-            print('Computing shortest path between: %s %s'%(labeldic[pair[0]][0],labeldic[pair[1]][0]))
-            if unfold:
-                path = get_shortestPath(som.uadj,pair[0], pair[1])
-            else:
-                path = get_shortestPath(som.adj,pair[0], pair[1])
-            paths[pair] = path
-            paths[(pair[1],pair[0])] = path
-            #print('Computing the length of the shortest path between: %s %s'%(labeldic[pair[0]][0],labeldic[pair[1]][0]))
-            if unfold:
-                pathDist = get_pathDist(som.uadj,path)
-            else:
-                pathDist = get_pathDist(som.adj,path)
-            #print(pathDist)
-            localadj['data'].extend([pathDist,pathDist])
-        localadj = scipy.sparse.coo_matrix((localadj['data'], (localadj['row'], localadj['col'])))
-        #print(localadj)
-        
         #Get the minimal spaning tree of the queries
-        mstree = csgraph.minimum_spanning_tree(localadj)
-        #print(mstree)
-        mstree_pairs = np.asarray(mstree.nonzero())
-        mstree_pairs = np.vstack((mstree_pairs[0], mstree_pairs[1])).T
+        mstree_pairs, paths = msptree.get_minsptree(umat=auxumat,adjmat=auxadj,bmus=auxbmus,verbose=True)
         for i,mstree_pair in enumerate(mstree_pairs):
-            #print(mstree_pair)
-            print('Printing the shortest parth between %s and %s'%(labeldic[mstree_pair[0]],labeldic[mstree_pair[1]]))
+            print('Printing the shortest parth between %s and %s'%(mstree_pair[0],mstree_pair[1]))
             mstree_path = paths[tuple(mstree_pair)]
-            #print(mstree_path)
             _mstree_path = np.asarray(np.unravel_index(mstree_path, (n1, n2)))
-            #print(_mstree_path)
             _mstree_path = np.vstack((_mstree_path[0], _mstree_path[1])).T
-            #print(_mstree_path)
             for j,step in enumerate(_mstree_path):
                 if j == 0: continue
-                #print(step)
                 #Check to avoid borders printting horizontal or vertical lines
                 if (_mstree_path[j-1][0] == 0 and _mstree_path[j][0] == n1-1) or (_mstree_path[j-1][0] == n1-1 and _mstree_path[j][0] == 0) or (_mstree_path[j-1][1] == 0 and _mstree_path[j][1] == n2-1) or (_mstree_path[j-1][1] == n2-1 and _mstree_path[j][1] == 0): continue
-                #print(_mstree_path[j-1],_mstree_path[j])
                 aux = np.stack((_mstree_path[j-1],_mstree_path[j])).T
-                #print(aux)
                 plt.plot(aux[1], aux[0],c='w')
 
     if allinp:
@@ -177,7 +106,7 @@ def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtyp
         else:
             _auxallbmus = _allbmus
         for bmu in _auxallbmus:
-            highlight_cell(int(bmu[1]),int(bmu[0]), color="grey", linewidth=1)
+            msptree.highlight_cell(int(bmu[1]),int(bmu[0]), color="grey", linewidth=1)
     
     texts=[]
     for i, bmu in enumerate(auxbmus):

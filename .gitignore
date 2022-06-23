@@ -5,3 +5,5 @@ som_umat.pdf
 logs/
 soms/
 __pycache__
+batch*
+
