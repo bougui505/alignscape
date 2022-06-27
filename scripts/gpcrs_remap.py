@@ -15,7 +15,7 @@ import scipy
 import scipy.sparse.csgraph as csgraph
 import minsptree as msptree
 
-def main(somfile,bmusfile,outname='reumat.pdf',unfold=False,minsptree=False):
+def main(somfile,bmusfile,outname='reumat.pdf',unfold=False,minsptree=False,save_localadj=save_localadj):
     
     #Data loading
     allbmus = np.genfromtxt(bmusfile, dtype=str, skip_header=1)
@@ -52,7 +52,7 @@ def main(somfile,bmusfile,outname='reumat.pdf',unfold=False,minsptree=False):
 
     if minsptree:
         #Get the minimal spaning tree of the queries
-        mstree_pairs, paths = msptree.get_minsptree(umat=auxumat,adjmat=auxadj,bmus=auxbmus,verbose=True)
+        mstree_pairs, paths = msptree.get_minsptree(umat=auxumat,adjmat=auxadj,bmus=auxbmus,verbose=True,save_localadj=save_localadj)
 
         for i,mstree_pair in enumerate(mstree_pairs):
             print('Printing the shortest parth between %s and %s'%(mstree_pair[0],mstree_pair[1]))
@@ -120,6 +120,7 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--out', help = 'Output name for the dmatrix plot and pickle file',default='dmatrix')
     parser.add_argument('--unfold',help='Unfold the UMAT',default = False, action = 'store_true')
     parser.add_argument('--minsptree',help='Plot the minimal spanning tree between queries', default = False, action = 'store_true')
+    parser.add_argument('-save_localadj',help = 'To save the local adj matrix',default = None, type = str)
     args = parser.parse_args()
 
-    main(somfile=args.som,bmusfile=args.bmus,outname=args.out,unfold=args.unfold,minsptree=args.minsptree)
+    main(somfile=args.som,bmusfile=args.bmus,outname=args.out,unfold=args.unfold,minsptree=args.minsptree,save_localadj=args.save_localadj)

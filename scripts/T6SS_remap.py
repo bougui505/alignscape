@@ -18,18 +18,7 @@ import minsptree as msptree
 
 pltcolorlist = ['r','b','g','m','orange','y','m','w']
 
-#def seqmetric(seqs1, seqs2, b62):
-#    nchar = 25
-#    batch_size = seqs1.shape[0]
-#    seqlenght = seqs1.shape[-1] // nchar
-#    n2 = seqs2.shape[0]
-#    seqs1 = seqs1.reshape((batch_size, seqlenght, nchar))
-#    seqs2 = seqs2.reshape((n2, seqlenght, nchar))
-#    scores = score_matrix_vec(seqs1, seqs2, b62=b62)
-#    return -scores
-
-
-def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtypes=None,allinp=False,unfold=False,minsptree=False):
+def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtypes=None,allinp=False,unfold=False,minsptree=False,save_localadj=None):
 
     #Load the data (allbmus, the queries, the som and the subtype dicc)
     allbmus = np.genfromtxt(bmusfile, dtype=str, skip_header=1)
@@ -85,7 +74,7 @@ def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtyp
     
     if minsptree:
         #Get the minimal spaning tree of the queries
-        mstree_pairs, paths = msptree.get_minsptree(umat=auxumat,adjmat=auxadj,bmus=auxbmus,verbose=True)
+        mstree_pairs, paths = msptree.get_minsptree(umat=auxumat,adjmat=auxadj,bmus=auxbmus,verbose=True,save_localadj=save_localadj)
         for i,mstree_pair in enumerate(mstree_pairs):
             print('Printing the shortest parth between %s and %s'%(mstree_pair[0],mstree_pair[1]))
             mstree_path = paths[tuple(mstree_pair)]
@@ -136,12 +125,13 @@ if __name__ == '__main__':
     parser.add_argument('-b', '--bmus', help = 'BMUS of all sequences inputted for the Som', required = True)
     parser.add_argument('-q', '--queries', help = 'Sequences to be remmaped',required = True)
     parser.add_argument('-o', '--out', help = 'Output name for the dmatrix plot and pickle file',default='dmatrix')
-    parser.add_argument('--deli',help = 'Delimiter to trim the queries tittles',default = None, type = str)
-    parser.add_argument('--subt',help = 'subtypes for specific coloring',default = None, type = str)
+    parser.add_argument('-deli',help = 'Delimiter to trim the queries tittles',default = None, type = str)
+    parser.add_argument('-subt',help = 'subtypes for specific coloring',default = None, type = str)
     parser.add_argument('--allinp',help = 'highlight all input data as white squares',default = False, action='store_true')
     parser.add_argument('--unfold',help='Unfold the UMAT',default = False, action = 'store_true')
     parser.add_argument('--minsptree',help='Plot the minimal spanning tree between queries', default = False, action = 'store_true')
+    parser.add_argument('-save_localadj',help = 'To save the local adj matrix',default = None, type = str)
     args = parser.parse_args()
 
-    main(somfile=args.som,bmusfile=args.bmus,queriesfile=args.queries,outname=args.out,delimiter=args.deli,subtypes=args.subt,allinp=args.allinp,unfold=args.unfold,minsptree=args.minsptree)
+    main(somfile=args.som,bmusfile=args.bmus,queriesfile=args.queries,outname=args.out,delimiter=args.deli,subtypes=args.subt,allinp=args.allinp,unfold=args.unfold,minsptree=args.minsptree,save_localadj=args.save_localadj)
     
