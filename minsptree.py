@@ -35,7 +35,7 @@ def get_localadjmat(umat,adjmat,bmus,verbose=True):
     localadj= {'data': [], 'row': [], 'col': []}
     paths = {}
     checkpairs = []
-    for pair in itertools.permutations(indxbmus[0:5], 2):
+    for pair in itertools.permutations(indxbmus, 2):
         if pair not in checkpairs and (pair[1],pair[0]) not in checkpairs:
             checkpairs.append(pair)
         else:
