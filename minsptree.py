@@ -36,7 +36,8 @@ def get_localadjmat(umat,adjmat,bmus,verbose=True):
     localadj= {'data': [], 'row': [], 'col': []}
     paths = {}
     checkpairs = []
-    size = int((len(list(itertools.permutations(indxbmus, 2)))-len(indxbmus))/2)
+    indxbmus = list(set(indxbmus))
+    size = int((len(list(itertools.permutations(indxbmus, 2))))/2)
     count = 0
     for pair in itertools.permutations(indxbmus, 2):
         if pair not in checkpairs and (pair[1],pair[0]) not in checkpairs:
@@ -66,7 +67,7 @@ def load_localadjmat(localadjmat):
 
 def get_minsptree(umat,adjmat,bmus,verbose=True,save_localadj=None):
     localadj, paths = get_localadjmat(umat,adjmat,bmus,verbose=True)
-    if save_localadj =! None:
+    if save_localadj is not None:
         scipy.sparse.save_npz(save_localadj + '.npz', localadj)
     mstree = csgraph.minimum_spanning_tree(localadj)
     mstree_pairs = np.asarray(mstree.nonzero())
