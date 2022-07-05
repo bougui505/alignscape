@@ -1,61 +1,37 @@
+import numpy as np
+import sys
+import matplotlib.pyplot as plt
+from adjustText import adjust_text
+import pickle
 import quicksom.som
 import quicksom.somax
 import functools
-import os
-import sys
-import numpy as np
-import torch
-import dill as pickle
-import matplotlib.pyplot as plt
-from adjustText import adjust_text
-import ast
-from random import randint
-sys.path.insert(1, '/work/ifilella/quicksom_seq')
-import seqdataloader as seqdataloader
+sys.path.insert(2, '/work/ifilella/quicksom_seq')
 import som_seq
 import jax_imports
+import seqdataloader as seqdataloader
+import itertools
+import scipy
+import scipy.sparse.csgraph as csgraph
 import minsptree as msptree
-import scipy.sparse
-import scipy.sparse.csgraph as graph
 
-pltcolorlist = ['r','b','g','m','orange','y','m','w']
-
-def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtypes=None,allinp=False,unfold=False,minsptree=False,save=None,load=None,remap=False):
-
-    #Load the data (allbmus, the queries, the som and the subtype dicc)
+def main(somfile,bmusfile,outname='reumat.pdf',unfold=False,minsptree=False,save=None,load=None,remap=False):
+    
+    #Data loading
     allbmus = np.genfromtxt(bmusfile, dtype=str, skip_header=1)
-    queries = open(queriesfile,'r')
     with open(somfile, 'rb') as somfileaux:
             som = pickle.load(somfileaux)
     b62 = som_seq.get_blosum62()
     som.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
-    if subtypes != None:
-        f = open(subtypes, 'r')
-        contents = f.read()
-        dsubtypes = ast.literal_eval(contents)
-        f.close() 
-    
-    #Associate a color for each subtype
-    csubtypes = pltcolorlist[0:len(set(dsubtypes.values()))]
-    _ksubtypes = dsubtypes.values()
-    ksubtypes = sorted(list(set(_ksubtypes)))
-    dcolors = dict(zip(ksubtypes,csubtypes)) 
 
-    #Parse the queries and their corresponding bmus
+    #Parse the data
     labels = list()
+    subtypes = list()
     bmus = list()
-
-    #Get the cells of the queries and parse their titles
-    for query in queries:
-        query = query.replace("\n","")
-        for bmu in allbmus:
-            if query in bmu[-1]:
-                if delimiter != None:
-                    aux = query.replace(">","").split(delimiter)[0]
-                else:
-                    aux = query
-                labels.append(aux)
-                bmus.append((int(bmu[0]),int(bmu[1])))
+    for k,bmu in enumerate(allbmus):
+        bmus.append((int(bmu[0]),int(bmu[1])))
+        labels.append(bmu[-1].replace(">","").split("_")[0])
+        subtypes.append(bmu[-1].split("_")[-1])
 
     #Load or compute the localadj matrix between the qbmus
     if load and minsptree:
@@ -75,15 +51,14 @@ def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtyp
             with open(save + '_paths.pkl', 'wb') as f:
                 pickle.dump(paths, f)
 
-
+    #Get the regular or the unfold umat
     if unfold:
         
         #Get the mininimal spanning tree of the localadj matrix between the queries bmus
-        mstree = graph.minimum_spanning_tree(localadj)
-        
+        mstree = csgraph.minimum_spanning_tree(localadj)
+
         #Use the minimial spanning three between queries bmus to unfold the umat
         uumat,mapping,reversed_mapping = msptree.get_unfold_umat(som.umat, som.adj, bmus, mstree)
-        
         som.uumat = uumat
         som.mapping = mapping
         som.reversed_mapping = reversed_mapping
@@ -100,9 +75,9 @@ def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtyp
     n1, n2 = auxumat.shape
     plt.matshow(auxumat)
     plt.colorbar()
-    
+
     if minsptree:
-        #Get the minimal spanning tree of the queries
+        #Get the minimal spaning tree of the queries
         if unfold:
             if remap:
                 mstree_pairs, paths = msptree.get_minsptree(localadj,paths)
@@ -123,9 +98,9 @@ def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtyp
                 ulocaladj, upaths = msptree.get_localadjmat(auxumat,auxadj,auxbmus,verbose=True)
                 mstree_pairs, paths = msptree.get_minsptree(ulocaladj,upaths)
         else:
-             mstree_pairs, paths = msptree.get_minsptree(localadj,paths)
-       
-        #Print the minimal smapnning tree 
+            mstree_pairs, paths = msptree.get_minsptree(localadj,paths)
+
+        #Print the minimal smapnning tree
         for i,mstree_pair in enumerate(mstree_pairs):
             print('Printing the shortest parth between %s and %s'%(mstree_pair[0],mstree_pair[1]))
             mstree_path = paths[tuple(mstree_pair)]
@@ -138,51 +113,63 @@ def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtyp
                 aux = np.stack((_mstree_path[j-1],_mstree_path[j])).T
                 plt.plot(aux[1], aux[0],c='w',linewidth=1)
 
-    if allinp:
-        _allbmus = [(int(bmu[0]),int(bmu[1])) for bmu in allbmus]
-        if unfold:
-            _allunfbmus = [mapping[bmu] for bmu in _allbmus]
-            _auxallbmus = _allunfbmus
-        else:
-            _auxallbmus = _allbmus
-        for bmu in _auxallbmus:
-            msptree.highlight_cell(int(bmu[1]),int(bmu[0]), color="grey", linewidth=0.5)
-    
-    texts=[]
-    for i, bmu in enumerate(auxbmus):
-        print(bmu,labels[i])
-        if bmu[1]==0 and bmu[0]!=0:
-            plt.scatter(bmu[1]+1, bmu[0],c=dcolors[dsubtypes[labels[i]]],s=7)
-        elif bmu[1]!=0 and bmu[0]==0:
-            plt.scatter(bmu[1], bmu[0]+1,c=dcolors[dsubtypes[labels[i]]],s=7)
-        elif bmu[1]==0 and bmu[0]==0:
-            plt.scatter(bmu[1]+1, bmu[0]+1,c=dcolors[dsubtypes[labels[i]]],s=7)
-        else:
-            plt.scatter(bmu[1], bmu[0],c=dcolors[dsubtypes[labels[i]]],s=7)
-        texts.append(plt.text(bmu[1], bmu[0], labels[i],fontsize=6,c='gainsboro'))
-    adjust_text(texts,only_move={'points':'y', 'texts':'y'},arrowprops=dict(arrowstyle="->, head_width=0.2", color='gainsboro', lw=0.5))
-
-    plt.savefig(outname+'.pdf')
-    plt.show() 
+    texts = []
+    setoverlapping = ('Q8WXD0', 'Q96LB2','Q16581', 'Q86VZ1','O14718', 'Q99678')
+    #Colour the BMU of the initial data
+    for k, bmu in enumerate(auxbmus):
+        if subtypes[k] == 'A-alpha':
+            #highlight_cell(int(bmu[1]),int(bmu[0]), color="darkviolet", linewidth=1)
+            plt.scatter(bmu[1], bmu[0],c='darkviolet',s=7)
+        if subtypes[k] == 'A-beta':
+            #highlight_cell(int(bmu[1]),int(bmu[0]), color="mediumpurple", linewidth=1)
+            plt.scatter(bmu[1], bmu[0],c='mediumpurple',s=7)
+        if subtypes[k] == 'A-gamma':
+            #highlight_cell(int(bmu[1]),int(bmu[0]), color="plum", linewidth=1)
+            plt.scatter(bmu[1], bmu[0],c='plum',s=7)
+        if subtypes[k] == 'A-delta':
+            #highlight_cell(int(bmu[1]),int(bmu[0]), color="magenta", linewidth=1)
+            plt.scatter(bmu[1], bmu[0],c='magenta',s=7)
+        if subtypes[k] == 'A-other':
+            #highlight_cell(int(bmu[1]),int(bmu[0]), color="lavenderblush", linewidth=1)
+            plt.scatter(bmu[1], bmu[0],c='lavenderblush',s=7)
+        if subtypes[k] == 'Olfactory':
+            #highlight_cell(int(bmu[1]),int(bmu[0]), color="mediumaquamarine", linewidth=1)
+            plt.scatter(bmu[1], bmu[0],c='mediumaquamarine',s=7)
+        if subtypes[k] == 'Taste2':
+            #highlight_cell(int(bmu[1]),int(bmu[0]), color="lime", linewidth=1)
+            plt.scatter(bmu[1], bmu[0],c='lime',s=7)
+        if subtypes[k] == 'Vomeronasal':
+            #highlight_cell(int(bmu[1]),int(bmu[0]), color="olive", linewidth=1)
+            plt.scatter(bmu[1], bmu[0],c='olive',s=7)
+        if subtypes[k] == 'B':
+            #highlight_cell(int(bmu[1]),int(bmu[0]), color="yellow", linewidth=1)
+            plt.scatter(bmu[1], bmu[0],c='yellow',s=7)
+        if subtypes[k] == 'Adhesion':
+            #highlight_cell(int(bmu[1]),int(bmu[0]), color="black", linewidth=1)
+            plt.scatter(bmu[1], bmu[0],c='black',s=7)
+        if subtypes[k] == 'C':
+            #highlight_cell(int(bmu[1]),int(bmu[0]), color="orange", linewidth=1)
+            plt.scatter(bmu[1], bmu[0],c='orange',s=7)
+        if subtypes[k] == 'F':
+            #highlight_cell(int(bmu[1]),int(bmu[0]), color="red", linewidth=1)
+            plt.scatter(bmu[1], bmu[0],c='red',s=7)
+        #if labels[k] in setoverlapping:
+        #    texts.append(plt.text(int(bmu[1]), int(bmu[0]),labels[k] ,fontsize=8,c='white'))
+    adjust_text(texts, only_move={'points':'y', 'texts':'y'}, arrowprops=dict(arrowstyle="->", color='r', lw=0.5))
+    plt.savefig(outname,dpi=500)
+    #plt.show()
 
 if __name__ == '__main__':
     import argparse
-    
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('-s', '--som', help = 'Som file', required = True)
     parser.add_argument('-b', '--bmus', help = 'BMUS of all sequences inputted for the Som', required = True)
-    parser.add_argument('-q', '--queries', help = 'Sequences to be remmaped',required = True)
     parser.add_argument('-o', '--out', help = 'Output name for the dmatrix plot and pickle file',default='dmatrix')
-    parser.add_argument('--deli',help = 'Delimiter to trim the queries tittles',default = None, type = str)
-    parser.add_argument('--subt',help = 'subtypes for specific coloring',default = None, type = str)
-    parser.add_argument('--allinp',help = 'highlight all input data as white squares',default = False, action='store_true')
-    parser.add_argument('--unfold',help='Unfold the UMAT using the queries minsptree',default = False, action = 'store_true')
+    parser.add_argument('--unfold',help='Unfold the UMAT',default = False, action = 'store_true')
     parser.add_argument('--minsptree',help='Plot the minimal spanning tree between queries', default = False, action = 'store_true')
     parser.add_argument('--save',help = 'Sufix to save the local adj matrix of the BMUs of the queries and its paths',default = None, type = str)
     parser.add_argument('--load',help = 'Sufix to load a precalculated local adj matrix of the BMUs of the queries and its paths',default = None, type = str)
-    parser.add_argument('--remap',help = 'To remap the minsptree of the fold umat to the unfold umat withour recomputing it on the uumat',default = False, action = 'store_true')
+    parser.add_argument('--remap',help = 'To remap the minsptree of the fold umat to the unfold umat withour recomputing it on the uumat',default = False, action = 'store_true') 
     args = parser.parse_args()
-    
 
-    main(somfile=args.som,bmusfile=args.bmus,queriesfile=args.queries,outname=args.out,delimiter=args.deli,subtypes=args.subt,allinp=args.allinp,unfold=args.unfold,minsptree=args.minsptree,save=args.save,load=args.load,remap=args.remap)
-    
+    main(somfile=args.som,bmusfile=args.bmus,outname=args.out,unfold=args.unfold,minsptree=args.minsptree,save=args.save,load=args.load,remap=args.remap)
