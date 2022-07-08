@@ -24,6 +24,7 @@ def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtyp
 
     #Load the data (allbmus, the queries, the som and the subtype dicc)
     allbmus = np.genfromtxt(bmusfile, dtype=str, skip_header=1)
+    _allbmus = [(int(bmu[0]),int(bmu[1])) for bmu in allbmus]
     queries = open(queriesfile,'r')
     with open(somfile, 'rb') as somfileaux:
             som = pickle.load(somfileaux)
@@ -43,7 +44,7 @@ def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtyp
 
     #Parse the queries and their corresponding bmus
     labels = list()
-    bmus = list()
+    qbmus = list()
 
     #Get the cells of the queries and parse their titles
     for query in queries:
@@ -55,7 +56,7 @@ def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtyp
                 else:
                     aux = query
                 labels.append(aux)
-                bmus.append((int(bmu[0]),int(bmu[1])))
+                qbmus.append((int(bmu[0]),int(bmu[1])))
 
     #Load or compute the localadj matrix between the qbmus
     if load and minsptree:
@@ -69,7 +70,8 @@ def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtyp
         except:
             raise KeyError('%s_paths.pkl is missing or have a wrong name'%load)
     elif not load and minsptree:
-        localadj, paths = msptree.get_localadjmat(som.umat,som.adj,bmus,verbose=True)
+        #localadj, paths = msptree.get_localadjmat(som.umat,som.adj,qbmus,verbose=True)
+        localadj, paths = msptree.get_localadjmat(som.umat,som.adj,_allbmus,verbose=True)
         if save is not None:
             scipy.sparse.save_npz(save + '_localadj.npz', localadj)
             with open(save + '_paths.pkl', 'wb') as f:
@@ -78,22 +80,28 @@ def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtyp
 
     if unfold:
         
-        #Get the mininimal spanning tree of the localadj matrix between the queries bmus
+        #Get the mininimal spanning tree of the localadj matrix
         mstree = graph.minimum_spanning_tree(localadj)
         
-        #Use the minimial spanning three between queries bmus to unfold the umat
-        uumat,mapping,reversed_mapping = msptree.get_unfold_umat(som.umat, som.adj, bmus, mstree)
+        #Use the minimial spanning three between bmus to unfold the umat
+        #uumat,mapping,reversed_mapping = msptree.get_unfold_umat(som.umat, som.adj, qbmus, mstree)
+        uumat,mapping,reversed_mapping = msptree.get_unfold_umat(som.umat, som.adj, _allbmus, mstree)
         
         som.uumat = uumat
         som.mapping = mapping
         som.reversed_mapping = reversed_mapping
         auxumat = uumat
-        unfbmus = [mapping[bmu] for bmu in bmus]
+        #unfbmus = [mapping[qbmu] for qbmu in qbmus]
+        unfbmus = [mapping[bmu] for bmu in _allbmus]
+        unfqbmus = [mapping[qbmu] for qbmu in qbmus]
         auxbmus = unfbmus
+        auxqbmus = unfqbmus
         som._get_unfold_adj()
         auxadj = som.uadj
     else:
-        auxbmus = bmus
+        #auxbmus = qbmus
+        auxbmus = _allbmus
+        auxqbmus = qbmus
         auxumat = som.umat
         auxadj = som.adj
 
@@ -139,26 +147,27 @@ def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtyp
                 plt.plot(aux[1], aux[0],c='w',linewidth=1)
 
     if allinp:
-        _allbmus = [(int(bmu[0]),int(bmu[1])) for bmu in allbmus]
-        if unfold:
-            _allunfbmus = [mapping[bmu] for bmu in _allbmus]
-            _auxallbmus = _allunfbmus
-        else:
-            _auxallbmus = _allbmus
-        for bmu in _auxallbmus:
-            msptree.highlight_cell(int(bmu[1]),int(bmu[0]), color="grey", linewidth=0.5)
+        #if unfold:
+            #_allunfbmus = [mapping[bmu] for bmu in _allbmus]
+            #_auxallbmus = _allunfbmus
+        #else:
+        #    _auxallbmus = _allbmus
+        for bmu in auxbmus:
+            if bmu not in qbmus:
+                msptree.highlight_cell(int(bmu[1]),int(bmu[0]), color="grey", linewidth=0.5)
     
     texts=[]
-    for i, bmu in enumerate(auxbmus):
+    #for i, bmu in enumerate(auxbmus):
+    for i, bmu in enumerate(auxqbmus): 
         print(bmu,labels[i])
         if bmu[1]==0 and bmu[0]!=0:
-            plt.scatter(bmu[1]+1, bmu[0],c=dcolors[dsubtypes[labels[i]]],s=7)
+            plt.scatter(bmu[1]+1, bmu[0],c=dcolors[dsubtypes[labels[i]]],s=8)
         elif bmu[1]!=0 and bmu[0]==0:
-            plt.scatter(bmu[1], bmu[0]+1,c=dcolors[dsubtypes[labels[i]]],s=7)
+            plt.scatter(bmu[1], bmu[0]+1,c=dcolors[dsubtypes[labels[i]]],s=8)
         elif bmu[1]==0 and bmu[0]==0:
-            plt.scatter(bmu[1]+1, bmu[0]+1,c=dcolors[dsubtypes[labels[i]]],s=7)
+            plt.scatter(bmu[1]+1, bmu[0]+1,c=dcolors[dsubtypes[labels[i]]],s=8)
         else:
-            plt.scatter(bmu[1], bmu[0],c=dcolors[dsubtypes[labels[i]]],s=7)
+            plt.scatter(bmu[1], bmu[0],c=dcolors[dsubtypes[labels[i]]],s=8)
         texts.append(plt.text(bmu[1], bmu[0], labels[i],fontsize=6,c='gainsboro'))
     adjust_text(texts,only_move={'points':'y', 'texts':'y'},arrowprops=dict(arrowstyle="->, head_width=0.2", color='gainsboro', lw=0.5))
 

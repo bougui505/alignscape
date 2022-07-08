@@ -238,7 +238,7 @@ def main(ali=None,
          periodic=None,
          scheduler=None,
          outname=None,
-         doplot=None,
+         doplot=True,
          use_jax=False,
          plot_ext=None):
     if inputvectors is None and ali is None:
@@ -350,10 +350,13 @@ def main(ali=None,
     f.write("#quantification_error #topo_error\n%.8f %.8f" % (quantification_error, topo_error))
     if doplot:
         import matplotlib.pyplot as plt
+        plt.switch_backend('agg')
+        print('Saving umat')
         np.save('%s_umat' % baseoutname, som.umat)
         plt.matshow(som.umat)
         plt.colorbar()
         plt.savefig(f'{baseoutname}_umat.{plot_ext}')
+    print('Saving SOM map')
     som.save_pickle(outname + '.p')
 
 

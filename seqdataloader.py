@@ -81,6 +81,26 @@ def seq2vec(sequence, dtype='prot'):
         vec[i, ind] = 1.
     return vec
 
+# transform a vector to a sequence
+def vec2seq(vec, threshold = 0.5, dtype='prot'):
+    aalist = list('ABCDEFGHIKLMNPQRSTVWXYZ|-')
+    nucllist = list('ATGCSWRYKMBVHDN|-')
+    if dtype == 'prot':
+        naa_types = len(aalist)
+    elif dtype == 'nucl':
+        naa_types = len(nucllist)
+    else:
+        raise ValueError("dtype must be 'prot' or 'nucl'")
+    vec = vec.reshape((-1, naa_types))
+    argmax_vec = vec.argmax(axis=1)
+    max_vec = vec.max(axis=1)
+    if dtype == 'prot':
+        seq = [aalist[i] if max_vec[i] > threshold else 'X' for i in argmax_vec]
+    elif dtype == 'nucl':
+        seq = [nucllist[i] if max_vec[i] > threshold else 'X' for i in argmax_vec]
+    seq = [e for e in seq if (e!='-' and e!='|')]
+    seq = ''.join(seq)
+    return seq
 
 def vectorize(sequences, dtype='prot'):
     vectors = np.asarray([seq2vec(s, dtype).flatten() for s in sequences])

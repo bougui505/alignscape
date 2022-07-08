@@ -113,7 +113,7 @@ def main(somfile,bmusfile,outname='reumat.pdf',unfold=False,minsptree=False,save
                 #Check to avoid borders printting horizontal or vertical lines
                 if (_mstree_path[j-1][0] == 0 and _mstree_path[j][0] == n1-1) or (_mstree_path[j-1][0] == n1-1 and _mstree_path[j][0] == 0) or (_mstree_path[j-1][1] == 0 and _mstree_path[j][1] == n2-1) or (_mstree_path[j-1][1] == n2-1 and _mstree_path[j][1] == 0): continue
                 aux = np.stack((_mstree_path[j-1],_mstree_path[j])).T
-                plt.plot(aux[1], aux[0],c='w',linewidth=1) 
+                plt.plot(aux[1], aux[0],c='w',linewidth=0.8) 
 
     texts = []
     set1 = ('MAP3K7', 'MAP3K9', 'MAP3K10', 'MAP3K11', 'MAP3K12', 'MAP3K13', 'MAP3K20','MAP3K210')
