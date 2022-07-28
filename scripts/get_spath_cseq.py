@@ -12,7 +12,7 @@ from adjustText import adjust_text
 
 aalist = list('ABCDEFGHIKLMNPQRSTVWXYZ|-')
 
-def main(cell1,cell2,somfile,bmusfile,threshold,outname,verbose = True):
+def main(cell1,cell2,somfile,bmusfile,threshold,outname,allinp,verbose = True):
     
     #Load and safecheck the data
     if len(cell1) != 2:
@@ -90,33 +90,56 @@ def main(cell1,cell2,somfile,bmusfile,threshold,outname,verbose = True):
         if step in bmus:
             indx = bmus.index(step)
             if subtypes[indx] == 'CMGC':
-                plt.scatter(step[1], step[0],c='black',s=7)
+                plt.scatter(step[1], step[0],c='black',s=15)
             if subtypes[indx] == 'CAMK':
-                plt.scatter(step[1], step[0],c='white',s=7)
+                plt.scatter(step[1], step[0],c='white',s=15)
             if subtypes[indx] == 'TKL':
-                plt.scatter(step[1], step[0],c='red',s=7)
+                plt.scatter(step[1], step[0],c='red',s=15)
             if subtypes[indx] == 'AGC':
-                plt.scatter(step[1], step[0],c='orange',s=7)
+                plt.scatter(step[1], step[0],c='orange',s=15)
             if subtypes[indx] == 'RGC':
-                plt.scatter(step[1], step[0],c='pink',s=7)
+                plt.scatter(step[1], step[0],c='pink',s=15)
             if subtypes[indx] == 'OTHER':
-                plt.scatter(step[1], step[0],c='yellow',s=7)
+                plt.scatter(step[1], step[0],c='yellow',s=15)
             if subtypes[indx] == 'CK1':
-                plt.scatter(step[1], step[0],c='lime',s=7)
+                plt.scatter(step[1], step[0],c='lime',s=15)
             if subtypes[indx] == 'STE':
-                plt.scatter(step[1], step[0],c='cyan',s=7)
+                plt.scatter(step[1], step[0],c='cyan',s=15)
             if subtypes[indx] == 'NEK':
-                plt.scatter(step[1], step[0],c='magenta',s=7)
+                plt.scatter(step[1], step[0],c='magenta',s=15)
             if subtypes[indx] == 'TYR':
-                plt.scatter(step[1], step[0],c='blue',s=7)   
+                plt.scatter(step[1], step[0],c='blue',s=15)   
             aux = subtypes[indx]+'_' + labels[indx]
             texts.append(plt.text(step[1], step[0],aux,fontsize=7,c='gainsboro'))
     adjust_text(texts,only_move={'points':'y', 'texts':'y'},arrowprops=dict(arrowstyle="->, head_width=0.2", color='gainsboro', lw=0.5)) 
+    
+    if allinp:
+        #Hihlight the rest of initial sequences
+        for k,bmu in enumerate(bmus):
+            if subtypes[k] == 'CMGC':
+                plt.scatter(bmu[1], bmu[0],c='black',s=2)
+            if subtypes[k] == 'CAMK':
+                plt.scatter(bmu[1], bmu[0],c='white',s=2)
+            if subtypes[k] == 'TKL':
+                plt.scatter(bmu[1], bmu[0],c='red',s=2)
+            if subtypes[k] == 'AGC':
+                plt.scatter(bmu[1], bmu[0],c='orange',s=2)
+            if subtypes[k] == 'RGC':
+                plt.scatter(bmu[1], bmu[0],c='pink',s=2)
+            if subtypes[k] == 'OTHER':
+                plt.scatter(bmu[1], bmu[0],c='yellow',s=2)
+            if subtypes[k] == 'CK1':
+                plt.scatter(bmu[1], bmu[0],c='lime',s=2)
+            if subtypes[k] == 'STE':
+                plt.scatter(bmu[1], bmu[0],c='cyan',s=2)
+            if subtypes[k] == 'NEK':
+                plt.scatter(bmu[1], bmu[0],c='magenta',s=2)
+            if subtypes[k] == 'TYR':
+                plt.scatter(bmu[1], bmu[0],c='blue',s=2)
+
 
     plt.savefig(outname+'.pdf',dpi=500) 
     plt.show()
-
-
 
 if __name__ == '__main__':
     import argparse
@@ -128,6 +151,7 @@ if __name__ == '__main__':
     parser.add_argument('-b', '--bmus', help = 'BMUS of all sequences inputted for the Som', required = True)
     parser.add_argument('-o', '--outname', help = 'Fasta outname', required = True)
     parser.add_argument('--freq_thres', help = 'Frequency threshold to assign the most frequent residue for each site', default = 0.5)
+    parser.add_argument('--allinp',help='plot all input data',default = False, action = 'store_true')
     args = parser.parse_args()
 
-    main(cell1=args.c1, cell2=args.c2, somfile=args.som, bmusfile=args.bmus, threshold=args.freq_thres,outname=args.outname)
+    main(cell1=args.c1, cell2=args.c2, somfile=args.som, bmusfile=args.bmus, threshold=args.freq_thres,outname=args.outname,allinp=args.allinp)

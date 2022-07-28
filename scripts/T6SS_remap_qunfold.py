@@ -86,7 +86,7 @@ def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtyp
         #Use the minimial spanning three between bmus to unfold the umat
         #uumat,mapping,reversed_mapping = msptree.get_unfold_umat(som.umat, som.adj, qbmus, mstree)
         uumat,mapping,reversed_mapping = msptree.get_unfold_umat(som.umat, som.adj, _allbmus, mstree)
-        
+
         som.uumat = uumat
         som.mapping = mapping
         som.reversed_mapping = reversed_mapping
@@ -122,7 +122,8 @@ def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtyp
                     unf_mstree_pairs.append(unf_rpair)
                 unf_mstree_pairs = np.asarray(unf_mstree_pairs)
                 mstree_pairs = unf_mstree_pairs
-                for k in paths:
+                for i,k in enumerate(paths):
+                    print(str(i),len(paths))
                     unf_rk = (msptree.get_uumat_ravel_cell(k[0],(_n1,_n2),(n1,n2),mapping),msptree.get_uumat_ravel_cell(k[1],(_n1,_n2),(n1,n2),mapping))
                     unf_rpath = [msptree.get_uumat_ravel_cell(step,(_n1,_n2),(n1,n2),mapping) for step in paths[k]]
                     unf_rpaths[unf_rk] = unf_rpath
@@ -161,13 +162,13 @@ def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtyp
     for i, bmu in enumerate(auxqbmus): 
         print(bmu,labels[i])
         if bmu[1]==0 and bmu[0]!=0:
-            plt.scatter(bmu[1]+1, bmu[0],c=dcolors[dsubtypes[labels[i]]],s=8)
+            plt.scatter(bmu[1]+1, bmu[0],c=dcolors[dsubtypes[labels[i]]],s=15)
         elif bmu[1]!=0 and bmu[0]==0:
-            plt.scatter(bmu[1], bmu[0]+1,c=dcolors[dsubtypes[labels[i]]],s=8)
+            plt.scatter(bmu[1], bmu[0]+1,c=dcolors[dsubtypes[labels[i]]],s=15)
         elif bmu[1]==0 and bmu[0]==0:
-            plt.scatter(bmu[1]+1, bmu[0]+1,c=dcolors[dsubtypes[labels[i]]],s=8)
+            plt.scatter(bmu[1]+1, bmu[0]+1,c=dcolors[dsubtypes[labels[i]]],s=15)
         else:
-            plt.scatter(bmu[1], bmu[0],c=dcolors[dsubtypes[labels[i]]],s=8)
+            plt.scatter(bmu[1], bmu[0],c=dcolors[dsubtypes[labels[i]]],s=15)
         texts.append(plt.text(bmu[1], bmu[0], labels[i],fontsize=6,c='gainsboro'))
     adjust_text(texts,only_move={'points':'y', 'texts':'y'},arrowprops=dict(arrowstyle="->, head_width=0.2", color='gainsboro', lw=0.5))
 
