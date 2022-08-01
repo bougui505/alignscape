@@ -63,9 +63,10 @@ def main(cell1,cell2,somfile,bmusfile,threshold,outname,allinp,verbose = True):
         cseq = seqdataloader.vec2seq(neuron,threshold)
         if cell in bmus:
             indx = bmus.index(cell)
-            title = ">" +  str(tuple(np.asarray(cell).T)) + " " + subtypes[indx] + "_" +labels[indx]
+            title = ">[" + str(tuple(np.asarray(cell).T)[0]) + "|" + str(tuple(np.asarray(cell).T)[1]) + "] " +  subtypes[indx] + "_" +labels[indx]
+        #str(tuple(np.asarray(cell).T)) + " " + subtypes[indx] + "_" +labels[indx]
         else:
-            title = ">" + str(cell)
+            title = ">[" + str(cell[0]) + "|" + str(cell[1]) + "]"
         print(title)
         fout.write(title+"\n")
         print(cseq)
