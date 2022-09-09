@@ -240,7 +240,7 @@ def main(ali=None,
          outname=None,
          doplot=True,
          use_jax=False,
-         plot_ext=None):
+         plot_ext='png'):
     if inputvectors is None and ali is None:
         raise ValueError('inputvectors or ali argument must be set. Both are None.')
     if inputvectors is not None and ali is not None:
