@@ -98,7 +98,11 @@ def vec2seq(vec, threshold = 0.5, dtype='prot'):
         seq = [aalist[i] if max_vec[i] > threshold else 'X' for i in argmax_vec]
     elif dtype == 'nucl':
         seq = [nucllist[i] if max_vec[i] > threshold else 'X' for i in argmax_vec]
-    seq = [e for e in seq if (e!='-' and e!='|')]
+    #seq = [e for e in seq if (e!='-' and e!='|')]
+    seq = list(seq)
+    for i,e in enumerate(seq):
+        if e == '|':
+            seq[i]='-'
     seq = ''.join(seq)
     return seq
 
