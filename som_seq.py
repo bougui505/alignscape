@@ -235,7 +235,7 @@ def main(ali=None,
          sigma=None,
          load=None,
          somobj=None,
-         periodic=None,
+         periodic=True,
          scheduler=None,
          outname=None,
          doplot=True,
@@ -377,7 +377,7 @@ if __name__ == '__main__':
     parser.add_argument("-o", "--out_name", default='som.p', help="name of pickle to dump (default som.p)")
     parser.add_argument('--noplot', help='Do not plot the resulting U-matrix', action='store_false', dest='doplot')
     parser.add_argument('--plot_ext', help='Filetype extension for the U-matrix plot (default: pdf)', default='pdf')
-    parser.add_argument('--periodic', help='Periodic toroidal SOM', action='store_true')
+    parser.add_argument('--noperiodic', help='Non periodic toroidal SOM', action='store_false',default=True)
     parser.add_argument('--scheduler',
                         help='Which scheduler to use, can be linear, exp or half (exp by default)',
                         default='exp')
@@ -397,7 +397,7 @@ if __name__ == '__main__':
          alpha=args.alpha,
          sigma=args.sigma,
          load=args.load,
-         periodic=args.periodic,
+         periodic=args.noperiodic,
          scheduler=args.scheduler,
          outname=args.out_name,
          doplot=args.doplot,
