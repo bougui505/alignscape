@@ -2,3 +2,4 @@ logs/
 soms/
 __pycache__
 batch*
+results/
