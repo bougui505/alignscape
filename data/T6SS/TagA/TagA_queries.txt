@@ -1,0 +1,12 @@
+>Ah-TagA|ahj:V469_13100
+>Cf1-TagA|cfd:CFNIH1_02155
+>EAEC1-TagA|eck:EC55989_0219
+>EAEC3-TagA|eck:EC55989_3315
+>Kp2-TagA|kpu:KP1_3364
+>Vc-TagA|vcm:VCM66_A0119
+>Vp2-TagA|vpa:VP1409
+>Yp3-TagA|ype:YPO1489
+>Yp6-TagA|ype:YPO3604
+>Yps1-TagA|ypi:YpsIP31758_0327
+>Yps3-TagA|ypi:YpsIP31758_0805
+>Yps5-TagA|ypi:YpsIP31758_2485

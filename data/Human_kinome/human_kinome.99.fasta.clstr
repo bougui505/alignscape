@@ -1,0 +1,1032 @@
+>Cluster 0
+0	26926aa, >TTN_Hsap... *
+>Cluster 1
+0	8550aa, >Obscn_Hsap... *
+>Cluster 2
+0	4128aa, >DNAPK_Hsap... *
+>Cluster 3
+0	3877aa, >TRRAP_Hsap... *
+>Cluster 4
+0	3657aa, >SMG1_Hsap... *
+>Cluster 5
+0	3267aa, >SPEG_Hsap... *
+>Cluster 6
+0	3097aa, >Trio_Hsap... *
+>Cluster 7
+0	3056aa, >ATM_Hsap... *
+>Cluster 8
+0	2985aa, >Trad_Hsap... *
+>Cluster 9
+0	2644aa, >ATR_Hsap... *
+>Cluster 10
+0	2635aa, >MAST4_Hsap... *
+>Cluster 11
+0	2549aa, >FRAP_Hsap... *
+>Cluster 12
+0	2534aa, >LRRK2_Hsap... *
+>Cluster 13
+0	2382aa, >Wnk1_Hsap... *
+>Cluster 14
+0	2347aa, >ROS_Hsap... *
+>Cluster 15
+0	2217aa, >Wnk2_Hsap... *
+>Cluster 16
+0	2054aa, >CRIK_Hsap... *
+>Cluster 17
+0	2022aa, >ChaK2_Hsap... *
+>Cluster 18
+0	1988aa, >LRRK1_Hsap... *
+>Cluster 19
+0	1914aa, >smMLCK_Hsap... *
+>Cluster 20
+0	1907aa, >AlphaK1_Hsap... *
+>Cluster 21
+0	1893aa, >TAF1_Hsap... *
+>Cluster 22
+0	1864aa, >ChaK1_Hsap... *
+>Cluster 23
+0	1826aa, >TAF1L_Hsap... *
+>Cluster 24
+0	1800aa, >Wnk3_Hsap... *
+>Cluster 25
+0	1798aa, >MAST2_Hsap... *
+>Cluster 26
+0	1770aa, >MRCKa_Hsap... *
+>Cluster 27
+0	1746aa, >SgK269_Hsap... *
+>Cluster 28
+0	1711aa, >MRCKb_Hsap... *
+>Cluster 29
+0	1649aa, >GCN2_Hsap... *
+>Cluster 30
+0	1620aa, >ALK_Hsap... *
+>Cluster 31
+0	1615aa, >MYO3A_Hsap... *
+>Cluster 32
+0	1607aa, >MAP3K4_Hsap... *
+>Cluster 33
+0	1582aa, >NRK_Hsap... *
+>Cluster 34
+0	1579aa, >DMPK2_Hsap... *
+>Cluster 35
+0	1570aa, >MAST1_Hsap... *
+>Cluster 36
+0	1536aa, >AlphaK2_Hsap... *
+>Cluster 37
+0	1512aa, >CHED_Hsap... *
+>Cluster 38
+0	1511aa, >MAP3K1_Hsap... *
+>Cluster 39
+0	1490aa, >CRK7_Hsap... *
+>Cluster 40
+0	1462aa, >LMR3_Hsap... *
+>Cluster 41
+0	1454aa, >LMR2_Hsap... *
+>Cluster 42
+0	1451aa, >SgK307_Hsap... *
+>Cluster 43
+0	1430aa, >DAPK1_Hsap... *
+>Cluster 44
+0	1429aa, >MAP3K8_Hsap... *
+>Cluster 45
+0	1402aa, >SgK223_Hsap... *
+>Cluster 46
+0	1400aa, >RON_Hsap... *
+>Cluster 47
+0	1392aa, >HGK_Hsap... *
+>Cluster 48
+0	1390aa, >MET_Hsap... *
+>Cluster 49
+0	1388aa, >ROCK2_Hsap... *
+>Cluster 50
+0	1382aa, >INSR_Hsap... *
+>Cluster 51
+0	1374aa, >MAP3K5_Hsap... *
+>Cluster 52
+0	1374aa, >LMR1_Hsap... *
+>Cluster 53
+0	1369aa, >QSK_Hsap... *
+>Cluster 54
+0	1367aa, >IGF1R_Hsap... *
+>Cluster 55
+0	1360aa, >TNIK_Hsap... *
+>Cluster 56
+0	1358aa, >PIK3R4_Hsap... *
+>Cluster 57
+0	1356aa, >KDR_Hsap... *
+>Cluster 58
+0	1354aa, >ROCK1_Hsap... *
+>Cluster 59
+0	1342aa, >ErbB3_Hsap... *
+>Cluster 60
+0	1340aa, >MINK_Hsap... *
+>Cluster 61
+0	1338aa, >FLT1_Hsap... *
+>Cluster 62
+0	1331aa, >MAST3_Hsap... *
+>Cluster 63
+0	1323aa, >PASK_Hsap... *
+>Cluster 64
+0	1323aa, >MAP3K7_Hsap... *
+>Cluster 65
+0	1321aa, >TTBK1_Hsap... *
+>Cluster 66
+0	1315aa, >Fused_Hsap... *
+>Cluster 67
+0	1311aa, >GAK_Hsap... *
+>Cluster 68
+0	1308aa, >ErbB4_Hsap... *
+>Cluster 69
+0	1298aa, >FLT4_Hsap... *
+>Cluster 70
+0	1297aa, >IRR_Hsap... *
+>Cluster 71
+0	1288aa, >MAP3K6_Hsap... *
+>Cluster 72
+0	1286aa, >NEK1_Hsap... *
+>Cluster 73
+0	1278aa, >MYO3B_Hsap... *
+>Cluster 74
+0	1271aa, >BCR_Hsap... *
+>Cluster 75
+0	1255aa, >ErbB2_Hsap... *
+>Cluster 76
+0	1244aa, >TTBK2_Hsap... *
+>Cluster 77
+0	1244aa, >AlphaK3_Hsap... *
+>Cluster 78
+0	1231aa, >Wnk4_Hsap... *
+>Cluster 79
+0	1215aa, >HIPK3_Hsap... *
+>Cluster 80
+0	1210aa, >HIPK1_Hsap... *
+>Cluster 81
+0	1210aa, >EGFR_Hsap... *
+>Cluster 82
+0	1198aa, >HIPK2_Hsap... *
+>Cluster 83
+0	1187aa, >TYK2_Hsap... *
+>Cluster 84
+0	1182aa, >ABL2_Hsap... *
+>Cluster 85
+0	1161aa, >BIKE_Hsap... *
+>Cluster 86
+0	1154aa, >JAK1_Hsap... *
+>Cluster 87
+0	1152aa, >SLK_Hsap... *
+>Cluster 88
+0	1149aa, >ABL1_Hsap... *
+>Cluster 89
+0	1138aa, >TIE1_Hsap... *
+>Cluster 90
+0	1132aa, >JAK2_Hsap... *
+>Cluster 91
+0	1130aa, >LATS1_Hsap... *
+>Cluster 92
+0	1127aa, >TIF1g_Hsap... *
+>Cluster 93
+0	1125aa, >NEK10_Hsap... *
+>Cluster 94
+0	1124aa, >TIE2_Hsap... *
+>Cluster 95
+0	1124aa, >JAK3_Hsap... *
+>Cluster 96
+0	1118aa, >MLK1_Hsap... *
+>Cluster 97
+0	1115aa, >PEK_Hsap... *
+>Cluster 98
+0	1114aa, >RET_Hsap... *
+>Cluster 99
+0	1108aa, >CYGF_Hsap... *
+>Cluster 100
+0	1106aa, >PDGFRb_Hsap... *
+>Cluster 101
+0	1103aa, >CYGD_Hsap... *
+>Cluster 102
+0	1089aa, >PDGFRa_Hsap... *
+>Cluster 103
+0	1088aa, >LATS2_Hsap... *
+>Cluster 104
+0	1085aa, >BUB1_Hsap... *
+>Cluster 105
+0	1079aa, >ACK_Hsap... *
+>Cluster 106
+0	1073aa, >HSER_Hsap... *
+>Cluster 107
+0	1070aa, >CCK4_Hsap... *
+>Cluster 108
+0	1066aa, >RSKL1_Hsap... *
+>Cluster 109
+0	1061aa, >ANPa_Hsap... *
+>Cluster 110
+0	1055aa, >EphB2_Hsap... *
+>Cluster 111
+0	1052aa, >FAK_Hsap... *
+>Cluster 112
+0	1050aa, >TIF1a_Hsap... *
+>Cluster 113
+0	1050aa, >BUBR1_Hsap... *
+>Cluster 114
+0	1050aa, >ULK1_Hsap... *
+>Cluster 115
+0	1049aa, >TAO2_Hsap... *
+>Cluster 116
+0	1047aa, >ANPb_Hsap... *
+>Cluster 117
+0	1038aa, >BMPR2_Hsap... *
+>Cluster 118
+0	1037aa, >EphA5_Hsap... *
+>Cluster 119
+0	1036aa, >MLK4_Hsap... *
+>Cluster 120
+0	1036aa, >EphA6_Hsap... *
+>Cluster 121
+0	1036aa, >ULK2_Hsap... *
+>Cluster 122
+0	1030aa, >CDKL5_Hsap... *
+>Cluster 123
+0	1021aa, >EphB6_Hsap... *
+>Cluster 124
+0	1019aa, >SgK396_Hsap... *
+>Cluster 125
+0	1009aa, >PYK2_Hsap... *
+>Cluster 126
+0	1008aa, >EphA10_Hsap... *
+>Cluster 127
+0	1007aa, >PRP4_Hsap... *
+>Cluster 128
+0	1005aa, >EphA8_Hsap... *
+>Cluster 129
+0	1001aa, >TAO1_Hsap... *
+>Cluster 130
+0	999aa, >MER_Hsap... *
+>Cluster 131
+0	998aa, >EphB3_Hsap... *
+>Cluster 132
+0	998aa, >EphA7_Hsap... *
+>Cluster 133
+0	993aa, >FLT3_Hsap... *
+>Cluster 134
+0	987aa, >EphB4_Hsap... *
+>Cluster 135
+0	986aa, >EphA4_Hsap... *
+>Cluster 136
+0	984aa, >PKN2_Hsap... *
+>Cluster 137
+0	984aa, >EphB1_Hsap... *
+>Cluster 138
+0	983aa, >EphA3_Hsap... *
+>Cluster 139
+0	979aa, >NEK9_Hsap... *
+>Cluster 140
+0	977aa, >IRE1_Hsap... *
+>Cluster 141
+0	976aa, >KIT_Hsap... *
+>Cluster 142
+0	976aa, >EphA2_Hsap... *
+>Cluster 143
+0	976aa, >EphA1_Hsap... *
+>Cluster 144
+0	972aa, >FMS_Hsap... *
+>Cluster 145
+0	970aa, >PLK4_Hsap... *
+>Cluster 146
+0	968aa, >LOK_Hsap... *
+>Cluster 147
+0	966aa, >LZK_Hsap... *
+>Cluster 148
+0	961aa, >AAK1_Hsap... *
+>Cluster 149
+0	954aa, >MLK2_Hsap... *
+>Cluster 150
+0	948aa, >KSR2_Hsap... *
+>Cluster 151
+0	947aa, >NIK_Hsap... *
+>Cluster 152
+0	947aa, >BRDT_Hsap... *
+>Cluster 153
+0	943aa, >ROR2_Hsap... *
+>Cluster 154
+0	942aa, >PKN1_Hsap... *
+>Cluster 155
+0	937aa, >ROR1_Hsap... *
+>Cluster 156
+0	933aa, >SCYL2_Hsap... *
+>Cluster 157
+0	929aa, >SgK496_Hsap... *
+>Cluster 158
+0	926aa, >QIK_Hsap... *
+>Cluster 159
+0	926aa, >IRE2_Hsap... *
+>Cluster 160
+0	921aa, >DYRK4_Hsap... *
+>Cluster 161
+0	912aa, >PKD1_Hsap... *
+>Cluster 162
+0	901aa, >KSR1_Hsap... *
+>Cluster 163
+0	898aa, >TAO3_Hsap... *
+>Cluster 164
+0	898aa, >caMLCK_Hsap... *
+>Cluster 165
+0	897aa, >CASK_Hsap... *
+>Cluster 166
+0	894aa, >KHS2_Hsap... *
+>Cluster 167
+0	893aa, >TBCK_Hsap... *
+>Cluster 168
+0	890aa, >PKD3_Hsap... *
+>Cluster 169
+0	890aa, >TYRO3_Hsap... *
+>Cluster 170
+0	889aa, >PKN3_Hsap... *
+>Cluster 171
+0	885aa, >AXL_Hsap... *
+>Cluster 172
+0	878aa, >PKD2_Hsap... *
+>Cluster 173
+0	878aa, >MASTL_Hsap... *
+>Cluster 174
+0	875aa, >DDR1_Hsap... *
+>Cluster 175
+0	869aa, >MUSK_Hsap... *
+>Cluster 176
+0	864aa, >LTK_Hsap... *
+>Cluster 177
+0	859aa, >DLK_Hsap... *
+>Cluster 178
+0	857aa, >TTK_Hsap... *
+>Cluster 179
+0	855aa, >DDR2_Hsap... *
+>Cluster 180
+0	847aa, >MLK3_Hsap... *
+>Cluster 181
+0	846aa, >KHS1_Hsap... *
+>Cluster 182
+0	841aa, >NEK4_Hsap... *
+>Cluster 183
+0	835aa, >TIF1b_Hsap... *
+>Cluster 184
+0	835aa, >HH498_Hsap... *
+>Cluster 185
+0	833aa, >HPK1_Hsap... *
+>Cluster 186
+0	825aa, >TRKC_Hsap... *
+>Cluster 187
+0	822aa, >TRKB_Hsap... *
+>Cluster 188
+0	822aa, >FGFR1_Hsap... *
+>Cluster 189
+0	822aa, >FES_Hsap... *
+>Cluster 190
+0	822aa, >FER_Hsap... *
+>Cluster 191
+0	821aa, >FGFR2_Hsap... *
+>Cluster 192
+0	820aa, >GCK_Hsap... *
+>Cluster 193
+0	816aa, >Erk5_Hsap... *
+>Cluster 194
+0	808aa, >SCYL1_Hsap... *
+>Cluster 195
+0	806aa, >FGFR3_Hsap... *
+>Cluster 196
+0	802aa, >MSK1_Hsap... *
+>Cluster 197
+0	802aa, >FGFR4_Hsap... *
+>Cluster 198
+0	801aa, >BRD2_Hsap... *
+>Cluster 199
+0	800aa, >ZAK_Hsap... *
+>Cluster 200
+0	798aa, >Haspin_Hsap... *
+>Cluster 201
+0	796aa, >TRKA_Hsap... *
+>Cluster 202
+0	795aa, >PITSLRE_Hsap... *
+>Cluster 203
+0	795aa, >MARK1_Hsap... *
+>Cluster 204
+0	794aa, >BRSK1_Hsap... *
+>Cluster 205
+0	788aa, >MARK2_Hsap... *
+>Cluster 206
+0	787aa, >TLK1_Hsap... *
+>Cluster 207
+0	784aa, >ANKRD3_Hsap... *
+>Cluster 208
+0	783aa, >SIK_Hsap... *
+>Cluster 209
+0	776aa, >MARK3_Hsap... *
+>Cluster 210
+0	772aa, >MSK2_Hsap... *
+>Cluster 211
+0	766aa, >DCLK2_Hsap... *
+>Cluster 212
+0	765aa, >SNRK_Hsap... *
+>Cluster 213
+0	765aa, >SgK288_Hsap... *
+>Cluster 214
+0	765aa, >BRAF_Hsap... *
+>Cluster 215
+0	762aa, >PKG2_Hsap... *
+>Cluster 216
+0	756aa, >IKKb_Hsap... *
+>Cluster 217
+0	754aa, >DYRK1A_Hsap... *
+>Cluster 218
+0	752aa, >MARK4_Hsap... *
+>Cluster 219
+0	750aa, >TLK2_Hsap... *
+>Cluster 220
+0	745aa, >RSK4_Hsap... *
+>Cluster 221
+0	745aa, >IKKa_Hsap... *
+>Cluster 222
+0	742aa, >SCYL3_Hsap... *
+>Cluster 223
+0	741aa, >RNAseL_Hsap... *
+>Cluster 224
+0	740aa, >RSK2_Hsap... *
+>Cluster 225
+0	737aa, >PKCe_Hsap... *
+>Cluster 226
+0	735aa, >RSK3_Hsap... *
+>Cluster 227
+0	733aa, >RSK1_Hsap... *
+>Cluster 228
+0	729aa, >TBK1_Hsap... *
+>Cluster 229
+0	729aa, >DCLK1_Hsap... *
+>Cluster 230
+0	726aa, >BRD3_Hsap... *
+>Cluster 231
+0	725aa, >eEF2K_Hsap... *
+>Cluster 232
+0	722aa, >BRD4_Hsap... *
+>Cluster 233
+0	721aa, >Erk3_Hsap... *
+>Cluster 234
+0	719aa, >PAK5_Hsap... *
+>Cluster 235
+0	716aa, >IKKe_Hsap... *
+>Cluster 236
+0	714aa, >HUNK_Hsap... *
+>Cluster 237
+0	712aa, >IRAK1_Hsap... *
+>Cluster 238
+0	706aa, >PKCt_Hsap... *
+>Cluster 239
+0	703aa, >NEK8_Hsap... *
+>Cluster 240
+0	697aa, >PKCg_Hsap... *
+>Cluster 241
+0	689aa, >BARK1_Hsap... *
+>Cluster 242
+0	688aa, >SRPK2_Hsap... *
+>Cluster 243
+0	688aa, >BARK2_Hsap... *
+>Cluster 244
+0	686aa, >PKG1_Hsap... *
+>Cluster 245
+0	685aa, >PLK2_Hsap... *
+>Cluster 246
+0	683aa, >PKCh_Hsap... *
+>Cluster 247
+0	681aa, >PAK6_Hsap... *
+>Cluster 248
+0	680aa, >SgK071_Hsap... *
+>Cluster 249
+0	680aa, >BMX_Hsap... *
+>Cluster 250
+0	676aa, >PKCd_Hsap... *
+>Cluster 251
+0	674aa, >BRSK2_Hsap... *
+>Cluster 252
+0	673aa, >PKCb_Hsap... *
+>Cluster 253
+0	672aa, >PKCa_Hsap... *
+>Cluster 254
+0	672aa, >NuaK2_Hsap... *
+>Cluster 255
+0	671aa, >RIPK1_Hsap... *
+>Cluster 256
+0	670aa, >NEK5_Hsap... *
+>Cluster 257
+0	661aa, >TNK1_Hsap... *
+>Cluster 258
+0	661aa, >NuaK1_Hsap... *
+>Cluster 259
+0	659aa, >BTK_Hsap... *
+>Cluster 260
+0	655aa, >SRPK1_Hsap... *
+>Cluster 261
+0	651aa, >MELK_Hsap... *
+>Cluster 262
+0	648aa, >RAF1_Hsap... *
+>Cluster 263
+0	648aa, >DCLK3_Hsap... *
+>Cluster 264
+0	647aa, >LIMK1_Hsap... *
+>Cluster 265
+0	647aa, >ADCK3_Hsap... *
+>Cluster 266
+0	646aa, >PLK3_Hsap... *
+>Cluster 267
+0	646aa, >Wee1_Hsap... *
+>Cluster 268
+0	645aa, >NEK11_Hsap... *
+>Cluster 269
+0	639aa, >DMPK1_Hsap... *
+>Cluster 270
+0	638aa, >LIMK2_Hsap... *
+>Cluster 271
+0	635aa, >SYK_Hsap... *
+>Cluster 272
+0	632aa, >ICK_Hsap... *
+>Cluster 273
+0	631aa, >TEC_Hsap... *
+>Cluster 274
+0	630aa, >HRI_Hsap... *
+>Cluster 275
+0	629aa, >DYRK1B_Hsap... *
+>Cluster 276
+0	626aa, >TESK1_Hsap... *
+>Cluster 277
+0	626aa, >MAP3K3_Hsap... *
+>Cluster 278
+0	626aa, >ADCK2_Hsap... *
+>Cluster 279
+0	625aa, >IRAK2_Hsap... *
+>Cluster 280
+0	623aa, >MAK_Hsap... *
+>Cluster 281
+0	620aa, >ITK_Hsap... *
+>Cluster 282
+0	619aa, >MAP3K2_Hsap... *
+>Cluster 283
+0	619aa, >ZAP70_Hsap... *
+>Cluster 284
+0	616aa, >HIPK4_Hsap... *
+>Cluster 285
+0	612aa, >skMLCK_Hsap... *
+>Cluster 286
+0	607aa, >RYK_Hsap... *
+>Cluster 287
+0	606aa, >TAK1_Hsap... *
+>Cluster 288
+0	606aa, >ARAF_Hsap... *
+>Cluster 289
+0	603aa, >PLK1_Hsap... *
+>Cluster 290
+0	601aa, >DYRK2_Hsap... *
+>Cluster 291
+0	600aa, >PSKH2_Hsap... *
+>Cluster 292
+0	596aa, >IRAK3_Hsap... *
+>Cluster 293
+0	592aa, >TGFbR2_Hsap... *
+>Cluster 294
+0	592aa, >PKCz_Hsap... *
+>Cluster 295
+0	591aa, >PAK4_Hsap... *
+>Cluster 296
+0	590aa, >GPRK5_Hsap... *
+>Cluster 297
+0	588aa, >DYRK3_Hsap... *
+>Cluster 298
+0	588aa, >CaMKK2_Hsap... *
+>Cluster 299
+0	587aa, >PKCi_Hsap... *
+>Cluster 300
+0	587aa, >Erk4_Hsap... *
+>Cluster 301
+0	581aa, >PINK1_Hsap... *
+>Cluster 302
+0	580aa, >ADCK5_Hsap... *
+>Cluster 303
+0	580aa, >ULK4_Hsap... *
+>Cluster 304
+0	578aa, >Slob_Hsap... *
+>Cluster 305
+0	578aa, >GPRK4_Hsap... *
+>Cluster 306
+0	577aa, >CaMK2g_Hsap... *
+>Cluster 307
+0	576aa, >GPRK6_Hsap... *
+>Cluster 308
+0	574aa, >CDC7_Hsap... *
+>Cluster 309
+0	573aa, >MISR2_Hsap... *
+>Cluster 310
+0	572aa, >RSKL2_Hsap... *
+>Cluster 311
+0	571aa, >TESK2_Hsap... *
+>Cluster 312
+0	568aa, >RIOK1_Hsap... *
+>Cluster 313
+0	567aa, >Wee1B_Hsap... *
+>Cluster 314
+0	563aa, >RHOK_Hsap... *
+>Cluster 315
+0	563aa, >Erk7_Hsap... *
+>Cluster 316
+0	556aa, >PDK1_Hsap... *
+>Cluster 317
+0	553aa, >GPRK7_Hsap... *
+>Cluster 318
+0	552aa, >RIOK2_Hsap... *
+>Cluster 319
+0	552aa, >AMPKa2_Hsap... *
+>Cluster 320
+0	551aa, >PKR_Hsap... *
+>Cluster 321
+0	550aa, >AMPKa1_Hsap... *
+>Cluster 322
+0	549aa, >FASTK_Hsap... *
+>Cluster 323
+0	545aa, >STLK3_Hsap... *
+>Cluster 324
+0	545aa, >PAK1_Hsap... *
+>Cluster 325
+0	544aa, >PAK3_Hsap... *
+>Cluster 326
+0	544aa, >ADCK4_Hsap... *
+>Cluster 327
+0	543aa, >CHK2_Hsap... *
+>Cluster 328
+0	543aa, >YES_Hsap... *
+>Cluster 329
+0	542aa, >CaMK2b_Hsap... *
+>Cluster 330
+0	540aa, >RIPK2_Hsap... *
+>Cluster 331
+0	537aa, >FYN_Hsap... *
+>Cluster 332
+0	536aa, >SRC_Hsap... *
+>Cluster 333
+0	535aa, >NRBP1_Hsap... *
+>Cluster 334
+0	534aa, >CLIK1_Hsap... *
+>Cluster 335
+0	533aa, >MSSK1_Hsap... *
+>Cluster 336
+0	532aa, >BMPR1A_Hsap... *
+>Cluster 337
+0	529aa, >FGR_Hsap... *
+>Cluster 338
+0	527aa, >OSR1_Hsap... *
+>Cluster 339
+0	527aa, >TXK_Hsap... *
+>Cluster 340
+0	525aa, >p70S6K_Hsap... *
+>Cluster 341
+0	524aa, >PAK2_Hsap... *
+>Cluster 342
+0	523aa, >PCTAIRE2_Hsap... *
+>Cluster 343
+0	523aa, >ADCK1_Hsap... *
+>Cluster 344
+0	519aa, >RIOK3_Hsap... *
+>Cluster 345
+0	518aa, >RIPK3_Hsap... *
+>Cluster 346
+0	515aa, >NLK_Hsap... *
+>Cluster 347
+0	514aa, >STK33_Hsap... *
+>Cluster 348
+0	513aa, >CaMKK1_Hsap... *
+>Cluster 349
+0	513aa, >ACTR2_Hsap... *
+>Cluster 350
+0	512aa, >LYN_Hsap... *
+>Cluster 351
+0	512aa, >ACTR2B_Hsap... *
+>Cluster 352
+0	509aa, >LCK_Hsap... *
+>Cluster 353
+0	509aa, >ALK2_Hsap... *
+>Cluster 354
+0	508aa, >VRK2_Hsap... *
+>Cluster 355
+0	507aa, >NRBP2_Hsap... *
+>Cluster 356
+0	507aa, >CTK_Hsap... *
+>Cluster 357
+0	506aa, >NEK3_Hsap... *
+>Cluster 358
+0	505aa, >HCK_Hsap... *
+>Cluster 359
+0	505aa, >FRK_Hsap... *
+>Cluster 360
+0	505aa, >BLK_Hsap... *
+>Cluster 361
+0	505aa, >ALK4_Hsap... *
+>Cluster 362
+0	503aa, >TGFbR1_Hsap... *
+>Cluster 363
+0	503aa, >ALK1_Hsap... *
+>Cluster 364
+0	502aa, >PCTAIRE3_Hsap... *
+>Cluster 365
+0	502aa, >CDK11_Hsap... *
+>Cluster 366
+0	502aa, >BMPR1B_Hsap... *
+>Cluster 367
+0	501aa, >VACAMKL_Hsap... *
+>Cluster 368
+0	499aa, >MYT1_Hsap... *
+>Cluster 369
+0	499aa, >CLK2_Hsap... *
+>Cluster 370
+0	499aa, >CaMK2d_Hsap... *
+>Cluster 371
+0	496aa, >SGK3_Hsap... *
+>Cluster 372
+0	496aa, >PCTAIRE1_Hsap... *
+>Cluster 373
+0	493aa, >SgK493_Hsap... *
+>Cluster 374
+0	493aa, >CDKL2_Hsap... *
+>Cluster 375
+0	493aa, >ALK7_Hsap... *
+>Cluster 376
+0	491aa, >MST2_Hsap... *
+>Cluster 377
+0	490aa, >CLK3_Hsap... *
+>Cluster 378
+0	488aa, >SRM_Hsap... *
+>Cluster 379
+0	487aa, >MST1_Hsap... *
+>Cluster 380
+0	486aa, >YANK3_Hsap... *
+>Cluster 381
+0	485aa, >SgK424_Hsap... *
+>Cluster 382
+0	484aa, >CLK1_Hsap... *
+>Cluster 383
+0	483aa, >GSK3A_Hsap... *
+>Cluster 384
+0	482aa, >p70S6Kb_Hsap... *
+>Cluster 385
+0	481aa, >CLK4_Hsap... *
+>Cluster 386
+0	481aa, >AKT2_Hsap... *
+>Cluster 387
+0	480aa, >AKT1_Hsap... *
+>Cluster 388
+0	479aa, >AKT3_Hsap... *
+>Cluster 389
+0	478aa, >CaMK2a_Hsap... *
+>Cluster 390
+0	476aa, >CHK1_Hsap... *
+>Cluster 391
+0	476aa, >CaMK1g_Hsap... *
+>Cluster 392
+0	474aa, >VRK3_Hsap... *
+>Cluster 393
+0	473aa, >CaMK4_Hsap... *
+>Cluster 394
+0	472aa, >ULK3_Hsap... *
+>Cluster 395
+0	471aa, >MLKL_Hsap... *
+>Cluster 396
+0	471aa, >MAPKAPK5_Hsap... *
+>Cluster 397
+0	467aa, >COT_Hsap... *
+>Cluster 398
+0	465aa, >NDR1_Hsap... *
+>Cluster 399
+0	464aa, >NDR2_Hsap... *
+>Cluster 400
+0	464aa, >CDK8_Hsap... *
+>Cluster 401
+0	460aa, >IRAK4_Hsap... *
+>Cluster 402
+0	455aa, >CDKL3_Hsap... *
+>Cluster 403
+0	454aa, >DAPK3_Hsap... *
+>Cluster 404
+0	452aa, >ILK_Hsap... *
+>Cluster 405
+0	451aa, >PFTAIRE1_Hsap... *
+>Cluster 406
+0	451aa, >BRK_Hsap... *
+>Cluster 407
+0	450aa, >CSK_Hsap... *
+>Cluster 408
+0	449aa, >SgK494_Hsap... *
+>Cluster 409
+0	447aa, >CK1g3_Hsap... *
+>Cluster 410
+0	445aa, >NEK2_Hsap... *
+>Cluster 411
+0	438aa, >MAP2K5_Hsap... *
+>Cluster 412
+0	436aa, >PDHK1_Hsap... *
+>Cluster 413
+0	436aa, >NIM1_Hsap... *
+>Cluster 414
+0	435aa, >SgK495_Hsap... *
+>Cluster 415
+0	435aa, >PFTAIRE2_Hsap... *
+>Cluster 416
+0	433aa, >LKB1_Hsap... *
+>Cluster 417
+0	431aa, >STLK5_Hsap... *
+>Cluster 418
+0	431aa, >SGK1_Hsap... *
+>Cluster 419
+0	431aa, >MST3_Hsap... *
+>Cluster 420
+0	426aa, >MAP2K7_Hsap... *
+>Cluster 421
+0	426aa, >YSK1_Hsap... *
+>Cluster 422
+0	424aa, >SBK_Hsap... *
+>Cluster 423
+0	424aa, >PSKH1_Hsap... *
+>Cluster 424
+0	424aa, >MNK1_Hsap... *
+>Cluster 425
+0	424aa, >JNK2_Hsap... *
+>Cluster 426
+0	422aa, >SuRTK106_Hsap... *
+>Cluster 427
+0	422aa, >JNK3_Hsap... *
+>Cluster 428
+0	422aa, >CK1g1_Hsap... *
+>Cluster 429
+0	420aa, >GSK3B_Hsap... *
+>Cluster 430
+0	419aa, >MOK_Hsap... *
+>Cluster 431
+0	419aa, >KIS_Hsap... *
+>Cluster 432
+0	418aa, >STLK6_Hsap... *
+>Cluster 433
+0	416aa, >MST4_Hsap... *
+>Cluster 434
+0	416aa, >CK1e_Hsap... *
+>Cluster 435
+0	415aa, >CK1g2_Hsap... *
+>Cluster 436
+0	414aa, >SgK110_Hsap... *
+>Cluster 437
+0	414aa, >MNK2_Hsap... *
+>Cluster 438
+0	414aa, >DRAK1_Hsap... *
+>Cluster 439
+0	414aa, >YANK2_Hsap... *
+>Cluster 440
+0	412aa, >BCKDK_Hsap... *
+>Cluster 441
+0	411aa, >PIM2_Hsap... *
+>Cluster 442
+0	411aa, >PDHK4_Hsap... *
+>Cluster 443
+0	409aa, >CK1d_Hsap... *
+>Cluster 444
+0	407aa, >PDHK2_Hsap... *
+>Cluster 445
+0	406aa, >PHKg2_Hsap... *
+>Cluster 446
+0	406aa, >PDHK3_Hsap... *
+>Cluster 447
+0	403aa, >AurA_Hsap... *
+>Cluster 448
+0	400aa, >MAPKAPK2_Hsap... *
+>Cluster 449
+0	400aa, >MAP2K2_Hsap... *
+>Cluster 450
+0	399aa, >MAP2K4_Hsap... *
+>Cluster 451
+0	396aa, >VRK1_Hsap... *
+>Cluster 452
+0	396aa, >YANK1_Hsap... *
+>Cluster 453
+0	393aa, >MAP2K1_Hsap... *
+>Cluster 454
+0	391aa, >CK2a1_Hsap... *
+>Cluster 455
+0	388aa, >SgK085_Hsap... *
+>Cluster 456
+0	387aa, >PHKg1_Hsap... *
+>Cluster 457
+0	384aa, >JNK1_Hsap... *
+>Cluster 458
+0	382aa, >MAPKAPK3_Hsap... *
+>Cluster 459
+0	379aa, >Erk1_Hsap... *
+>Cluster 460
+0	372aa, >Trb1_Hsap... *
+>Cluster 461
+0	372aa, >DRAK2_Hsap... *
+>Cluster 462
+0	372aa, >CDK9_Hsap... *
+>Cluster 463
+0	370aa, >DAPK2_Hsap... *
+>Cluster 464
+0	370aa, >CaMK1a_Hsap... *
+>Cluster 465
+0	368aa, >G11_Hsap... *
+>Cluster 466
+0	367aa, >TSSK1_Hsap... *
+>Cluster 467
+0	367aa, >SGK2_Hsap... *
+>Cluster 468
+0	367aa, >p38g_Hsap... *
+>Cluster 469
+0	365aa, >p38d_Hsap... *
+>Cluster 470
+0	365aa, >CK1a_Hsap... *
+>Cluster 471
+0	364aa, >p38b_Hsap... *
+>Cluster 472
+0	360aa, >p38a_Hsap... *
+>Cluster 473
+0	360aa, >CDK10_Hsap... *
+>Cluster 474
+0	358aa, >TSSK2_Hsap... *
+>Cluster 475
+0	358aa, >Trb3_Hsap... *
+>Cluster 476
+0	358aa, >PRKX_Hsap... *
+>Cluster 477
+0	358aa, >CDKL1_Hsap... *
+>Cluster 478
+0	357aa, >CaMK1d_Hsap... *
+>Cluster 479
+0	351aa, >PKACg_Hsap... *
+>Cluster 480
+0	351aa, >PKACb_Hsap... *
+>Cluster 481
+0	351aa, >PKACa_Hsap... *
+>Cluster 482
+0	350aa, >SgK196_Hsap... *
+>Cluster 483
+0	350aa, >CK2a2_Hsap... *
+>Cluster 484
+0	348aa, >SgK069_Hsap... *
+>Cluster 485
+0	348aa, >Erk2_Hsap... *
+>Cluster 486
+0	347aa, >MAP2K3_Hsap... *
+>Cluster 487
+0	346aa, >MOS_Hsap... *
+>Cluster 488
+0	346aa, >CDK7_Hsap... *
+>Cluster 489
+0	346aa, >CCRK_Hsap... *
+>Cluster 490
+0	344aa, >AurB_Hsap... *
+>Cluster 491
+0	343aa, >Trb2_Hsap... *
+>Cluster 492
+0	343aa, >CaMK1b_Hsap... *
+>Cluster 493
+0	342aa, >CDKL4_Hsap... *
+>Cluster 494
+0	341aa, >CLIK1L_Hsap... *
+>Cluster 495
+0	337aa, >CK1a2_Hsap... *
+>Cluster 496
+0	334aa, >MAP2K6_Hsap... *
+>Cluster 497
+0	328aa, >TSSK4_Hsap... *
+>Cluster 498
+0	326aa, >PIM3_Hsap... *
+>Cluster 499
+0	326aa, >CDK6_Hsap... *
+>Cluster 500
+0	322aa, >PBK_Hsap... *
+>Cluster 501
+0	313aa, >NEK6_Hsap... *
+>Cluster 502
+0	313aa, >PIM1_Hsap... *
+>Cluster 503
+0	309aa, >AurC_Hsap... *
+>Cluster 504
+0	305aa, >MPSK1_Hsap... *
+>Cluster 505
+0	305aa, >CDK3_Hsap... *
+>Cluster 506
+0	303aa, >CDK4_Hsap... *
+>Cluster 507
+0	302aa, >NEK7_Hsap... *
+>Cluster 508
+0	298aa, >CDK2_Hsap... *
+>Cluster 509
+0	297aa, >CDC2_Hsap... *
+>Cluster 510
+0	292aa, >CDK5_Hsap... *
+>Cluster 511
+0	277aa, >PRKY_Hsap... *
+>Cluster 512
+0	273aa, >SSTK_Hsap... *
+>Cluster 513
+0	268aa, >TSSK3_Hsap... *
+>Cluster 514
+0	253aa, >PRPK_Hsap... *
+>Cluster 515
+0	196aa, >H11_Hsap... *

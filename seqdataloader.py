@@ -113,11 +113,11 @@ def vectorize(sequences, dtype='prot'):
 
 class SeqDataset(torch.utils.data.Dataset):
     """
-    >>> dataset = SeqDataset('data/TssB.aln')
+    >>> dataset = SeqDataset('data/T6SS/TssB/TssB.aln')
     >>> print(dataset.__len__())
     2916
     >>> seqname, inputvector = dataset.get_seq(23)
-    opening data/TssB.aln
+    opening data/T6SS/TssB/TssB.aln
     >>> print(seqname)
     >A0A6I3XKS6
     >>> seqname, inputvector = dataset.get_seq(10)
@@ -211,7 +211,7 @@ def workinit(workerid, fastafilename):
     print(f'{fastafilename} opened with object id {id(work_dataset.fastafile)} for worker {workerid}')
 
 
-def test_parallel(num_workers, batch_size=10, nloop=100, fastafilename='data/TssB.aln'):
+def test_parallel(num_workers, batch_size=10, nloop=100, fastafilename='data/T6SS/TssB/TssB.aln'):
     dataset = SeqDataset(fastafilename)
     dataloader = torch.utils.data.DataLoader(dataset,
                                              batch_size=batch_size,
@@ -237,8 +237,8 @@ if __name__ == '__main__':
     # parser.add_argument(name or flags...[, action][, nargs][, const][, default][, type][, choices][, required][, help][, metavar][, dest])
     parser.add_argument(
         '--fasta',
-        help='Fasta file to test the parallel data loader -- see --test_parallel -- (default: data/TssB.aln)',
-        default='data/TssB.aln')
+        help='Fasta file to test the parallel data loader -- see --test_parallel -- (default: data/T6SS/TssB/TssB.aln)',
+        default='data/T6SS/TssB/TssB.aln')
     parser.add_argument('--test', help='Test the code', action='store_true')
     parser.add_argument('--test_parallel', help='Test the code for parallel execution', action='store_true')
     args = parser.parse_args()
