@@ -4,6 +4,10 @@ import scipy.sparse
 import matplotlib.pyplot as plt
 import itertools
 import numpy as np
+from Timer import Timer
+from tqdm import tqdm
+
+TIMER = Timer(autoreset=True)
 
 def get_shortestPath(graph,start,end):
     sdist, pred = csgraph.shortest_path(graph, directed=False, indices = (start,end), return_predecessors=True)
@@ -15,10 +19,10 @@ def get_shortestPath(graph,start,end):
         path.append(prev)
     return path
 
-def get_pathDist(graph,path):
+def get_pathDist(dok,path):
     dist = 0
     for step in zip(path, path[1:]):
-        dist += graph.todok()[step[0],step[1]]
+        dist += dok[step[0],step[1]]
     return dist
 
 def highlight_cell(x,y, ax=None, **kwargs):
@@ -195,25 +199,30 @@ def get_localadjmat(umat,adjmat,bmus,verbose=True):
     indxbmus = list(set(indxbmus))
     size = int((len(list(itertools.permutations(indxbmus, 2))))/2)
     count = 0
+    dok = adjmat.todok()
+    pbar = tqdm(total=size)
     for pair in itertools.permutations(indxbmus, 2):
         if pair not in checkpairs and (pair[1],pair[0]) not in checkpairs:
             checkpairs.append(pair)
         else:
             continue
         count += 1
-        if verbose:
-            print(str(count) + "/" + str(size))
+        #if verbose:
+        #    print(str(count) + "/" + str(size))
         localadj['row'].extend([pair[0],pair[1]])
         localadj['col'].extend([pair[1],pair[0]])
-        if verbose:
-            print('Computing shortest path between: %d %d'%(pair[0],pair[1]))
+        #if verbose:
+        #    print('Computing shortest path between: %d %d'%(pair[0],pair[1]))
         path = get_shortestPath(adjmat,pair[0], pair[1])
         paths[pair] = path
         paths[(pair[1],pair[0])] = path
-        if verbose:
-            print('Computing the lenght of the shortest path between: %d %d'%(pair[0],pair[1]))
-        pathDist = get_pathDist(adjmat,path)
+        paths[(pair[0],pair[1])] = path
+        #if verbose:
+        #    print('Computing the lenght of the shortest path between: %d %d'%(pair[0],pair[1]))
+        pathDist = get_pathDist(dok,path)
         localadj['data'].extend([pathDist,pathDist])
+        pbar.update(1)
+    pbar.close()
     localadj = scipy.sparse.coo_matrix((localadj['data'], (localadj['row'], localadj['col'])))
     return localadj,paths
 
