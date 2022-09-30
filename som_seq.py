@@ -330,11 +330,11 @@ def main(ali=None,
             alpha=alpha,
             logfile=f'{baseoutname}.log')
     print('Computing BMUS')
-    som.bmus, som.error, som.labels, som.density, quantification_error, topo_error = som.predict(dataset=dataset,
-                                                                                                 batch_size=batch_size,
-                                                                                                 return_density=True,
-												 num_workers=1,
-												 return_errors=True)
+    som.bmus, som.error, som.labels = som.predict(dataset=dataset,
+                                                  batch_size=batch_size,
+                                                  return_density=False,
+                                                  num_workers=1,
+                                                  return_errors=False)
 
     index = np.arange(len(som.bmus))
     out_arr = np.zeros(n_inp, dtype=[('bmu1', int), ('bmu2', int), ('error', float), ('index', int), ('label', 'U512')])
@@ -346,8 +346,8 @@ def main(ali=None,
     out_fmt = ['%d', '%d', '%.4g', '%d', '%s']
     out_header = '#bmu1 #bmu2 #error #index #label'
     np.savetxt(f"{baseoutname}_bmus.txt", out_arr, fmt=out_fmt, header=out_header, comments='')
-    f = open(f"{baseoutname}_errors.txt", "w")
-    f.write("#quantification_error #topo_error\n%.8f %.8f" % (quantification_error, topo_error))
+    # f = open(f"{baseoutname}_errors.txt", "w")
+    # f.write("#quantification_error #topo_error\n%.8f %.8f" % (quantification_error, topo_error))
     if doplot:
         import matplotlib.pyplot as plt
         plt.switch_backend('agg')
@@ -357,7 +357,7 @@ def main(ali=None,
         plt.colorbar()
         plt.savefig(f'{baseoutname}_umat.{plot_ext}')
     print('Saving SOM map')
-    som.save_pickle(outname + '.p')
+    som.save_pickle(outname)
 
 
 if __name__ == '__main__':
@@ -374,10 +374,10 @@ if __name__ == '__main__':
     parser.add_argument('--alpha', help='learning rate', default=None, type=float)
     parser.add_argument('--sigma', help='Learning radius for the SOM', default=None, type=float)
     parser.add_argument('--nepochs', help='Number of SOM epochs', default=2, type=int)
-    parser.add_argument("-o", "--out_name", default='som.p', help="name of pickle to dump (default som.p)")
+    parser.add_argument("-o", "--out_name", default='som.pickle', help="name of pickle to dump (default som.pickle)")
     parser.add_argument('--noplot', help='Do not plot the resulting U-matrix', action='store_false', dest='doplot')
     parser.add_argument('--plot_ext', help='Filetype extension for the U-matrix plot (default: pdf)', default='pdf')
-    parser.add_argument('--noperiodic', help='Non periodic toroidal SOM', action='store_false',default=True)
+    parser.add_argument('--noperiodic', help='Non periodic toroidal SOM', action='store_false', default=True)
     parser.add_argument('--scheduler',
                         help='Which scheduler to use, can be linear, exp or half (exp by default)',
                         default='exp')
