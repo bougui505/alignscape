@@ -224,6 +224,8 @@ def seqmetric(seqs1, seqs2, b62):
 
     return dists
 
+def bmu_to_label(bmu,label, bmus):
+    pass
 
 def main(ali=None,
          inputvectors=None,
@@ -357,7 +359,7 @@ def main(ali=None,
         plt.colorbar()
         plt.savefig(f'{baseoutname}_umat.{plot_ext}')
     print('Saving SOM map')
-    som.save_pickle(outname)
+    som.save_pickle(f'{baseoutname}.pickle')
 
 
 if __name__ == '__main__':
@@ -374,7 +376,7 @@ if __name__ == '__main__':
     parser.add_argument('--alpha', help='learning rate', default=None, type=float)
     parser.add_argument('--sigma', help='Learning radius for the SOM', default=None, type=float)
     parser.add_argument('--nepochs', help='Number of SOM epochs', default=2, type=int)
-    parser.add_argument("-o", "--out_name", default='som.pickle', help="name of pickle to dump (default som.pickle)")
+    parser.add_argument("-o", "--out_name", default='som', help="basename (default som)")
     parser.add_argument('--noplot', help='Do not plot the resulting U-matrix', action='store_false', dest='doplot')
     parser.add_argument('--plot_ext', help='Filetype extension for the U-matrix plot (default: pdf)', default='pdf')
     parser.add_argument('--noperiodic', help='Non periodic toroidal SOM', action='store_false', default=True)

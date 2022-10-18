@@ -9,7 +9,7 @@
 #                                                                           #
 #  Redistribution and use in source and binary forms, with or without       #
 #  modification, are permitted provided that the following conditions       #
-#  are met:                                                                 #    
+#  are met:                                                                 #
 #                                                                           #
 #  1. Redistributions of source code must retain the above copyright        #
 #  notice, this list of conditions and the following disclaimer.            #
@@ -36,4 +36,4 @@
 #                                                                           #
 #############################################################################
 
-./som_seq.py -a =(head -60 data/T6SS/TssB/TssB.aln) -b 10 --nepochs 1 --alpha 0.5
+./som_seq.py -a =(head -60 data/T6SS/TssB/TssB.aln) -b 10 --nepochs 1 --alpha 0.5 -o som
