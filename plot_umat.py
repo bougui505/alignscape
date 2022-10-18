@@ -29,6 +29,8 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False,un
     titles = [title.replace(">","") for title in titles]
     if delimiter != None:
         labels = [title.split(delimiter)[0] for title in titles]
+    else:
+        labels = []
 
     #Compute the local Adjacency Matrix between the qbmus
     if minsptree or unfold:
