@@ -22,10 +22,10 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False,un
         som = pickle.load(somfileaux)
     b62 = som_seq.get_blosum62()
     som.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
-    #bmus = list(zip(*som.bmus.T))
-    #titles = som.labels
-    bmus = list(zip(*som.bmus[0:100].T))
-    titles = som.labels[0:100]
+    bmus = list(zip(*som.bmus.T))
+    titles = som.labels
+    #bmus = list(zip(*som.bmus[0:100].T))
+    #titles = som.labels[0:100]
     titles = [title.replace(">","") for title in titles]
     if delimiter != None:
         labels = [title.split(delimiter)[0] for title in titles]
