@@ -10,7 +10,6 @@ from Timer import Timer
 import scipy.sparse.csgraph as csgraph
 import matplotlib.pyplot as plt
 import newick
-import Bio.
 
 somfile = 'som.pickle'
 timer = Timer(autoreset=True)
@@ -29,9 +28,8 @@ mstree = mstree.tocoo()
 mstree_rows = mstree.row
 mstree_cols = mstree.col
 mstree_dists = mstree.data
-mstree_rows = quicksom.utils.bmus_to_label(mstree_rows,som.bmus,som.labels,(som.m,som.n)))
-mstree_cols = quicksom.utils.bmus_to_label(mstree_cols,som.bmus,som.labels,(som.m,som.n)))
-exit()
+mstree_rows = quicksom.utils.bmus_to_label(mstree_rows,som.bmus,som.labels,(som.m,som.n))
+mstree_cols = quicksom.utils.bmus_to_label(mstree_cols,som.bmus,som.labels,(som.m,som.n))
 timer.stop()
 timer.start('computing the unfolding')
 uumat, mapping, reversed_mapping = msptree.get_unfold_umat(som.umat, som.adj,bmus, mstree)
