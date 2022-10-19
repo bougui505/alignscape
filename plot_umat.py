@@ -12,7 +12,6 @@ import quicksom.somax
 import quicksom.utils
 from Timer import Timer
 
-
 timer = Timer(autoreset=True)
 
 def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False,unfold=False):
@@ -22,10 +21,10 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False,un
         som = pickle.load(somfileaux)
     b62 = som_seq.get_blosum62()
     som.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
-    bmus = list(zip(*som.bmus.T))
-    titles = som.labels
-    #bmus = list(zip(*som.bmus[0:100].T))
-    #titles = som.labels[0:100]
+    #bmus = list(zip(*som.bmus.T))
+    #titles = som.labels
+    bmus = list(zip(*som.bmus[0:100].T))
+    titles = som.labels[0:100]
     titles = [title.replace(">","") for title in titles]
     if delimiter != None:
         labels = [title.split(delimiter)[0] for title in titles]
@@ -61,35 +60,26 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False,un
         auxumat = som.umat
         auxadj = som.adj
 
-    n1, n2 = auxumat.shape
-
     #Compute the msptree pairs and paths between the qbmus
     if minsptree:
         timer.start('get the minsptree paths')
         msptree_pairs, msptree_paths = mspt.get_minsptree(localadj,localadj_paths)
         timer.stop()
         if unfold:
-            _n1,_n2 = som.umat.shape
-            unf_msptree_pairs = []
-            unf_rpaths = {}
-            for pair in msptree_pairs:
-                unf_rpair = [mspt.get_uumat_ravel_cell(pair[0],(_n1,_n2),(n1,n2),mapping), mspt.get_uumat_ravel_cell(pair[1],(_n1,_n2),(n1,n2),mapping)]
-                unf_msptree_pairs.append(unf_rpair)
-            unf_msptree_pairs = np.asarray(unf_msptree_pairs)
-            msptree_pairs = unf_msptree_pairs
-            for k in msptree_paths:
-                unf_rk = (mspt.get_uumat_ravel_cell(k[0],(_n1,_n2),(n1,n2),mapping),mspt.get_uumat_ravel_cell(k[1],(_n1,_n2),(n1,n2),mapping))
-                unf_rpath = [mspt.get_uumat_ravel_cell(step,(_n1,_n2),(n1,n2),mapping) for step in msptree_paths[k]]
-                unf_rpaths[unf_rk] = unf_rpath
-            msptree_paths = unf_rpaths
+            timer.start('get the minsptree paths in the unfold umat')
+            msptree_pairs, msptree_paths = mspt.get_unfold_msptree(msptree_pairs, msptree_paths, som.umat.shape, som.uumat.shape, mapping)
+            timer.stop()
 
     _plot_umat(auxumat,auxbmus,labels,hideSeqs)
 
-    if minsptree:
-        _plot_msptree(msptree_pairs, msptree_paths,(n1,n2))
+    if minsptree and not unfold:
+        _plot_msptree(msptree_pairs, msptree_paths,som.umat.shape)
+    elif minsptree and unfold:
+        _plot_msptree(msptree_pairs, msptree_paths,som.uumat.shape)
 
     plt.savefig(outname+'.pdf')
     plt.show()
+
 
 def _plot_msptree(msptree_pairs, msptree_paths,somsize,verbose=False):
     n1, n2 = somsize
