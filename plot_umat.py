@@ -110,7 +110,14 @@ def _plot_umat(umat, bmus, labels, hideSeqs):
             box = ax.get_position()
             ax.set_position([box.x0, box.y0 + box.height * 0.1,
                                  box.width, box.height * 0.9])
-            for unique_label in list(set(labels)):
+            unique_labels = list(set(labels))
+            #If unknown just highlight the cell
+            if 'unk' in unique_labels:
+                for i,label in enumerate(labels):
+                    if label == 'unk':
+                        mspt.highlight_cell(int(bmus[i][1]),int(bmus[i][0]), color="grey", linewidth=0.5)
+            for unique_label in unique_labels:
+                if unique_label == 'unk': continue
                 aux_X = []
                 aux_Y = []
                 for i,label in enumerate(labels):
@@ -118,7 +125,7 @@ def _plot_umat(umat, bmus, labels, hideSeqs):
                         aux_X.append(bmus[i][1])
                         aux_Y.append(bmus[i][0])
                     else: continue
-                ax.scatter(aux_X,aux_Y,label=unique_label,s=15)
+                ax.scatter(aux_X,aux_Y,label=unique_label,s=25)
             ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
                               fancybox=True, shadow=True, ncol=5)
 
