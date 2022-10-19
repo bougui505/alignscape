@@ -14,7 +14,7 @@ from Timer import Timer
 
 timer = Timer(autoreset=True)
 
-def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False,unfold=False):
+def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False,unfold=False, plot_ext='png'):
 
     #Load the data and parse it
     with open(somfile, 'rb') as somfileaux:
@@ -77,7 +77,7 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False,un
     elif minsptree and unfold:
         _plot_msptree(msptree_pairs, msptree_paths,som.uumat.shape)
 
-    plt.savefig(outname+'.png')
+    plt.savefig(outname+'.'+plot_ext)
     plt.show()
 
 
@@ -132,6 +132,7 @@ if __name__ == '__main__':
     parser.add_argument('--hide_seqs',help = 'To hide input sequences',action='store_true')
     parser.add_argument('--minsptree',help='Plot the minimal spanning tree between BMUs', default = False, action = 'store_true')
     parser.add_argument('--unfold',help='Unfold the Umat', default = False, action = 'store_true')
+    parser.add_argument('--plot_ext', help='Filetype extension for the UMAT plots (default: png)',default='png')
     args = parser.parse_args()
 
-    main(somfile=args.som,outname=args.outname,delimiter=args.delimiter,hideSeqs=args.hide_seqs,minsptree=args.minsptree, unfold=args.unfold)
+    main(somfile=args.som,outname=args.outname,delimiter=args.delimiter,hideSeqs=args.hide_seqs,minsptree=args.minsptree, unfold=args.unfold, plot_ext=args.plot_ext)
