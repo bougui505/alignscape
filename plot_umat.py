@@ -77,7 +77,7 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False,un
     elif minsptree and unfold:
         _plot_msptree(msptree_pairs, msptree_paths,som.uumat.shape)
 
-    plt.savefig(outname+'.pdf')
+    plt.savefig(outname+'.png')
     plt.show()
 
 
