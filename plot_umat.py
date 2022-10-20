@@ -54,8 +54,11 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False,un
         timer.start('compute the unfolded adj matrix')
         som._get_unfold_adj()
         auxadj = som.uadj
-        timer.start('get the minsptree paths in the unfold umat')
-        msptree_pairs, msptree_paths = mspt.get_unfold_msptree(msptree_pairs, msptree_paths, som.umat.shape, som.uumat.shape, mapping)
+        timer.stop()
+        if minsptree:
+            timer.start('get the minsptree paths in the unfold umat')
+            msptree_pairs, msptree_paths = mspt.get_unfold_msptree(msptree_pairs, msptree_paths, som.umat.shape, som.uumat.shape, mapping)
+            timer.stop()
     else:
         auxbmus = bmus
         auxumat = som.umat
