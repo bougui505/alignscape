@@ -16,7 +16,7 @@ import scipy.sparse.csgraph as csgraph
 import minsptree as msptree
 
 def main(somfile,bmusfile,outname='reumat.pdf',unfold=False,minsptree=False,save=None,load=None,remap=False):
-    
+
     #Load the data (bmus and umat)
     allbmus = np.genfromtxt(bmusfile, dtype=str, skip_header=1)
     with open(somfile, 'rb') as somfileaux:
@@ -53,7 +53,7 @@ def main(somfile,bmusfile,outname='reumat.pdf',unfold=False,minsptree=False,save
 
     #Get the regular or the unfold umat
     if unfold:
-        
+
         #Get the mininimal spanning tree of the localadj matrix between the queries bmus
         mstree = csgraph.minimum_spanning_tree(localadj)
 
@@ -72,7 +72,7 @@ def main(somfile,bmusfile,outname='reumat.pdf',unfold=False,minsptree=False,save
         auxbmus = bmus
         auxumat = som.umat
         auxadj = som.adj
-    
+
     n1, n2 = auxumat.shape
     plt.matshow(auxumat)
     plt.colorbar()
@@ -82,7 +82,7 @@ def main(somfile,bmusfile,outname='reumat.pdf',unfold=False,minsptree=False,save
         #Get the minimal spaning tree of the queries
         if unfold:
             if remap:
-                mstree_pairs, paths = msptree.get_minsptree(localadj,paths)
+                mstree, mstree_pairs, paths = msptree.get_minsptree(localadj,paths)
                 _n1,_n2 = som.umat.shape
                 unf_mstree_pairs = []
                 unf_rpaths = {}
@@ -98,11 +98,11 @@ def main(somfile,bmusfile,outname='reumat.pdf',unfold=False,minsptree=False,save
                 paths = unf_rpaths
             else:
                 ulocaladj, upaths = msptree.get_localadjmat(auxumat,auxadj,auxbmus,verbose=True)
-                mstree_pairs, paths = msptree.get_minsptree(ulocaladj,upaths)
+                mstree, mstree_pairs, paths = msptree.get_minsptree(ulocaladj,upaths)
         else:
-            mstree_pairs, paths = msptree.get_minsptree(localadj,paths)
+            mstree, mstree_pairs, paths = msptree.get_minsptree(localadj,paths)
 
-        #Print the minimal smapnning tree 
+        #Print the minimal smapnning tree
         for i,mstree_pair in enumerate(mstree_pairs):
             print('Printing the shortest parth between %s and %s'%(mstree_pair[0],mstree_pair[1]))
             mstree_path = paths[tuple(mstree_pair)]
@@ -113,7 +113,7 @@ def main(somfile,bmusfile,outname='reumat.pdf',unfold=False,minsptree=False,save
                 #Check to avoid borders printting horizontal or vertical lines
                 if (_mstree_path[j-1][0] == 0 and _mstree_path[j][0] == n1-1) or (_mstree_path[j-1][0] == n1-1 and _mstree_path[j][0] == 0) or (_mstree_path[j-1][1] == 0 and _mstree_path[j][1] == n2-1) or (_mstree_path[j-1][1] == n2-1 and _mstree_path[j][1] == 0): continue
                 aux = np.stack((_mstree_path[j-1],_mstree_path[j])).T
-                plt.plot(aux[1], aux[0],c='w',linewidth=0.8) 
+                plt.plot(aux[1], aux[0],c='w',linewidth=0.8)
 
     texts = []
     set1 = ('MAP3K7', 'MAP3K9', 'MAP3K10', 'MAP3K11', 'MAP3K12', 'MAP3K13', 'MAP3K20','MAP3K210')
@@ -124,7 +124,7 @@ def main(somfile,bmusfile,outname='reumat.pdf',unfold=False,minsptree=False,save
     set6 = ('AURKA','AURKB','AURKC','CAMKK1','CAMKK2','PLK1','PLK2','PLK3','PLK4')
     set7 = ('PLK5')
     setnewother = ('RPS6KC1', 'RPS6KL1','CDC7', 'UHMK1','MOS', 'MLKL')
-    
+
     #Colour the BMU of the initial data
     for k,bmu in enumerate(auxbmus):
         if subtypes[k] == 'CMGC':
@@ -180,7 +180,7 @@ if __name__ == '__main__':
     parser.add_argument('--minsptree',help='Plot the minimal spanning tree between queries', default = False, action = 'store_true')
     parser.add_argument('--save',help = 'Sufix to save the local adj matrix of the BMUs of the queries and its paths',default = None, type = str)
     parser.add_argument('--load',help = 'Sufix to load a precalculated local adj matrix of the BMUs of the queries and its paths',default = None, type = str)
-    parser.add_argument('--remap',help = 'To remap the minsptree of the fold umat to the unfold umat withour recomputing it on the uumat',default = False, action = 'store_true')  
+    parser.add_argument('--remap',help = 'To remap the minsptree of the fold umat to the unfold umat withour recomputing it on the uumat',default = False, action = 'store_true')
     args = parser.parse_args()
 
     main(somfile=args.som,bmusfile=args.bmus,outname=args.out,unfold=args.unfold,minsptree=args.minsptree,save=args.save,load=args.load,remap=args.remap)

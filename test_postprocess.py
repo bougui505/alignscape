@@ -10,6 +10,8 @@ from Timer import Timer
 import scipy.sparse.csgraph as csgraph
 import matplotlib.pyplot as plt
 import newick
+import numpy as np
+import networkx as nx
 
 somfile = 'som.pickle'
 timer = Timer(autoreset=True)
@@ -25,11 +27,20 @@ timer.stop()
 timer.start('computing the tree')
 mstree = csgraph.minimum_spanning_tree(localadj)
 mstree = mstree.tocoo()
-mstree_rows = mstree.row
-mstree_cols = mstree.col
-mstree_dists = mstree.data
-mstree_rows = quicksom.utils.bmus_to_label(mstree_rows,som.bmus,som.labels,(som.m,som.n))
-mstree_cols = quicksom.utils.bmus_to_label(mstree_cols,som.bmus,som.labels,(som.m,som.n))
+mstree_nodes = np.concatenate((mstree.row,mstree.col))
+mstree_nodes = list(set(list(mstree_nodes)))
+mstree_nodes_labels = quicksom.utils.bmus_to_label(mstree_nodes,som.bmus,som.labels,(som.m,som.n))
+mstree_nodes_labels = [';'.join(node_label).replace(">","") for node_label in mstree_nodes_labels]
+mapping = dict(zip(mstree_nodes,mstree_nodes_labels))
+
+mstree_ntw = nx.from_scipy_sparse_matrix(mstree)
+mstree_ntw_isolates = list(nx.isolates(mstree_ntw))
+mstree_ntw.remove_nodes_from(mstree_ntw_isolates)
+print(mstree_ntw)
+nx.relabel_nodes(mstree_ntw,mapping,copy=False)
+nx.write_gml(mstree_ntw,'mstree.gml')
+
+
 timer.stop()
 timer.start('computing the unfolding')
 uumat, mapping, reversed_mapping = msptree.get_unfold_umat(som.umat, som.adj,bmus, mstree)

@@ -234,7 +234,7 @@ def get_minsptree(localadj,paths,verbose=True):
     mstree = csgraph.minimum_spanning_tree(localadj)
     mstree_pairs = np.asarray(mstree.nonzero())
     mstree_pairs = np.vstack((mstree_pairs[0], mstree_pairs[1])).T
-    return mstree_pairs,paths
+    return mstree,mstree_pairs,paths
 
 def get_unfold_msptree(msptree_pairs, msptree_paths, somsize, unfsomsize, mapping):
     unf_msptree_pairs = []

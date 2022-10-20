@@ -36,12 +36,12 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False,un
         timer.start('computing localadj between queries')
         localadj, localadj_paths = mspt.get_localadjmat(som.umat,som.adj,bmus,verbose=True)
         timer.stop()
-
-    if unfold:
         #Compute the minimal spanning tree
         timer.start('compute the msptree')
-        msptree = csgraph.minimum_spanning_tree(localadj)
+        msptree, msptree_pairs, msptree_paths = mspt.get_minsptree(localadj,localadj_paths)
         timer.stop()
+
+    if unfold:
         #Use the minimial spanning three between queries bmus to unfold the umat
         timer.start('compute the umap unfolding')
         uumat,mapping,reversed_mapping = mspt.get_unfold_umat(som.umat, som.adj, bmus, msptree)
@@ -55,20 +55,12 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False,un
         timer.start('compute the unfolded adj matrix')
         som._get_unfold_adj()
         auxadj = som.uadj
+        timer.start('get the minsptree paths in the unfold umat')
+        msptree_pairs, msptree_paths = mspt.get_unfold_msptree(msptree_pairs, msptree_paths, som.umat.shape, som.uumat.shape, mapping)
     else:
         auxbmus = bmus
         auxumat = som.umat
         auxadj = som.adj
-
-    #Compute the msptree pairs and paths between the qbmus
-    if minsptree:
-        timer.start('get the minsptree paths')
-        msptree_pairs, msptree_paths = mspt.get_minsptree(localadj,localadj_paths)
-        timer.stop()
-        if unfold:
-            timer.start('get the minsptree paths in the unfold umat')
-            msptree_pairs, msptree_paths = mspt.get_unfold_msptree(msptree_pairs, msptree_paths, som.umat.shape, som.uumat.shape, mapping)
-            timer.stop()
 
     _plot_umat(auxumat,auxbmus,labels,hideSeqs)
 
