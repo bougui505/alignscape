@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 from itertools import count
 import pickle
 import functools
-import scipy.sparse.csgraph as csgraph
 import som_seq
 import jax_imports
 import minsptree as mspt

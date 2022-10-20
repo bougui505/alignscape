@@ -6,6 +6,8 @@ import itertools
 import numpy as np
 from Timer import Timer
 from tqdm import tqdm
+import networkx as nx
+import quicksom.utils
 
 TIMER = Timer(autoreset=True)
 
@@ -249,3 +251,18 @@ def get_unfold_msptree(msptree_pairs, msptree_paths, somsize, unfsomsize, mappin
         unf_rpath = [get_uumat_ravel_cell(step,somsize,unfsomsize,mapping) for step in msptree_paths[k]]
         unf_rpaths[unf_rk] = unf_rpath
     return np.asarray(unf_msptree_pairs), unf_rpaths
+
+def from_mstree_to_graph(mstree,bmus,labels,somsize):
+    mstree = mstree.tocoo()
+    mstree_nodes = np.concatenate((mstree.row,mstree.col))
+    mstree_nodes = list(set(list(mstree_nodes)))
+    mstree_nodes_labels = quicksom.utils.bmus_to_label(mstree_nodes,bmus,labels,somsize)
+    mstree_nodes_labels = [';'.join(node_label).replace(">","") for node_label in mstree_nodes_labels]
+    mapping = dict(zip(mstree_nodes,mstree_nodes_labels))
+
+    mstree_ntw = nx.from_scipy_sparse_matrix(mstree)
+    mstree_ntw_isolates = list(nx.isolates(mstree_ntw))
+    mstree_ntw.remove_nodes_from(mstree_ntw_isolates)
+    nx.relabel_nodes(mstree_ntw,mapping,copy=False)
+    return mstree_ntw
+
