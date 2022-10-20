@@ -266,3 +266,6 @@ def from_mstree_to_graph(mstree,bmus,labels,somsize):
     nx.relabel_nodes(mstree_ntw,mapping,copy=False)
     return mstree_ntw
 
+def write_mstree_gml(mstree,bmus,labels,somsize,outname):
+    mstree_ntw = from_mstree_to_graph(mstree,bmus,labels,somsize)
+    nx.write_gml(mstree_ntw,outname+'.gml')
