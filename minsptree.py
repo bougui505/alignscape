@@ -238,9 +238,11 @@ def get_minsptree(localadj,paths,verbose=True):
     mstree_pairs = np.vstack((mstree_pairs[0], mstree_pairs[1])).T
     return mstree,mstree_pairs,paths
 
-def get_unfold_msptree(msptree_pairs, msptree_paths, somsize, unfsomsize, mapping):
+def get_unfold_msptree(msptree_pairs, msptree_paths, somsize, unfsomsize, mapping, uadj):
+    dok = uadj.todok()
     unf_msptree_pairs = []
     unf_rpaths = {}
+    unf_msptree = {'data': [], 'row': [], 'col': []}
     #Get the coordinates of the msptree pairs in the unfold umatrix
     for pair in msptree_pairs:
         unf_rpair = [get_uumat_ravel_cell(pair[0],somsize,unfsomsize,mapping), get_uumat_ravel_cell(pair[1],somsize,unfsomsize,mapping)]
@@ -250,7 +252,14 @@ def get_unfold_msptree(msptree_pairs, msptree_paths, somsize, unfsomsize, mappin
         unf_rk = (get_uumat_ravel_cell(k[0],somsize,unfsomsize,mapping), get_uumat_ravel_cell(k[1],somsize,unfsomsize,mapping))
         unf_rpath = [get_uumat_ravel_cell(step,somsize,unfsomsize,mapping) for step in msptree_paths[k]]
         unf_rpaths[unf_rk] = unf_rpath
-    return np.asarray(unf_msptree_pairs), unf_rpaths
+    for i,pair in enumerate(np.asarray(unf_msptree_pairs)):
+        dist = get_pathDist(dok,unf_rpaths[tuple(pair)])
+        unf_msptree['row'].extend([pair[0]])
+        unf_msptree['col'].extend([pair[1]])
+        unf_msptree['data'].extend([dist])
+    dim = max(unf_msptree['row'] + unf_msptree['col'])
+    unf_msptree = scipy.sparse.coo_matrix((unf_msptree['data'], (unf_msptree['row'], unf_msptree['col'])),shape=(dim+1,dim+1))
+    return unf_msptree, np.asarray(unf_msptree_pairs), unf_rpaths
 
 def from_mstree_to_graph(mstree,bmus,labels,somsize):
     mstree = mstree.tocoo()

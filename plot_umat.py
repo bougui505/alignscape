@@ -57,7 +57,7 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False,un
         timer.stop()
         if minsptree:
             timer.start('get the minsptree paths in the unfold umat')
-            msptree_pairs, msptree_paths = mspt.get_unfold_msptree(msptree_pairs, msptree_paths, som.umat.shape, som.uumat.shape, mapping)
+            msptree, msptree_pairs, msptree_paths = mspt.get_unfold_msptree(msptree_pairs, msptree_paths, som.umat.shape, som.uumat.shape, mapping)
             timer.stop()
     else:
         auxbmus = bmus

@@ -207,6 +207,9 @@ def seqmetric(seqs1, seqs2, b62):
     n2 = seqs2.shape[0]
     seqs1 = seqs1.reshape((batch_size, seqlenght, nchar))
     seqs2 = seqs2.reshape((n2, seqlenght, nchar))
+    if not torch.is_tensor(b62):
+        device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        b62 = torchify(b62, device=device)
     scores = score_matrix_vec(seqs1, seqs2, b62=b62)
     rscores = rscore_matrix_vec(seqs1, seqs2, b62=b62)
 
