@@ -61,7 +61,6 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False,un
     else:
         auxbmus = bmus
         auxumat = som.umat
-        auxadj = som.adj
 
     _plot_umat(auxumat,auxbmus,labels,hideSeqs)
 
