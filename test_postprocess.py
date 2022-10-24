@@ -46,15 +46,10 @@ unfbmus = np.asarray([mapping[bmu] for bmu in bmus])
 som.uumat = uumat
 som.mapping = mapping
 som.reversed_mapping = reversed_mapping
-som._get_unfold_adj()
 timer.stop()
 
 timer.start('get the minsptree paths in the unfold umat')
-mstree, mstree_pairs, mstree_paths = mspt.get_unfold_msptree(mstree_pairs,mstree_paths, som.umat.shape, som.uumat.shape, som.mapping, som.uadj)
-timer.stop()
-
-timer.start('computing the unfold mstree graph')
-mspt.write_mstree_gml(mstree,unfbmus,som.labels,uumat.shape, outname='unf_mstree_ntw')
+mstree_pairs, mstree_paths = mspt.get_unfold_msptree(mstree_pairs,mstree_paths, som.umat.shape, som.uumat.shape, som.mapping)
 timer.stop()
 
 timer.start('Plotting2')
