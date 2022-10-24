@@ -20,10 +20,10 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False,un
         som = pickle.load(somfileaux)
     b62 = som_seq.get_blosum62()
     som.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
-    bmus = list(zip(*som.bmus.T))
-    titles = som.labels
-    #bmus = list(zip(*som.bmus[0:100].T))
-    #titles = som.labels[0:100]
+    #bmus = list(zip(*som.bmus.T))
+    #titles = som.labels
+    bmus = list(zip(*som.bmus[0:100].T))
+    titles = som.labels[0:100]
     titles = [title.replace(">","") for title in titles]
     if delimiter != None:
         labels = [title.split(delimiter)[0] for title in titles]
@@ -38,6 +38,8 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False,un
         #Compute the minimal spanning tree
         timer.start('compute the msptree')
         msptree, msptree_pairs, msptree_paths = mspt.get_minsptree(localadj,localadj_paths)
+        if minsptree:
+            mspt.write_mstree_gml(msptree,bmus,titles,som.umat.shape,outname='mstree_ntw')
         timer.stop()
 
     if unfold:
@@ -55,10 +57,6 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False,un
         som._get_unfold_adj()
         auxadj = som.uadj
         timer.stop()
-        if minsptree:
-            timer.start('get the minsptree paths in the unfold umat')
-            msptree, msptree_pairs, msptree_paths = mspt.get_unfold_msptree(msptree_pairs, msptree_paths, som.umat.shape, som.uumat.shape, mapping)
-            timer.stop()
     else:
         auxbmus = bmus
         auxumat = som.umat

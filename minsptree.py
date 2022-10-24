@@ -263,6 +263,7 @@ def get_unfold_msptree(msptree_pairs, msptree_paths, somsize, unfsomsize, mappin
 
 def from_mstree_to_graph(mstree,bmus,labels,somsize):
     mstree = mstree.tocoo()
+    bmus = np.asarray(bmus)
     mstree_nodes = np.concatenate((mstree.row,mstree.col))
     mstree_nodes = list(set(list(mstree_nodes)))
     mstree_nodes_labels = quicksom.utils.bmus_to_label(mstree_nodes,bmus,labels,somsize)
