@@ -10,10 +10,11 @@ import quicksom.som
 import quicksom.somax
 import quicksom.utils
 from Timer import Timer
+import scipy.sparse.csgraph as csgraph
 
 timer = Timer(autoreset=True)
 
-def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False,unfold=False, plot_ext='png'):
+def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False, clst=False, unfold=False, plot_ext='png'):
 
     #Load the data and parse it
     with open(somfile, 'rb') as somfileaux:
@@ -39,7 +40,7 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False,un
         timer.start('compute the msptree')
         msptree, msptree_pairs, msptree_paths = mspt.get_minsptree(localadj,localadj_paths)
         if minsptree:
-            mspt.write_mstree_gml(msptree,bmus,titles,som.umat.shape,outname='mstree_ntw')
+            mspt.write_mstree_gml(msptree,bmus,titles,som.umat.shape,outname='%s'%outname)
         timer.stop()
 
     if unfold:
@@ -61,6 +62,25 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False,un
     else:
         auxbmus = bmus
         auxumat = som.umat
+
+    if clst:
+        timer.start('clusterizing the umat')
+        umat_clst = mspt.get_clusterized_umat(som.umat,som.adj,som.umat.shape)
+        if unfold:
+            for unf_bmu in reversed_mapping.keys():
+                fold_bmu = reversed_mapping[unf_bmu]
+                fold_value = umat_clst[fold_bmu[0],fold_bmu[1]]
+                auxumat[unf_bmu[0]][unf_bmu[1]] = fold_value
+        else:
+            auxumat = umat_clst
+        f = open('%s.txt'%outname,'w')
+        f.write('#bmu1 #bmu2 #title #cluster\n')
+        for i,bmu in enumerate(auxbmus):
+            bmu_r = auxbmus[i][0]
+            bmu_c = auxbmus[i][1]
+            f.write('%d %d %s %d\n'%(bmu_r,bmu_c,titles[i], auxumat[bmu_r][bmu_c]))
+        f.close()
+        timer.stop()
 
     _plot_umat(auxumat,auxbmus,labels,hideSeqs)
 
@@ -130,8 +150,9 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--delimiter', help = 'If gruping infomation was contained in the sequences title, the delimiter split it and select the prefix',default=None)
     parser.add_argument('--hide_seqs',help = 'To hide input sequences',action='store_true')
     parser.add_argument('--minsptree',help='Plot the minimal spanning tree between BMUs', default = False, action = 'store_true')
+    parser.add_argument('--clst',help='Clusterize the Umat', default = False, action = 'store_true')
     parser.add_argument('--unfold',help='Unfold the Umat', default = False, action = 'store_true')
     parser.add_argument('--plot_ext', help='Filetype extension for the UMAT plots (default: png)',default='png')
     args = parser.parse_args()
 
-    main(somfile=args.som,outname=args.outname,delimiter=args.delimiter,hideSeqs=args.hide_seqs,minsptree=args.minsptree, unfold=args.unfold, plot_ext=args.plot_ext)
+    main(somfile=args.som,outname=args.outname,delimiter=args.delimiter,hideSeqs=args.hide_seqs,minsptree=args.minsptree, clst = args.clst, unfold=args.unfold, plot_ext=args.plot_ext)

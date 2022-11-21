@@ -342,14 +342,14 @@ def main(ali=None,
                                                   return_errors=False)
 
     index = np.arange(len(som.bmus))
-    out_arr = np.zeros(n_inp, dtype=[('bmu1', int), ('bmu2', int), ('error', float), ('index', int), ('label', 'U512')])
-    out_arr['bmu1'] = som.bmus[:, 0]
-    out_arr['bmu2'] = som.bmus[:, 1]
+    out_arr = np.zeros(n_inp, dtype=[('bmu_r', int), ('bmu_c', int), ('error', float), ('index', int), ('label', 'U512')])
+    out_arr['bmu_r'] = som.bmus[:, 0]
+    out_arr['bmu_c'] = som.bmus[:, 1]
     out_arr['error'] = som.error
     out_arr['index'] = index
     out_arr['label'] = som.labels
     out_fmt = ['%d', '%d', '%.4g', '%d', '%s']
-    out_header = '#bmu1 #bmu2 #error #index #label'
+    out_header = '#bmu_r #bmu_c #error #index #label'
     np.savetxt(f"{baseoutname}_bmus.txt", out_arr, fmt=out_fmt, header=out_header, comments='')
     # f = open(f"{baseoutname}_errors.txt", "w")
     # f.write("#quantification_error #topo_error\n%.8f %.8f" % (quantification_error, topo_error))

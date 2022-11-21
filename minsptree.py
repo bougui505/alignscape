@@ -8,6 +8,8 @@ from Timer import Timer
 from tqdm import tqdm
 import networkx as nx
 import quicksom.utils
+from skimage.feature import peak_local_max
+from sklearn.cluster import AgglomerativeClustering
 
 TIMER = Timer(autoreset=True)
 
@@ -231,6 +233,21 @@ def get_localadjmat(umat,adjmat,bmus,verbose=True):
 def load_localadjmat(localadjmat):
     localadj = scipy.sparse.load_npz(localadjmat)
     return localadj
+
+def get_clusterized_umat(umat,adj,somsize,min_distance=7):
+    local_min = peak_local_max(-umat, min_distance=min_distance)
+    n_local_min = local_min.shape[0]
+    clusterer = AgglomerativeClustering(affinity='precomputed', linkage='average',n_clusters=n_local_min)
+    all_to_all_dist = csgraph.shortest_path(adj, directed=False)
+    try:
+        clustered_umat = clusterer.fit_predict(all_to_all_dist)
+    except:
+        print(f'WARNING : The following error was catched : "{e}"\n'
+              f'The clusterer yields zero clusters on the data.'
+              ' You should train it more or gather more data')
+        clustered_umat = np.zeros(somsize[0]*somsize[1])
+    clustered_umat = clustered_umat.reshape(somsize)
+    return clustered_umat
 
 def get_minsptree(localadj,paths,verbose=True):
     mstree = csgraph.minimum_spanning_tree(localadj)
