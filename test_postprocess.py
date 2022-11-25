@@ -12,7 +12,7 @@ import numpy as np
 import networkx as nx
 import minsptree as mspt
 import plot_umat
-somfile = 'som.pickle'
+somfile = 'testout/som.pickle'
 timer = Timer(autoreset=True)
 
 with open(somfile, 'rb') as somfileaux:
@@ -30,7 +30,7 @@ mstree,mstree_pairs,mstree_paths = mspt.get_minsptree(localadj,paths,verbose=Fal
 timer.stop()
 
 timer.start('computing the mstree graph')
-mspt.write_mstree_gml(mstree,som.bmus,som.labels,(som.m,som.n),outname='mstree_ntw')
+mspt.write_mstree_gml(mstree,som.bmus,som.labels,(som.m,som.n),outname='testout/mstree_ntw')
 timer.stop()
 
 timer.start('computing the unfolding')
@@ -47,14 +47,14 @@ timer.stop()
 
 timer.start('Test plots')
 labels = []
-plot_umat.main(somfile,outname='umat',delimiter=None,hideSeqs=True,minsptree=False,clst=False,unfold=False)
-plot_umat.main(somfile,outname='umat_remap',delimiter=None,hideSeqs=False,minsptree=False,clst=False,unfold=False)
-plot_umat.main(somfile,outname='umat_labels',delimiter='_',hideSeqs=False,minsptree=False,clst=False,unfold=False)
-plot_umat.main(somfile,outname='umat_minsptree',delimiter='_',hideSeqs=False,minsptree=True,clst=False,unfold=False)
-plot_umat.main(somfile,outname='umat_unfold',delimiter='_',hideSeqs=False,minsptree=False,clst=False,unfold=True)
-plot_umat.main(somfile,outname='umat_minsptree_unfold',delimiter='_',hideSeqs=False,minsptree=True,clst=False,unfold=True)
-plot_umat.main(somfile,outname='umat_clst',delimiter='_',hideSeqs=False,minsptree=False,clst=True,unfold=False)
-plot_umat.main(somfile,outname='umat_minsptree_clst',delimiter='_',hideSeqs=False,minsptree=True,clst=True,unfold=False)
-plot_umat.main(somfile,outname='umat_unfold_clst',delimiter='_',hideSeqs=False,minsptree=False,clst=True,unfold=True)
-plot_umat.main(somfile,outname='umat_minsptree_unfold_clst',delimiter='_',hideSeqs=False,minsptree=True,clst=True,unfold=True)
+plot_umat.main(somfile,outname='testout/umat',delimiter=None,hideSeqs=True,minsptree=False,clst=False,unfold=False)
+plot_umat.main(somfile,outname='testout/umat_remap',delimiter=None,hideSeqs=False,minsptree=False,clst=False,unfold=False)
+plot_umat.main(somfile,outname='testout/umat_labels',delimiter='_',hideSeqs=False,minsptree=False,clst=False,unfold=False)
+plot_umat.main(somfile,outname='testout/umat_minsptree',delimiter='_',hideSeqs=False,minsptree=True,clst=False,unfold=False)
+plot_umat.main(somfile,outname='testout/umat_unfold',delimiter='_',hideSeqs=False,minsptree=False,clst=False,unfold=True)
+plot_umat.main(somfile,outname='testout/umat_minsptree_unfold',delimiter='_',hideSeqs=False,minsptree=True,clst=False,unfold=True)
+plot_umat.main(somfile,outname='testout/umat_clst',delimiter='_',hideSeqs=False,minsptree=False,clst=True,unfold=False)
+plot_umat.main(somfile,outname='testout/umat_minsptree_clst',delimiter='_',hideSeqs=False,minsptree=True,clst=True,unfold=False)
+plot_umat.main(somfile,outname='testout/umat_unfold_clst',delimiter='_',hideSeqs=False,minsptree=False,clst=True,unfold=True)
+plot_umat.main(somfile,outname='testout/umat_minsptree_unfold_clst',delimiter='_',hideSeqs=False,minsptree=True,clst=True,unfold=True)
 timer.stop()

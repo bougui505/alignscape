@@ -36,4 +36,5 @@
 #                                                                           #
 #############################################################################
 
-./som_seq.py -a =(head -60 data/T6SS/TssB/TssB.aln) -b 10 --nepochs 1 --alpha 0.5 -o som
+mkdir testout
+./som_seq.py -a =(head -60 data/T6SS/TssB/TssB.aln) -b 10 --nepochs 1 --alpha 0.5 -o testout/som
