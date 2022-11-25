@@ -40,7 +40,8 @@ import functools
 import os
 import dill as pickle  # For tricky pickles
 # import pickle
-from Bio.SubsMat import MatrixInfo
+# from Bio.SubsMat import MatrixInfo
+from Bio.Align import substitution_matrices
 import numpy as np
 import torch
 import seqdataloader as seqdataloader
@@ -81,12 +82,20 @@ def read_fasta(fastafilename, names=None):
 
 
 def get_blosum62():
+   # b62 = np.zeros((23, 23))
+   # for k in MatrixInfo.blosum62:
+   #     i0 = aalist.index(k[0])
+   #     i1 = aalist.index(k[1])
+   #     b62[i0, i1] = MatrixInfo.blosum62[k]
+   #     b62[i1, i0] = MatrixInfo.blosum62[k]
+
     b62 = np.zeros((23, 23))
-    for k in MatrixInfo.blosum62:
-        i0 = aalist.index(k[0])
-        i1 = aalist.index(k[1])
-        b62[i0, i1] = MatrixInfo.blosum62[k]
-        b62[i1, i0] = MatrixInfo.blosum62[k]
+    for pair, value in substitution_matrices.load('BLOSUM62').items():
+        if '*' in pair: continue
+        i0 = aalist.index(pair[0])
+        i1 = aalist.index(pair[1])
+        b62[i0, i1] = value
+        b62[i1, i0] = value
     return b62
 
 

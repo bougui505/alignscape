@@ -4,6 +4,7 @@ from itertools import count
 import pickle
 import functools
 import som_seq
+from som_seq import seqmetric
 import jax_imports
 import minsptree as mspt
 import quicksom.som
