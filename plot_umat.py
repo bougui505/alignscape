@@ -75,7 +75,7 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False, c
         else:
             auxumat = umat_clst
         f = open('%s.txt'%outname,'w')
-        f.write('#bmu1 #bmu2 #title #cluster\n')
+        f.write('#bmu_r #bmu_c #title #cluster\n')
         for i,bmu in enumerate(auxbmus):
             bmu_r = auxbmus[i][0]
             bmu_c = auxbmus[i][1]
