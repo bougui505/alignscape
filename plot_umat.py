@@ -1,7 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import count
-import pickle
+import dill as pickle
+#import pickle
 import functools
 import som_seq
 from som_seq import seqmetric
@@ -17,9 +18,12 @@ timer = Timer(autoreset=True)
 
 def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False, clst=False, unfold=False, plot_ext='png'):
 
+
     #Load the data and parse it
     with open(somfile, 'rb') as somfileaux:
         som = pickle.load(somfileaux)
+
+
     b62 = som_seq.get_blosum62()
     som.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
     bmus = list(zip(*som.bmus.T))
@@ -32,17 +36,31 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False, c
     else:
         labels = []
 
-    #Compute the local Adjacency Matrix between the qbmus
     if minsptree or unfold:
-        timer.start('computing localadj between queries')
-        localadj, localadj_paths = mspt.get_localadjmat(som.umat,som.adj,bmus,verbose=True)
-        timer.stop()
+        #Compute the local Adjacency Matrix between the qbmus
+        if not hasattr(som, 'localadj'):
+            timer.start('computing localadj between queries')
+            localadj, localadj_paths = mspt.get_localadjmat(som.umat,som.adj,bmus,verbose=True)
+            timer.stop()
+            som.localadj = localadj
+            som.localadj_paths = localadj_paths
+        else:
+            localajd = som.localadj
+            localadj_paths = som.localadj_paths
         #Compute the minimal spanning tree
-        timer.start('compute the msptree')
-        msptree, msptree_pairs, msptree_paths = mspt.get_minsptree(localadj,localadj_paths)
+        if not hasattr(som,'msptree'):
+            timer.start('compute the msptree')
+            msptree, msptree_pairs, msptree_paths = mspt.get_minsptree(localadj,localadj_paths)
+            timer.stop()
+            som.msptree = msptree
+            som.msptree_pairs = msptree_pairs
+            som.msptree_paths = msptree_paths
+        else:
+            msptree = som.msptree
+            msptree_pairs = som.msptree_pairs
+            msptree_paths = som.msptree_paths
         if minsptree:
             mspt.write_mstree_gml(msptree,bmus,titles,som.umat.shape,outname='%s'%outname)
-        timer.stop()
 
     if unfold:
         #Use the minimial spanning three between queries bmus to unfold the umat
@@ -83,6 +101,10 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False, c
         f.close()
         timer.stop()
 
+    #Saving the SOM
+    pickle.dump(som,open(somfile,'wb'))
+
+    #Plotting
     _plot_umat(auxumat,auxbmus,labels,hideSeqs)
 
     if minsptree and not unfold:
