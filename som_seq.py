@@ -372,7 +372,7 @@ def main(ali=None,
         plt.savefig(f'{baseoutname}_umat.{plot_ext}')
     print('Saving SOM map')
     som.save_pickle(f'{baseoutname}.pickle')
-
+    return som
 
 if __name__ == '__main__':
     import argparse
