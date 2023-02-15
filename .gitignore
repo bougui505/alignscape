@@ -3,3 +3,6 @@ soms/
 __pycache__
 batch*
 results/
+data/T2SS/*
+data/PEFASES/*
+testout/*

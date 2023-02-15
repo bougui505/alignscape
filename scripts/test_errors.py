@@ -11,12 +11,12 @@ epochs = np.concatenate((epochs2,epochs5),axis=None)
 repetitions = 10
 somside = 50
 alpha = 0.5
-batch_size = 10
-#ali = '../data/Human_kinome/human_kinome_noPLK5_test.aln'
-ali = '../data/Human_kinome/human_kinome_noPLK5.aln'
-
-for epoch in epochs:
-    f_out = open('/data/ifilella/test_errors_%d.csv'%epoch,'w')
+batch_size = 8
+#ali = '../data/Human_kinome/human_kinome_noPLK5.aln'
+#ali = '../data/Human_gpcr/gpcrs_human_gapyness09.aln'
+ali = '../data/T6SS/TssB/TssB_rmout_gapyness090.fasta'
+for epoch in epochs[15:]:
+    f_out = open('/data/ifilella/TssB_errors_%d.csv'%epoch,'w')
     f_out.write('epochs,QE,TE\n')
     for i in range(repetitions):
         print(f'Epoch {epoch}, repetition {i}')
