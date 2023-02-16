@@ -131,7 +131,7 @@ def _plot_msptree(msptree_pairs, msptree_paths,somsize,verbose=False):
             plt.plot(aux[1], aux[0],c='w',linewidth=0.8)
 
 
-def _plot_umat(umat, bmus, labels, hideSeqs):
+def _plot_umat(umat, bmus, labels, hideSeqs, dotsize = 25, legend=True, dic_colors=None):
     figure = plt.figure()
     ax = figure.add_subplot(111)
     cax = ax.matshow(umat)
@@ -153,6 +153,11 @@ def _plot_umat(umat, bmus, labels, hideSeqs):
                         mspt.highlight_cell(int(bmus[i][1]),int(bmus[i][0]), color="grey", linewidth=0.5)
             for unique_label in unique_labels:
                 if unique_label == 'unk': continue
+                if dic_colors:
+                    try:
+                        color = dic_colors[unique_label]
+                    except:
+                        raise ValueError('%s label is missing in dic_colors'%unique_label)
                 aux_X = []
                 aux_Y = []
                 for i,label in enumerate(labels):
@@ -160,8 +165,12 @@ def _plot_umat(umat, bmus, labels, hideSeqs):
                         aux_X.append(bmus[i][1])
                         aux_Y.append(bmus[i][0])
                     else: continue
-                ax.scatter(aux_X,aux_Y,label=unique_label,s=25)
-            ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
+                if dic_colors:
+                    ax.scatter(aux_X,aux_Y,label=unique_label,s=dotsize,color=color)
+                else:
+                    ax.scatter(aux_X,aux_Y,label=unique_label,s=dotsize)
+            if legend:
+                ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
                               fancybox=True, shadow=True, ncol=5)
 
 if __name__ == '__main__':
