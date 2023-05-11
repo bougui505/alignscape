@@ -6,6 +6,8 @@ import functools
 import numpy as np
 from collections import Counter
 import matplotlib.pyplot as plt
+from operator import itemgetter
+
 
 def get_max_occurance(li):
     count_keys = list(Counter(li).keys())
@@ -14,7 +16,7 @@ def get_max_occurance(li):
     idxs_m = [i for i, j in enumerate(count_values) if j == m]
     return [count_keys[idx] for idx in idxs_m]
 
-class KNeighbors(object):
+class KNeighborsBMU(object):
     """
     """
 
@@ -73,3 +75,38 @@ class KNeighbors(object):
             i+=1
         predict_type = get_max_occurance(kclosest_types)[0]
         return predict_type
+
+class KNeighborsB62(object):
+    """
+    """
+
+    def __init__(self,k):
+        """
+        """
+        self.k = k
+
+    def fit(self,dmatrix, train_titles):
+        self.dmatrix = dmatrix
+        self.train_titles = train_titles
+
+    def predict(self,title):
+        aux_dict = {}
+        for train_title in self.train_titles:
+            aux_dict[train_title]=self.dmatrix[title,train_title]
+        kclosest = sorted(aux_dict.items(), key = itemgetter(1))[:self.k]
+        kclosest_types = [t[0].split('_')[0] for t in kclosest]
+        predict_type = get_max_occurance(kclosest_types)[0]
+        return predict_type
+
+    def score(self,test_titles):
+        tosum = 0
+        print('----------------------------------------------')
+        for i,test_title in enumerate(test_titles):
+            test_type = test_title.split('_')[0]
+            predict_type = self.predict(test_title)
+            if test_type == predict_type: tosum +=1
+        try:
+            score = tosum / len(test_titles)
+        except:
+            score = 0
+        return score

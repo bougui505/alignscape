@@ -288,7 +288,7 @@ def from_mstree_to_graph(mstree,bmus,labels,somsize):
     mstree_nodes_labels = [';'.join(node_label).replace(">","") for node_label in mstree_nodes_labels]
     mapping = dict(zip(mstree_nodes,mstree_nodes_labels))
 
-    mstree_ntw = nx.from_scipy_sparse_matrix(mstree)
+    mstree_ntw = nx.from_scipy_sparse_array(mstree)
     mstree_ntw_isolates = list(nx.isolates(mstree_ntw))
     mstree_ntw.remove_nodes_from(mstree_ntw_isolates)
     nx.relabel_nodes(mstree_ntw,mapping,copy=False)
