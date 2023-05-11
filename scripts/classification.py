@@ -144,13 +144,14 @@ for i in range(40):
     print('%d ---'%(i+1))
 
     #Split classified data into training and testing
-    bmus_train_k, bmus_test_k, types_train_k, types_test_k = train_test_split(bmus_class_k,types_class_k,test_size=0.5)
-    bmus_train_g, bmus_test_g, types_train_g, types_test_g = train_test_split(bmus_class_g,types_class_g,test_size=0.5)
-
+    bmus_train_k, bmus_test_k, types_train_k, types_test_k = train_test_split(bmus_class_k,types_class_k,test_size=0.25)
+    bmus_train_g, bmus_test_g, types_train_g, types_test_g = train_test_split(bmus_class_g,types_class_g,test_size=0.25)
+    print(f'%d BMUs in train and %d BMUs in test'%(len(bmus_train_k),len(bmus_test_k)))
     idx_train_k = np.hstack([np.where(bmus_kinome == bmu)[0] for bmu in bmus_train_k])
     titles_train_k = [titles_kinome[idx] for idx in idx_train_k]
     idx_test_k = np.hstack([np.where(bmus_kinome == bmu)[0] for bmu in bmus_test_k])
     titles_test_k = [titles_kinome[idx] for idx in idx_test_k]
+    print(f'%d seqs in train and %d seqs in test'%(len(titles_train_k),len(titles_test_k)))
     idx_train_g = np.hstack([np.where(bmus_kinome == bmu)[0] for bmu in bmus_train_g])
     titles_train_g = [titles_kinome[idx] for idx in idx_train_g]
     idx_test_g = np.hstack([np.where(bmus_kinome == bmu)[0] for bmu in bmus_test_g])

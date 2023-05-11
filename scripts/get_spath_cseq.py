@@ -1,6 +1,6 @@
 import pickle
 import sys
-sys.path.insert(2, '/work/ifilella/quicksom_seq')
+sys.path.insert(1,'../')
 import som_seq
 import functools
 import jax_imports
@@ -13,7 +13,7 @@ from adjustText import adjust_text
 aalist = list('ABCDEFGHIKLMNPQRSTVWXYZ|-')
 
 def main(cell1,cell2,somfile,bmusfile,threshold,outname,allinp,verbose = True):
-    
+
     #Load and safecheck the data
     if len(cell1) != 2:
         raise ValueError('c1 must provide a two elements list with the row and column of the first cell')
@@ -35,22 +35,23 @@ def main(cell1,cell2,somfile,bmusfile,threshold,outname,allinp,verbose = True):
     for k,bmu in enumerate(allbmus):
         bmus.append((int(bmu[0]),int(bmu[1])))
         labels.append("_".join(bmu[-1].split("_")[1:]))
-        subtypes.append(bmu[-1].replace(">","").split("_")[0]) 
-    
+        subtypes.append(bmu[-1].replace(">","").split("_")[0])
+
     #Get the shortest path between cell1 and cell2
     n1, n2 = som.umat.shape
     indx_cell1 = np.ravel_multi_index(cell1,(n1,n2))
     indx_cell2 = np.ravel_multi_index(cell2,(n1,n2))
-   
+
     if verbose:
         print('Computing shortest path between: ' + str(cell1) + ' ' + str(cell2))
     path = msptree.get_shortestPath(som.adj,indx_cell1, indx_cell2)
-    pathDist = msptree.get_pathDist(som.adj,path)
+    dok = som.adj.todok()
+    pathDist = msptree.get_pathDist(dok,path)
     if verbose:
         print(path)
         print(pathDist)
     unrpath = np.asarray(np.unravel_index(path, (n1, n2)))
-    unrpath = np.vstack((unrpath[0], unrpath[1])).T  
+    unrpath = np.vstack((unrpath[0], unrpath[1])).T
     if verbose:
         print(unrpath)
 
@@ -109,11 +110,12 @@ def main(cell1,cell2,somfile,bmusfile,threshold,outname,allinp,verbose = True):
             if subtypes[indx] == 'NEK':
                 plt.scatter(step[1], step[0],c='magenta',s=15)
             if subtypes[indx] == 'TYR':
-                plt.scatter(step[1], step[0],c='blue',s=15)   
+                plt.scatter(step[1], step[0],c='blue',s=15)
             aux = subtypes[indx]+'_' + labels[indx]
             texts.append(plt.text(step[1], step[0],aux,fontsize=7,c='gainsboro'))
-    adjust_text(texts,only_move={'points':'y', 'texts':'y'},arrowprops=dict(arrowstyle="->, head_width=0.2", color='gainsboro', lw=0.5)) 
-    
+    if len(texts) > 0:
+        adjust_text(texts,only_move={'points':'y', 'texts':'y'},arrowprops=dict(arrowstyle="->, head_width=0.2", color='gainsboro', lw=0.5))
+
     if allinp:
         #Hihlight the rest of initial sequences
         for k,bmu in enumerate(bmus):
@@ -139,12 +141,12 @@ def main(cell1,cell2,somfile,bmusfile,threshold,outname,allinp,verbose = True):
                 plt.scatter(bmu[1], bmu[0],c='blue',s=2)
 
 
-    plt.savefig(outname+'.pdf',dpi=500) 
+    plt.savefig(outname+'.pdf',dpi=500)
     plt.show()
 
 if __name__ == '__main__':
     import argparse
-    
+
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('--c1', nargs='+', help = 'First umat cell coordinates (row-col format)', required = True, type=int)
     parser.add_argument('--c2', nargs='+', help = 'First umat cell coordinates (row-col format)', required = True, type=int)
