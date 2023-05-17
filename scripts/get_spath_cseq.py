@@ -12,7 +12,7 @@ from adjustText import adjust_text
 
 aalist = list('ABCDEFGHIKLMNPQRSTVWXYZ|-')
 
-def main(cell1,cell2,somfile,bmusfile,threshold,outname,allinp,verbose = True):
+def main(cell1,cell2,somfile,threshold,outname,allinp,verbose = True):
 
     #Load and safecheck the data
     if len(cell1) != 2:
@@ -25,17 +25,13 @@ def main(cell1,cell2,somfile,bmusfile,threshold,outname,allinp,verbose = True):
             som = pickle.load(somfileaux)
     b62 = som_seq.get_blosum62()
     som.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
-    allbmus = np.genfromtxt(bmusfile, dtype=str, skip_header=1)
     threshold = float(threshold)
 
     #Parse the data
-    labels = list()
-    bmus = list()
     subtypes = list()
-    for k,bmu in enumerate(allbmus):
-        bmus.append((int(bmu[0]),int(bmu[1])))
-        labels.append("_".join(bmu[-1].split("_")[1:]))
-        subtypes.append(bmu[-1].replace(">","").split("_")[0])
+    bmus = [tuple(bmu) for bmu in som.bmus]
+    labels = ['_'.join(label.split("_")[1:]) for label in som.labels]
+    subtypes = [label.replace(">","").split("_")[0] for label in som.labels]
 
     #Get the shortest path between cell1 and cell2
     n1, n2 = som.umat.shape
@@ -151,10 +147,9 @@ if __name__ == '__main__':
     parser.add_argument('--c1', nargs='+', help = 'First umat cell coordinates (row-col format)', required = True, type=int)
     parser.add_argument('--c2', nargs='+', help = 'First umat cell coordinates (row-col format)', required = True, type=int)
     parser.add_argument('-s', '--som', help = 'Som file', required = True)
-    parser.add_argument('-b', '--bmus', help = 'BMUS of all sequences inputted for the Som', required = True)
     parser.add_argument('-o', '--outname', help = 'Fasta outname', required = True)
     parser.add_argument('--freq_thres', help = 'Frequency threshold to assign the most frequent residue for each site', default = 0.5)
     parser.add_argument('--allinp',help='plot all input data',default = False, action = 'store_true')
     args = parser.parse_args()
 
-    main(cell1=args.c1, cell2=args.c2, somfile=args.som, bmusfile=args.bmus, threshold=args.freq_thres,outname=args.outname,allinp=args.allinp)
+    main(cell1=args.c1, cell2=args.c2, somfile=args.som, threshold=args.freq_thres,outname=args.outname,allinp=args.allinp)
