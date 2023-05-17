@@ -5,14 +5,17 @@ import som_seq
 import functools
 import jax_imports
 import numpy as np
-import minsptree as msptree
 import seqdataloader as seqdataloader
 import matplotlib.pyplot as plt
 from adjustText import adjust_text
+import minsptree as mspt
+from Timer import Timer
 
 aalist = list('ABCDEFGHIKLMNPQRSTVWXYZ|-')
+timer = Timer(autoreset=True)
 
-def main(cell1,cell2,somfile,threshold,outname,allinp,verbose = True):
+
+def main(cell1,cell2,somfile,threshold,outname,allinp,unfold,verbose = True):
 
     #Load and safecheck the data
     if len(cell1) != 2:
@@ -40,9 +43,9 @@ def main(cell1,cell2,somfile,threshold,outname,allinp,verbose = True):
 
     if verbose:
         print('Computing shortest path between: ' + str(cell1) + ' ' + str(cell2))
-    path = msptree.get_shortestPath(som.adj,indx_cell1, indx_cell2)
+    path = mspt.get_shortestPath(som.adj,indx_cell1, indx_cell2)
     dok = som.adj.todok()
-    pathDist = msptree.get_pathDist(dok,path)
+    pathDist = mspt.get_pathDist(dok,path)
     if verbose:
         print(path)
         print(pathDist)
@@ -70,23 +73,59 @@ def main(cell1,cell2,somfile,threshold,outname,allinp,verbose = True):
         fout.write(cseq+"\n")
     fout.close()
 
+    if unfold:
+        if not hasattr(som, 'localadj'):
+            timer.start('computing localadj between queries')
+            localadj, localadj_paths = mspt.get_localadjmat(som.umat,som.adj,bmus,verbose=True)
+            timer.stop()
+            som.localadj = localadj
+            som.localadj_paths = localadj_paths
+        else:
+            localajd = som.localadj
+            localadj_paths = som.localadj_paths
+        if not hasattr(som,'msptree'):
+            timer.start('compute the msptree')
+            msptree, msptree_pairs, msptree_paths = mspt.get_minsptree(localadj,localadj_paths)
+            timer.stop()
+            som.msptree = msptree
+            som.msptree_pairs = msptree_pairs
+            som.msptree_paths = msptree_paths
+        else:
+            msptree = som.msptree
+            msptree_pairs = som.msptree_pairs
+            msptree_paths = som.msptree_paths
+        timer.start('compute the umap unfolding')
+        uumat,mapping,reversed_mapping = mspt.get_unfold_umat(som.umat, som.adj, bmus, msptree)
+        timer.stop()
+        som.uumat = uumat
+        som.mapping = mapping
+        som.reversed_mapping = reversed_mapping
+        auxumat = uumat
+        unfbmus = [mapping[bmu] for bmu in bmus]
+        auxbmus = unfbmus
+        auxpath = np.asarray([np.asarray(mapping[tuple(path)]) for path in unrpath])
+    else:
+        auxbmus = bmus
+        auxumat = som.umat
+        auxpath = unrpath
+
     #Print the shortest path between cell1 and cell2
-    plt.matshow(som.umat)
+    plt.matshow(auxumat)
     plt.colorbar()
-    for j,step in enumerate(unrpath):
+    for j,step in enumerate(auxpath):
         if j == 0: continue
         #Check to avoid borders printting horizontal or vertical lines
-        if (unrpath[j-1][0] == 0 and unrpath[j][0] == n1-1) or (unrpath[j-1][0] == n1-1 and unrpath[j][0] == 0) or (unrpath[j-1][1] == 0 and unrpath[j][1] == n2-1) or (unrpath[j-1][1] == n2-1 and unrpath[j][1] == 0): continue
-        aux = np.stack((unrpath[j-1],unrpath[j])).T
+        if (auxpath[j-1][0] == 0 and auxpath[j][0] == n1-1) or (auxpath[j-1][0] == n1-1 and auxpath[j][0] == 0) or (auxpath[j-1][1] == 0 and auxpath[j][1] == n2-1) or (auxpath[j-1][1] == n2-1 and auxpath[j][1] == 0): continue
+        aux = np.stack((auxpath[j-1],auxpath[j])).T
         plt.plot(aux[1], aux[0],c='w',linewidth=1)
 
     #Highlight the initial data if the shortest path pass through one of them
 
     texts = []
-    for step in unrpath:
+    for step in auxpath:
         step = tuple(step)
-        if step in bmus:
-            indx = bmus.index(step)
+        if step in auxbmus:
+            indx = auxbmus.index(step)
             if subtypes[indx] == 'CMGC':
                 plt.scatter(step[1], step[0],c='black',s=15)
             if subtypes[indx] == 'CAMK':
@@ -114,7 +153,7 @@ def main(cell1,cell2,somfile,threshold,outname,allinp,verbose = True):
 
     if allinp:
         #Hihlight the rest of initial sequences
-        for k,bmu in enumerate(bmus):
+        for k,bmu in enumerate(auxbmus):
             if subtypes[k] == 'CMGC':
                 plt.scatter(bmu[1], bmu[0],c='black',s=2)
             if subtypes[k] == 'CAMK':
@@ -150,6 +189,7 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--outname', help = 'Fasta outname', required = True)
     parser.add_argument('--freq_thres', help = 'Frequency threshold to assign the most frequent residue for each site', default = 0.5)
     parser.add_argument('--allinp',help='plot all input data',default = False, action = 'store_true')
+    parser.add_argument('--unfold',help='Unfold the Umat', default = False,action = 'store_true')
     args = parser.parse_args()
 
-    main(cell1=args.c1, cell2=args.c2, somfile=args.som, threshold=args.freq_thres,outname=args.outname,allinp=args.allinp)
+    main(cell1=args.c1, cell2=args.c2, somfile=args.som, threshold=args.freq_thres,outname=args.outname,allinp=args.allinp,unfold=args.unfold)
