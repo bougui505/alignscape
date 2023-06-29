@@ -52,7 +52,8 @@ class KNeighborsBMU(object):
         dist_row = self.dmatrix[idx,:]
         #Set to inf the distances of unclassified and the ones from idxs_toinf (if not None)
         for _idx in self.unclassified_idxs:
-            dist_row[_idx] = np.inf
+            if _idx in self.dic_types_train.keys(): pass
+            else: dist_row[_idx] = np.inf
         if len(idxs_toinf) > 0:
             for _idx in idxs_toinf:
                 dist_row[_idx] = np.inf
