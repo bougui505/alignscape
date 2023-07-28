@@ -2,17 +2,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 from itertools import count
 import dill as pickle
-#import pickle
 import functools
-import som_seq
-from som_seq import seqmetric
-import jax_imports
-import minsptree as mspt
-import quicksom.som
-import quicksom.somax
-import quicksom.utils
-from Timer import Timer
 import scipy.sparse.csgraph as csgraph
+from som_seq import seqmetric
+from som_seq import get_blosum62
+from quicksom_seq.jax import jax_imports
+from quicksom_seq.quicksom import somax
+from quicksom_seq.quicksom import som
+from quicksom_seq.utils import minsptree
+from quicksom_seq.utils.Timer import Timer
 
 timer = Timer(autoreset=True)
 
@@ -24,7 +22,7 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False, c
         som = pickle.load(somfileaux)
 
 
-    b62 = som_seq.get_blosum62()
+    b62 = get_blosum62()
     som.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
     bmus = list(zip(*som.bmus.T))
     titles = som.labels
@@ -40,7 +38,7 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False, c
         #Compute the local Adjacency Matrix between the qbmus
         if not hasattr(som, 'localadj'):
             timer.start('computing localadj between queries')
-            localadj, localadj_paths = mspt.get_localadjmat(som.umat,som.adj,bmus,verbose=True)
+            localadj, localadj_paths = minsptree.get_localadjmat(som.umat,som.adj,bmus,verbose=True)
             timer.stop()
             som.localadj = localadj
             som.localadj_paths = localadj_paths
@@ -50,7 +48,7 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False, c
         #Compute the minimal spanning tree
         if not hasattr(som,'msptree'):
             timer.start('compute the msptree')
-            msptree, msptree_pairs, msptree_paths = mspt.get_minsptree(localadj,localadj_paths)
+            msptree, msptree_pairs, msptree_paths = minsptree.get_minsptree(localadj,localadj_paths)
             timer.stop()
             som.msptree = msptree
             som.msptree_pairs = msptree_pairs
@@ -60,12 +58,12 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False, c
             msptree_pairs = som.msptree_pairs
             msptree_paths = som.msptree_paths
         if minsptree:
-            mspt.write_mstree_gml(msptree,bmus,titles,som.umat.shape,outname='%s'%outname)
+            minsptree.write_mstree_gml(msptree,bmus,titles,som.umat.shape,outname='%s'%outname)
 
     if unfold:
         #Use the minimial spanning three between queries bmus to unfold the umat
         timer.start('compute the umap unfolding')
-        uumat,mapping,reversed_mapping = mspt.get_unfold_umat(som.umat, som.adj, bmus, msptree)
+        uumat,mapping,reversed_mapping = minsptree.get_unfold_umat(som.umat, som.adj, bmus, msptree)
         timer.stop()
         som.uumat = uumat
         som.mapping = mapping
@@ -75,7 +73,7 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False, c
         auxbmus = unfbmus
         if minsptree:
             timer.start('get the minsptree paths in the unfold umat')
-            msptree_pairs, msptree_paths = mspt.get_unfold_msptree(msptree_pairs, msptree_paths, som.umat.shape, som.uumat.shape, mapping)
+            msptree_pairs, msptree_paths = minsptree.get_unfold_msptree(msptree_pairs, msptree_paths, som.umat.shape, som.uumat.shape, mapping)
             timer.stop()
         timer.stop()
     else:
@@ -84,7 +82,7 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False, c
 
     if clst:
         timer.start('clusterizing the umat')
-        umat_clst = mspt.get_clusterized_umat(som.umat,som.adj,som.umat.shape)
+        umat_clst = minsptree.get_clusterized_umat(som.umat,som.adj,som.umat.shape)
         if unfold:
             for unf_bmu in reversed_mapping.keys():
                 fold_bmu = reversed_mapping[unf_bmu]
@@ -140,7 +138,7 @@ def _plot_umat(umat, bmus, labels, hideSeqs, dotsize = 25, legend=True, dic_colo
     if not hideSeqs:
         if len(labels) == 0:
             for bmu in bmus:
-                mspt.highlight_cell(int(bmu[1]),int(bmu[0]), color="grey", linewidth=0.5)
+                minsptree.highlight_cell(int(bmu[1]),int(bmu[0]), color="grey", linewidth=0.5)
         else:
             box = ax.get_position()
             ax.set_position([box.x0, box.y0 + box.height * 0.1,
@@ -150,7 +148,7 @@ def _plot_umat(umat, bmus, labels, hideSeqs, dotsize = 25, legend=True, dic_colo
             if 'unk' in unique_labels:
                 for i,label in enumerate(labels):
                     if label == 'unk':
-                        mspt.highlight_cell(int(bmus[i][1]),int(bmus[i][0]), color="grey", linewidth=0.5)
+                        minsptree.highlight_cell(int(bmus[i][1]),int(bmus[i][0]), color="grey", linewidth=0.5)
             for unique_label in unique_labels:
                 if unique_label == 'unk': continue
                 if dic_colors:

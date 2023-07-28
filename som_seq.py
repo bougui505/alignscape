@@ -38,13 +38,11 @@
 
 import functools
 import os
-import dill as pickle  # For tricky pickles
-# import pickle
-# from Bio.SubsMat import MatrixInfo
+import dill as pickle
 from Bio.Align import substitution_matrices
 import numpy as np
 import torch
-import seqdataloader as seqdataloader
+from quicksom_seq.utils import seqdataloader
 
 aalist = list('ABCDEFGHIKLMNPQRSTVWXYZ|-')
 
@@ -82,13 +80,6 @@ def read_fasta(fastafilename, names=None):
 
 
 def get_blosum62():
-   # b62 = np.zeros((23, 23))
-   # for k in MatrixInfo.blosum62:
-   #     i0 = aalist.index(k[0])
-   #     i1 = aalist.index(k[1])
-   #     b62[i0, i1] = MatrixInfo.blosum62[k]
-   #     b62[i1, i0] = MatrixInfo.blosum62[k]
-
     b62 = np.zeros((23, 23))
     for pair, value in substitution_matrices.load('BLOSUM62').items():
         if '*' in pair: continue
@@ -270,10 +261,10 @@ def main(ali=None,
 
     if use_jax:
         import jax
-        import jax_imports
-        import quicksom.somax
+        from quicksom_seq.jax import jax_imports
+        from quicksom_seq.quicksom import somax
     else:
-        import quicksom.som
+        from quicksom_seq.quicksom import som
 
     # Get the data ready
     dataset = seqdataloader.SeqDataset(ali)
@@ -309,7 +300,7 @@ def main(ali=None,
         som = somobj
     else:
         if use_jax:
-            som = quicksom.somax.SOM(somside,
+            som = somax.SOM(somside,
                                      somside,
                                      device=device,
                                      n_epoch=nepochs,
@@ -320,7 +311,7 @@ def main(ali=None,
                                      metric=functools.partial(jax_imports.seqmetric_jax, b62=b62),
                                      sched=scheduler)
         else:
-            som = quicksom.som.SOM(somside,
+            som = som.SOM(somside,
                                    somside,
                                    n_epoch=nepochs,
                                    dim=dim,
@@ -383,7 +374,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='')
     # parser.add_argument(name or flags...[, action][, nargs][, const][, default][, type][, choices][, required][, help][, metavar][, dest])
     parser.add_argument('-a', '--aln', help='Alignment file')
-    parser.add_argument('-b', '--batch', help='Batch size (default: 100)', default=100, type=int)
+    parser.add_argument('-b', '--batch', help='Batch size (default: 100)', default=10, type=int)
     parser.add_argument('--somside', help='Size of the side of the square SOM', default=50, type=int)
     parser.add_argument('--alpha', help='learning rate', default=None, type=float)
     parser.add_argument('--sigma', help='Learning radius for the SOM', default=None, type=float)

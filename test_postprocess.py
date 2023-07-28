@@ -5,21 +5,23 @@ import functools
 import som_seq
 from som_seq import seqmetric
 import pickle
-from Timer import Timer
+from quicksom_seq.utils.Timer import Timer
 import matplotlib.pyplot as plt
 import newick
 import numpy as np
 import networkx as nx
-import minsptree as mspt
+import quicksom_seq.utils.minsptree as mspt
 import plot_umat
 somfile = 'testout/som.pickle'
 timer = Timer(autoreset=True)
 
+timer.start('loading the som')
 with open(somfile, 'rb') as somfileaux:
     som = pickle.load(somfileaux)
 b62 = som_seq.get_blosum62()
 som.metric = functools.partial(som_seq.seqmetric, b62=b62)
 bmus = list(zip(*som.bmus[0:100].T))
+timer.stop()
 
 timer.start('computing localadj between queries')
 localadj, paths = mspt.get_localadjmat(som.umat,som.adj,bmus)
