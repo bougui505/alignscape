@@ -294,6 +294,7 @@ def main(ali=None,
                                      periodic=periodic,
                                      metric=functools.partial(jax_imports.seqmetric_jax, b62=b62),
                                      sched=scheduler)
+            somobj.jax = True
         else:
             somobj = som.SOM(somside,
                                    somside,
@@ -304,6 +305,7 @@ def main(ali=None,
                                    periodic=periodic,
                                    metric=functools.partial(seqmetric, b62=b62),
                                    sched=scheduler)
+            somobj.jax = False
     somobj.to_device(device)
 
     print('batch_size:', batch_size)

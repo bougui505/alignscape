@@ -22,7 +22,10 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,mst=False, clst=Fa
         somobj = pickle.load(somfileaux)
 
     b62 = get_blosum62()
-    somobj.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
+    if somobj.jax:
+        somobj.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
+    else:
+        somobj.metric = functools.partial(seqmetric, b62=b62)
     bmus = list(zip(*somobj.bmus.T))
     titles = somobj.labels
     titles = [title.replace(">","") for title in titles]
@@ -70,7 +73,7 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,mst=False, clst=Fa
         auxbmus = unfbmus
         if mst:
             timer.start('get the minsptree paths in the unfold umat')
-            mstree_pairs, mstree_paths = minsptree.get_unfold_mstree(mstree_pairs, mstree_paths, somobj.umat.shape, somobj.uumat.shape, mapping)
+            mstree_pairs, mstree_paths = minsptree.get_unfold_msptree(mstree_pairs, mstree_paths, somobj.umat.shape, somobj.uumat.shape, mapping)
             timer.stop()
         timer.stop()
     else:
@@ -97,7 +100,8 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,mst=False, clst=Fa
         timer.stop()
 
     #Saving the SOM
-    pickle.dump(somobj,open(somfile,'wb'))
+    #pickle.dump(somobj,open(somfile,'wb'))
+    somobj.save_pickle(somfile)
 
     #Plotting
     _plot_umat(auxumat,auxbmus,labels,hideSeqs)

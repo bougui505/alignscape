@@ -19,7 +19,10 @@ timer.start('loading the som')
 with open(somfile, 'rb') as somfileaux:
     somobj = pickle.load(somfileaux)
 b62 = som_seq.get_blosum62()
-somobj.metric = functools.partial(som_seq.seqmetric, b62=b62)
+if somobj.jax:
+    somobj.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
+else:
+    somobj.metric = functools.partial(seqmetric, b62=b62)
 bmus = list(zip(*somobj.bmus[0:100].T))
 timer.stop()
 
@@ -50,7 +53,6 @@ timer.stop()
 timer.start('Test plots')
 labels = []
 plot_umat.main(somfile,outname='testout/umat',delimiter=None,hideSeqs=True,mst=False,clst=False,unfold=False)
-exit()
 plot_umat.main(somfile,outname='testout/umat_remap',delimiter=None,hideSeqs=False,mst=False,clst=False,unfold=False)
 plot_umat.main(somfile,outname='testout/umat_labels',delimiter='_',hideSeqs=False,mst=False,clst=False,unfold=False)
 plot_umat.main(somfile,outname='testout/umat_minsptree',delimiter='_',hideSeqs=False,mst=True,clst=False,unfold=False)
