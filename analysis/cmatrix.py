@@ -66,7 +66,7 @@ class Cmatrix(object):
                     corrma[j][i] = r
                     print(r)
         self.cdf = pd.DataFrame(corrma,columns=self.labels,index=self.labels)
-        
+
 
     def get_random_dmatrix(self,df):
         values = df.values.flatten()
@@ -102,7 +102,7 @@ class Cmatrix(object):
 
         #Get common DFs
         ndf1,ndf2 = self.get_intersectedDFs(df1,df2)
-        
+
         #Get loweer diagonal (without diagonal values)
         vec1 = ndf1.mask(np.triu(np.ones(ndf1.shape)).astype(bool)).stack()
         vec2 = ndf2.mask(np.triu(np.ones(ndf2.shape)).astype(bool)).stack()
@@ -125,10 +125,10 @@ class Cmatrix(object):
                 indextolerance = np.concatenate(np.argwhere(difvec > self.tolerance))
                 vec1 = np.delete(vec1,indextolerance)
                 vec2 = np.delete(vec2,indextolerance)
-        
+
         nvec1 = vec1
         nvec2 = vec2
-        
+
         r = pearsonr(nvec1, nvec2)[0]
         if math.isnan(r):
             return 0
@@ -162,18 +162,10 @@ class Cmatrix(object):
 if __name__ == '__main__':
 
     labels = ['TssA','TssB','TssC','TssE','TssF','TssG','TssK','TssL','TssM','ClpV','VgrG','hcp','TssJ']
-    labels = ['C','D','E','F','G','H','I','J','K','L','M','O']
-    epochs = '200'
     dmatrices = list()
     for l in labels:
-        dmatrices.append("T2SS_dist/%s/%s_%se_dmatrix.p"%(l,l,epochs))
-        #dmatrices.append("T2SS_dist/%s/%s_2kmeans_%se_dmatrix.p"%(l,l,epochs))
-        #dmatrices.append("T6SS_dist2/%s/%s_%se_dmatrix.p"%(l,l,epochs))
-        #dmatrices.append("T6SS_dist2/%s/%s_2kmeans_%se_dmatrix.p"%(l,l,epochs))
+        dmatrices.append("results/dmatrix/%s/%s.phylo.p"%(l,l))
     print(dmatrices)
-    cmatrix = Cmatrix(dmatrices=dmatrices,labels=labels,outname='T2SS_dist/T2SS_%se_cmatrix'%epochs)
-    #cmatrix = Cmatrix(dmatrices=dmatrices,labels=labels,outname='T2SS_dist/T2SS_2kmeans_%se_cmatrix'%epochs)
-    #cmatrix = Cmatrix(dmatrices=dmatrices,labels=labels,outname='T6SS_dist2/T6SS_%se_cmatrix'%epochs)
-    #cmatrix = Cmatrix(dmatrices=dmatrices,labels=labels,outname='T6SS_dist2/T6SS_2kmeans_%se_cmatrix'%epochs)
+    cmatrix = Cmatrix(dmatrices=dmatrices,labels=labels,outname='T6SS_phylo_cmatrix')
     cmatrix.save()
     cmatrix.plot(vmin=0, vmax=1)

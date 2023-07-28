@@ -129,10 +129,13 @@ def _plot_msptree(msptree_pairs, msptree_paths,somsize,verbose=False):
             plt.plot(aux[1], aux[0],c='w',linewidth=0.8)
 
 
-def _plot_umat(umat, bmus, labels, hideSeqs, dotsize = 25, legend=True, dic_colors=None):
+def _plot_umat(umat, bmus, labels, hideSeqs, dotsize = 25, legend=True, dic_colors=None,cmap=None):
     figure = plt.figure()
     ax = figure.add_subplot(111)
-    cax = ax.matshow(umat)
+    if cmap:
+        cax = ax.matshow(umat,cmap=cmap)
+    else:
+        cax = ax.matshow(umat)
     figure.colorbar(cax)
 
     if not hideSeqs:

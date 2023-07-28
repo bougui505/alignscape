@@ -55,65 +55,54 @@ class Dmatrix(object):
     """
     Distance matrix
     """
-    def __init__(self, som=None, bmus=None, queries=None, output=None, load=None, subtypes=None, delimiter=None):
+    def __init__(self, somfile=None, queries=None, output=None, load=None,  delimiter=None):
         """
         """
         #Parse initial data
         self.out = output
-        if subtypes != None:
-            f = open(subtypes, 'r')
-            contents = f.read()
-            self.subtypes = ast.literal_eval(contents)
-            f.close()
-        else:
-            self.subtypes = subtypes
-        self.delimiter = delimiter       
- 
+        self.delimiter = delimiter
+
         #Load an already calculated Dmatrix object
-        if load is not None and all(x is None for x in [som,bmus,queries]):
+        if load is not None and all(x is None for x in [somfile,queries]):
             self.load = load
             self.df = pickle.load(open(load,'rb'))
             self.columns=self.df.columns
-        #Calculate a Dmatrix using a list of queries, a som and a list of bmus
-        elif all(x is not None for x in [som,bmus,queries])  and load is None:
-            with open(som, 'rb') as somfile:
-                self.som = pickle.load(somfile)
-            allbmus = np.genfromtxt(bmus, dtype=str, skip_header=1)
-            self.bmus = list()
-            allqueries = open(queries,'r')
+        #Calculate a Dmatrix using a list of queries and a somfile
+        elif all(x is not None for x in [somfile,queries])  and load is None:
+            with open(somfile, 'rb') as somaux:
+                self.som = pickle.load(somaux)
+            allbmus = self.som.bmus
+            allbmus = list(zip(*allbmus.T))
+            titles = self.som.labels
+            titles = [title.replace(">","") for title in titles]
+            f = open(queries,'r')
             self.queries = list()
-            for query in allqueries:
-                query = query.replace("\n","")
-                indx = np.where(np.char.find(allbmus[:,-1,], query)>=0)
-                if len(indx[0]) == 0:
+            self.bmus = list()
+            self.indxs = list()
+            for query in f:
+                query = query.replace("\n","").replace('>','')
+                #indx = np.where(np.char.find(allbmus[:,-1,], query)>=0)
+                indx = list(np.where(np.asarray(titles) == query)[0])
+                if len(indx) == 0:
+                    warnings.warn(f'The query: %s is not find in the som'%query)
                     continue
-                elif len(indx[0]) > 1:
-                    warnings.warn(f'The query: %s is find multiple times in the original ali'%query)
-                indx = indx[0][0]
+                elif len(indx) > 1:
+                    warnings.warn(f'The query: %s is find multiple times in the som'%query)
+                indx = indx[0]
                 self.bmus.append((int(allbmus[indx][0]),int(allbmus[indx][1])))
-                self.queries.append(query.replace(">",""))
-            self.umat = self.som.umat 
+                self.queries.append(query)
+                self.indxs.append(indx)
+            self.umat = self.som.umat
             self.dim = self.som.umat.shape[0]
             self.get_SOMDmatrix()
         else:
-            raise ValueError("To initialize a Dmatrix either use 'load' or 'som+bmus+queries'")        
+            raise ValueError("To initialize a Dmatrix either use 'load' or 'som+bmus+queries'")
 
 
     def get_SOMDmatrix(self):
         """
         """
-        #Obtain the row/column names for the Dmatrix
-        self.columns = list()
-        
-        if self.subtypes != None:       
-            for i,bmu in enumerate(self.bmus):
-                aux = self.queries[i].split(self.delimiter)[0]
-                self.columns.append(aux + " " + self.subtypes[aux])
-        else:
-            for i, bmu in enumerate(self.bmus):
-                column = self.queries[i].split(self.delimiter)[0]
-                self.columns.append(column)
-        
+        self.columns = self.queries
         #Calculate the distance matrix between all conected cells of the umat
         row_list=[]
         col_list=[]
@@ -132,7 +121,7 @@ class Dmatrix(object):
                     data_list.append(np.linalg.norm(c_uval-n_uval))
         adjmat=scipy.sparse.coo_matrix((data_list,(row_list,col_list)),shape=(self.dim*self.dim,self.dim*self.dim))
         c_distmat=scipy.sparse.csgraph.shortest_path(adjmat,directed=False)
-        
+
         #Get the dataframe where the queries are the columns/rows and the values the shortest path between its corresponding umat cells
         data = np.zeros((len(self.columns),len(self.columns)))
         for i,b1 in enumerate(self.bmus):
@@ -151,27 +140,28 @@ class Dmatrix(object):
             self.df.to_pickle('dmatrix.p')
 
     def plot(self,out=None):
-        #Color rows and columns by subtype
+        #Color rows and columns by subtype (delimiter)
         if len(self.columns) == 0:
             warnings.warn(f'There are no queries', UserWarning)
             return 0
         elif len(self.columns) == 1:
             cg = sns.heatmap(self.df,cmap="RdBu_r",linewidths = 0.30,yticklabels=True,xticklabels=True)
         elif len(self.columns) > 1:
-            if self.subtypes != None:
-                used_subtypes = list(set(self.subtypes.values()))
-                used_subtypes.sort()
-                subtypes_pal = sns.color_palette("Set1", n_colors=len(used_subtypes), desat=.99)
-                subtypes_lut = dict(list(zip(list(map(str, used_subtypes)), subtypes_pal)))
+            if self.delimiter != None:
+                labels = [query.split(self.delimiter)[0] for query in self.queries]
+                uniq_labels = list(set(labels))
+                uniq_labels.sort()
+                labels_pal = sns.color_palette("Set1", n_colors=len(uniq_labels), desat=.99)
+                labels_lut = dict(list(zip(list(map(str, uniq_labels)), labels_pal)))
                 colors = []
                 for i,name in enumerate(zip(self.columns,self.columns)):
-                    subtype=name[0].split(" ")[1]
-                    colors.append(subtypes_lut[subtype])
+                    subtype=name[0].split(self.delimiter)[0]
+                    colors.append(labels_lut[subtype])
                 dfcolors=pd.DataFrame({'subtype':colors},index=self.columns)
                 cg = sns.clustermap(self.df,cmap="RdBu_r",linewidths = 0.30,metric='cityblock',col_colors=dfcolors, row_colors=dfcolors,yticklabels=True,xticklabels=True)
                 #Add subtype legend
-                for label in used_subtypes:
-                    cg.ax_col_dendrogram.bar(0, 0, color=subtypes_lut[label],
+                for label in uniq_labels:
+                    cg.ax_col_dendrogram.bar(0, 0, color=labels_lut[label],
                                             label=label, linewidth=0)
                     cg.ax_col_dendrogram.legend(loc="best", bbox_to_anchor=(0, 1.2) ,ncol=1)
             else:
@@ -200,18 +190,14 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('-s', '--som', help = 'Som file', required = True)
-    parser.add_argument('-b', '--bmus', help = 'BMUS of all sequences inputted for the SOM', required = True)
     parser.add_argument('-q', '--queries', help = 'Sequences to be remmaped',required = True)
     parser.add_argument('-o', '--out', help = 'Output name for the dmatrix plot and pickle file',default='dmatrix')
-    parser.add_argument('--subt',help = 'Subtype dicctionary',default = None)
     parser.add_argument('--deli',help = 'Delimiter to trim the queries tittles',default = None, type = str)
     args = parser.parse_args()
 
-    dmatrix = Dmatrix(som=args.som,
-            bmus=args.bmus,
+    dmatrix = Dmatrix(somfile=args.som,
             queries=args.queries,
             output=args.out,
-            subtypes=args.subt,
             delimiter=args.deli)
     dmatrix.plot()
     dmatrix.save()
