@@ -42,7 +42,7 @@ import dill as pickle
 from Bio.Align import substitution_matrices
 import numpy as np
 import torch
-from quicksom_seq.utils import seqdataloader
+from utils import seqdataloader
 
 aalist = list('ABCDEFGHIKLMNPQRSTVWXYZ|-')
 
@@ -261,10 +261,10 @@ def main(ali=None,
 
     if use_jax:
         import jax
-        from quicksom_seq.jax import jax_imports
-        from quicksom_seq.quicksom import somax
+        from utils import jax_imports
+        from quicksom import somax
     else:
-        from quicksom_seq.quicksom import som
+        from quicksom import som
 
     # Get the data ready
     dataset = seqdataloader.SeqDataset(ali)

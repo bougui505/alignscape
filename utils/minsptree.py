@@ -4,7 +4,7 @@ import scipy.sparse
 import matplotlib.pyplot as plt
 import itertools
 import numpy as np
-from quicksom_seq.utils.Timer import Timer
+from utils.Timer import Timer
 from tqdm import tqdm
 import networkx as nx
 import quicksom.utils

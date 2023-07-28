@@ -6,11 +6,11 @@ import functools
 import scipy.sparse.csgraph as csgraph
 from som_seq import seqmetric
 from som_seq import get_blosum62
-from quicksom_seq.jax import jax_imports
-from quicksom_seq.quicksom import somax
-from quicksom_seq.quicksom import som
-from quicksom_seq.utils import minsptree
-from quicksom_seq.utils.Timer import Timer
+from utils import jax_imports
+from quicksom import somax
+from quicksom import som
+from utils import minsptree
+from utils.Timer import Timer
 
 timer = Timer(autoreset=True)
 

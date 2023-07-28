@@ -61,13 +61,13 @@ def seqmetric_jax(seqs1, seqs2, b62):
     seqs1 = seqs1.reshape((batch_size, seqlenght, nchar))
     seqs2 = seqs2.reshape((n2, seqlenght, nchar))
     scores = jax_score_matrix_vec(seqs1, seqs2, b62=b62)
-    
+
     rscores = jax_rscore_matrix_vec(seqs1, seqs2, b62=b62)
-    
+
     iscores1 = jax_iscore_matrix_vec(seqs1, b62=b62)
     iscores2 = jax_iscore_matrix_vec(seqs2, b62=b62)
     iscores = (iscores1.reshape(-1, 1) + iscores2)/2
-    
+
     #Compute the B62 based distance
     denominators = iscores-rscores
     nominators = scores-rscores
