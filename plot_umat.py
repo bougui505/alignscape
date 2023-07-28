@@ -14,7 +14,7 @@ from utils.Timer import Timer
 
 timer = Timer(autoreset=True)
 
-def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False, clst=False, unfold=False, plot_ext='png'):
+def main(somfile,outname='umat',delimiter=None,hideSeqs=False,mst=False, clst=False, unfold=False, plot_ext='png'):
 
 
     #Load the data and parse it
@@ -34,7 +34,7 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False, c
     else:
         labels = []
 
-    if minsptree or unfold:
+    if mst or unfold:
         #Compute the local Adjacency Matrix between the qbmus
         if not hasattr(som, 'localadj'):
             timer.start('computing localadj between queries')
@@ -46,24 +46,24 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False, c
             localajd = som.localadj
             localadj_paths = som.localadj_paths
         #Compute the minimal spanning tree
-        if not hasattr(som,'msptree'):
-            timer.start('compute the msptree')
-            msptree, msptree_pairs, msptree_paths = minsptree.get_minsptree(localadj,localadj_paths)
+        if not hasattr(som,'mstree'):
+            timer.start('compute the mstree')
+            mstree, mstree_pairs, mstree_paths = minsptree.get_minsptree(localadj,localadj_paths)
             timer.stop()
-            som.msptree = msptree
-            som.msptree_pairs = msptree_pairs
-            som.msptree_paths = msptree_paths
+            som.mstree = mstree
+            som.mstree_pairs = mstree_pairs
+            som.mstree_paths = mstree_paths
         else:
-            msptree = som.msptree
-            msptree_pairs = som.msptree_pairs
-            msptree_paths = som.msptree_paths
-        if minsptree:
-            minsptree.write_mstree_gml(msptree,bmus,titles,som.umat.shape,outname='%s'%outname)
+            mstree = som.mstree
+            mstree_pairs = som.mstree_pairs
+            mstree_paths = som.mstree_paths
+        if mst:
+            minsptree.write_mstree_gml(mstree,bmus,titles,som.umat.shape,outname='%s'%outname)
 
     if unfold:
         #Use the minimial spanning three between queries bmus to unfold the umat
         timer.start('compute the umap unfolding')
-        uumat,mapping,reversed_mapping = minsptree.get_unfold_umat(som.umat, som.adj, bmus, msptree)
+        uumat,mapping,reversed_mapping = minsptree.get_unfold_umat(som.umat, som.adj, bmus, mstree)
         timer.stop()
         som.uumat = uumat
         som.mapping = mapping
@@ -71,9 +71,9 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False, c
         auxumat = uumat
         unfbmus = [mapping[bmu] for bmu in bmus]
         auxbmus = unfbmus
-        if minsptree:
+        if mst:
             timer.start('get the minsptree paths in the unfold umat')
-            msptree_pairs, msptree_paths = minsptree.get_unfold_msptree(msptree_pairs, msptree_paths, som.umat.shape, som.uumat.shape, mapping)
+            mstree_pairs, mstree_paths = minsptree.get_unfold_mstree(mstree_pairs, mstree_paths, som.umat.shape, som.uumat.shape, mapping)
             timer.stop()
         timer.stop()
     else:
@@ -105,27 +105,27 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,minsptree=False, c
     #Plotting
     _plot_umat(auxumat,auxbmus,labels,hideSeqs)
 
-    if minsptree and not unfold:
-        _plot_msptree(msptree_pairs, msptree_paths, som.umat.shape)
-    elif minsptree and unfold:
-        _plot_msptree(msptree_pairs, msptree_paths, som.uumat.shape)
+    if mst and not unfold:
+        _plot_mstree(mstree_pairs, mstree_paths, som.umat.shape)
+    elif mst and unfold:
+        _plot_mstree(mstree_pairs, mstree_paths, som.uumat.shape)
 
     plt.savefig(outname+'.'+plot_ext)
     plt.show()
 
 
-def _plot_msptree(msptree_pairs, msptree_paths,somsize,verbose=False):
+def _plot_mstree(mstree_pairs, mstree_paths,somsize,verbose=False):
     n1, n2 = somsize
-    for i,msptree_pair in enumerate(msptree_pairs):
-        if verbose: print('Printing the shortest parth between %s and %s'%(msptree_pair[0],msptree_pair[1]))
-        msptree_path = msptree_paths[tuple(msptree_pair)]
-        _msptree_path = np.asarray(np.unravel_index(msptree_path, (n1, n2)))
-        _msptree_path = np.vstack((_msptree_path[0], _msptree_path[1])).T
-        for j,step in enumerate(_msptree_path):
+    for i,mstree_pair in enumerate(mstree_pairs):
+        if verbose: print('Printing the shortest parth between %s and %s'%(mstree_pair[0],mstree_pair[1]))
+        mstree_path = mstree_paths[tuple(mstree_pair)]
+        _mstree_path = np.asarray(np.unravel_index(mstree_path, (n1, n2)))
+        _mstree_path = np.vstack((_mstree_path[0], _mstree_path[1])).T
+        for j,step in enumerate(_mstree_path):
             if j == 0: continue
             #Check to avoid borders printting horizontal or vertical lines
-            if (_msptree_path[j-1][0] == 0 and _msptree_path[j][0] == n1-1) or (_msptree_path[j-1][0] == n1-1 and _msptree_path[j][0] == 0) or (_msptree_path[j-1][1] == 0 and _msptree_path[j][1] == n2-1) or (_msptree_path[j-1][1] == n2-1 and _msptree_path[j][1] == 0): continue
-            aux = np.stack((_msptree_path[j-1],_msptree_path[j])).T
+            if (_mstree_path[j-1][0] == 0 and _mstree_path[j][0] == n1-1) or (_mstree_path[j-1][0] == n1-1 and _mstree_path[j][0] == 0) or (_mstree_path[j-1][1] == 0 and _mstree_path[j][1] == n2-1) or (_mstree_path[j-1][1] == n2-1 and _mstree_path[j][1] == 0): continue
+            aux = np.stack((_mstree_path[j-1],_mstree_path[j])).T
             plt.plot(aux[1], aux[0],c='w',linewidth=0.8)
 
 
@@ -182,10 +182,10 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--outname', help = 'Output name for the umat',default='umat')
     parser.add_argument('-d', '--delimiter', help = 'If gruping infomation was contained in the sequences title, the delimiter split it and select the prefix',default=None)
     parser.add_argument('--hide_seqs',help = 'To hide input sequences',action='store_true')
-    parser.add_argument('--minsptree',help='Plot the minimal spanning tree between BMUs', default = False, action = 'store_true')
+    parser.add_argument('--mst',help='Plot the minimal spanning tree between BMUs', default = False, action = 'store_true')
     parser.add_argument('--clst',help='Clusterize the Umat', default = False, action = 'store_true')
     parser.add_argument('--unfold',help='Unfold the Umat', default = False, action = 'store_true')
     parser.add_argument('--plot_ext', help='Filetype extension for the UMAT plots (default: png)',default='png')
     args = parser.parse_args()
 
-    main(somfile=args.som,outname=args.outname,delimiter=args.delimiter,hideSeqs=args.hide_seqs,minsptree=args.minsptree, clst = args.clst, unfold=args.unfold, plot_ext=args.plot_ext)
+    main(somfile=args.som,outname=args.outname,delimiter=args.delimiter,hideSeqs=args.hide_seqs,mst=args.mst, clst = args.clst, unfold=args.unfold, plot_ext=args.plot_ext)
