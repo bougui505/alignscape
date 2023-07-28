@@ -231,33 +231,20 @@ def bmu_to_label(bmu,label, bmus):
     pass
 
 def main(ali=None,
-         inputvectors=None,
-         seqnames=None,
          batch_size=None,
          somside=None,
          nepochs=None,
          alpha=None,
          sigma=None,
          load=None,
-         somobj=None,
          periodic=True,
          scheduler=None,
          outname=None,
          doplot=True,
          use_jax=False,
          plot_ext='png'):
-    if inputvectors is None and ali is None:
-        raise ValueError('inputvectors or ali argument must be set. Both are None.')
-    if inputvectors is not None and ali is not None:
-        raise ValueError('inputvectors and ali arguments are given. Only one must be set.')
-    if inputvectors is not None and seqnames is None:
-        raise ValueError('When inputvectors argument is given, seqnames argument must be given too.')
-    if inputvectors is not None and seqnames is not None:
-        if len(inputvectors) != len(seqnames):
-            raise ValueError(
-                f'inputvectors (len: {len(inputvectors)}) and seqnames (len: {len(seqnames)}) have different length.')
-    if load is not None and somobj is not None:
-        raise ValueError('load and somobj cannot be both set')
+    if ali is None:
+        raise ValueError('ali argument must be set')
 
     if use_jax:
         import jax
@@ -294,13 +281,10 @@ def main(ali=None,
     if load is not None:
         print(f'Loading {load}')
         with open(load, 'rb') as somfile:
-            som = pickle.load(somfile)
-    elif somobj is not None:
-        print(f'Using given som object: {somobj}')
-        som = somobj
+            somobj = pickle.load(somfile)
     else:
         if use_jax:
-            som = somax.SOM(somside,
+            somobj = somax.SOM(somside,
                                      somside,
                                      device=device,
                                      n_epoch=nepochs,
@@ -311,7 +295,7 @@ def main(ali=None,
                                      metric=functools.partial(jax_imports.seqmetric_jax, b62=b62),
                                      sched=scheduler)
         else:
-            som = som.SOM(somside,
+            somobj = som.SOM(somside,
                                    somside,
                                    n_epoch=nepochs,
                                    dim=dim,
@@ -320,13 +304,13 @@ def main(ali=None,
                                    periodic=periodic,
                                    metric=functools.partial(seqmetric, b62=b62),
                                    sched=scheduler)
-    som.to_device(device)
+    somobj.to_device(device)
 
     print('batch_size:', batch_size)
-    print('sigma:', som.sigma)
-    if som.alpha is not None:
-        print('alpha:', som.alpha)
-    som.fit(dataset=dataloader,
+    print('sigma:', somobj.sigma)
+    if somobj.alpha is not None:
+        print('alpha:', somobj.alpha)
+    somobj.fit(dataset=dataloader,
             batch_size=batch_size,
             do_compute_all_dists=False,
             unfold=False,
@@ -335,19 +319,19 @@ def main(ali=None,
             alpha=alpha,
             logfile=f'{baseoutname}.log')
     print('Computing BMUS')
-    som.bmus, som.error, som.labels = som.predict(dataset=dataset,
+    somobj.bmus, somobj.error, somobj.labels = somobj.predict(dataset=dataset,
                                                   batch_size=batch_size,
                                                   return_density=False,
                                                   num_workers=1,
                                                   return_errors=False)
 
-    index = np.arange(len(som.bmus))
+    index = np.arange(len(somobj.bmus))
     out_arr = np.zeros(n_inp, dtype=[('bmu_r', int), ('bmu_c', int), ('error', float), ('index', int), ('label', 'U512')])
-    out_arr['bmu_r'] = som.bmus[:, 0]
-    out_arr['bmu_c'] = som.bmus[:, 1]
-    out_arr['error'] = som.error
+    out_arr['bmu_r'] = somobj.bmus[:, 0]
+    out_arr['bmu_c'] = somobj.bmus[:, 1]
+    out_arr['error'] = somobj.error
     out_arr['index'] = index
-    out_arr['label'] = som.labels
+    out_arr['label'] = somobj.labels
     out_fmt = ['%d', '%d', '%.4g', '%d', '%s']
     out_header = '#bmu_r #bmu_c #error #index #label'
     np.savetxt(f"{baseoutname}_bmus.txt", out_arr, fmt=out_fmt, header=out_header, comments='')
@@ -357,13 +341,13 @@ def main(ali=None,
         import matplotlib.pyplot as plt
         plt.switch_backend('agg')
         print('Saving umat')
-        np.save('%s_umat' % baseoutname, som.umat)
-        plt.matshow(som.umat)
+        np.save('%s_umat' % baseoutname, somobj.umat)
+        plt.matshow(somobj.umat)
         plt.colorbar()
         plt.savefig(f'{baseoutname}_umat.{plot_ext}')
     print('Saving SOM map')
-    som.save_pickle(f'{baseoutname}.pickle')
-    return som
+    somobj.save_pickle(f'{baseoutname}.pickle')
+    return somobj
 
 if __name__ == '__main__':
     import argparse

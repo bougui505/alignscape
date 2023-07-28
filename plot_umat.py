@@ -19,15 +19,12 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,mst=False, clst=Fa
 
     #Load the data and parse it
     with open(somfile, 'rb') as somfileaux:
-        som = pickle.load(somfileaux)
-
+        somobj = pickle.load(somfileaux)
 
     b62 = get_blosum62()
-    som.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
-    bmus = list(zip(*som.bmus.T))
-    titles = som.labels
-    #bmus = list(zip(*som.bmus[0:100].T))
-    #titles = som.labels[0:100]
+    somobj.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
+    bmus = list(zip(*somobj.bmus.T))
+    titles = somobj.labels
     titles = [title.replace(">","") for title in titles]
     if delimiter != None:
         labels = [title.split(delimiter)[0] for title in titles]
@@ -36,53 +33,53 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,mst=False, clst=Fa
 
     if mst or unfold:
         #Compute the local Adjacency Matrix between the qbmus
-        if not hasattr(som, 'localadj'):
+        if not hasattr(somobj, 'localadj'):
             timer.start('computing localadj between queries')
-            localadj, localadj_paths = minsptree.get_localadjmat(som.umat,som.adj,bmus,verbose=True)
+            localadj, localadj_paths = minsptree.get_localadjmat(somobj.umat,somobj.adj,bmus,verbose=True)
             timer.stop()
-            som.localadj = localadj
-            som.localadj_paths = localadj_paths
+            somobj.localadj = localadj
+            somobj.localadj_paths = localadj_paths
         else:
-            localajd = som.localadj
-            localadj_paths = som.localadj_paths
+            localajd = somobj.localadj
+            localadj_paths = somobj.localadj_paths
         #Compute the minimal spanning tree
-        if not hasattr(som,'mstree'):
+        if not hasattr(somobj,'mstree'):
             timer.start('compute the mstree')
             mstree, mstree_pairs, mstree_paths = minsptree.get_minsptree(localadj,localadj_paths)
             timer.stop()
-            som.mstree = mstree
-            som.mstree_pairs = mstree_pairs
-            som.mstree_paths = mstree_paths
+            somobj.mstree = mstree
+            somobj.mstree_pairs = mstree_pairs
+            somobj.mstree_paths = mstree_paths
         else:
-            mstree = som.mstree
-            mstree_pairs = som.mstree_pairs
-            mstree_paths = som.mstree_paths
+            mstree = somobj.mstree
+            mstree_pairs = somobj.mstree_pairs
+            mstree_paths = somobj.mstree_paths
         if mst:
-            minsptree.write_mstree_gml(mstree,bmus,titles,som.umat.shape,outname='%s'%outname)
+            minsptree.write_mstree_gml(mstree,bmus,titles,somobj.umat.shape,outname='%s'%outname)
 
     if unfold:
         #Use the minimial spanning three between queries bmus to unfold the umat
         timer.start('compute the umap unfolding')
-        uumat,mapping,reversed_mapping = minsptree.get_unfold_umat(som.umat, som.adj, bmus, mstree)
+        uumat,mapping,reversed_mapping = minsptree.get_unfold_umat(somobj.umat, somobj.adj, bmus, mstree)
         timer.stop()
-        som.uumat = uumat
-        som.mapping = mapping
-        som.reversed_mapping = reversed_mapping
+        somobj.uumat = uumat
+        somobj.mapping = mapping
+        somobj.reversed_mapping = reversed_mapping
         auxumat = uumat
         unfbmus = [mapping[bmu] for bmu in bmus]
         auxbmus = unfbmus
         if mst:
             timer.start('get the minsptree paths in the unfold umat')
-            mstree_pairs, mstree_paths = minsptree.get_unfold_mstree(mstree_pairs, mstree_paths, som.umat.shape, som.uumat.shape, mapping)
+            mstree_pairs, mstree_paths = minsptree.get_unfold_mstree(mstree_pairs, mstree_paths, somobj.umat.shape, somobj.uumat.shape, mapping)
             timer.stop()
         timer.stop()
     else:
         auxbmus = bmus
-        auxumat = som.umat
+        auxumat = somobj.umat
 
     if clst:
         timer.start('clusterizing the umat')
-        umat_clst = minsptree.get_clusterized_umat(som.umat,som.adj,som.umat.shape)
+        umat_clst = minsptree.get_clusterized_umat(somobj.umat,somobj.adj,somobj.umat.shape)
         if unfold:
             for unf_bmu in reversed_mapping.keys():
                 fold_bmu = reversed_mapping[unf_bmu]
@@ -100,15 +97,15 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,mst=False, clst=Fa
         timer.stop()
 
     #Saving the SOM
-    pickle.dump(som,open(somfile,'wb'))
+    pickle.dump(somobj,open(somfile,'wb'))
 
     #Plotting
     _plot_umat(auxumat,auxbmus,labels,hideSeqs)
 
     if mst and not unfold:
-        _plot_mstree(mstree_pairs, mstree_paths, som.umat.shape)
+        _plot_mstree(mstree_pairs, mstree_paths, somobj.umat.shape)
     elif mst and unfold:
-        _plot_mstree(mstree_pairs, mstree_paths, som.uumat.shape)
+        _plot_mstree(mstree_pairs, mstree_paths, somobj.uumat.shape)
 
     plt.savefig(outname+'.'+plot_ext)
     plt.show()
@@ -178,7 +175,7 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description='')
     requiredArguments = parser.add_argument_group('required arguments')
-    requiredArguments.add_argument('-s', '--som', help = 'Som file', required = True)
+    requiredArguments.add_argument('-s', '--somfile', help = 'Som file', required = True)
     parser.add_argument('-o', '--outname', help = 'Output name for the umat',default='umat')
     parser.add_argument('-d', '--delimiter', help = 'If gruping infomation was contained in the sequences title, the delimiter split it and select the prefix',default=None)
     parser.add_argument('--hide_seqs',help = 'To hide input sequences',action='store_true')
@@ -188,4 +185,4 @@ if __name__ == '__main__':
     parser.add_argument('--plot_ext', help='Filetype extension for the UMAT plots (default: png)',default='png')
     args = parser.parse_args()
 
-    main(somfile=args.som,outname=args.outname,delimiter=args.delimiter,hideSeqs=args.hide_seqs,mst=args.mst, clst = args.clst, unfold=args.unfold, plot_ext=args.plot_ext)
+    main(somfile=args.somfile,outname=args.outname,delimiter=args.delimiter,hideSeqs=args.hide_seqs,mst=args.mst, clst = args.clst, unfold=args.unfold, plot_ext=args.plot_ext)
