@@ -1,13 +1,13 @@
-import som_seq
-import quicksom.som
-import quicksom
 import pickle
 import functools
 import numpy as np
 from collections import Counter
 import matplotlib.pyplot as plt
 from operator import itemgetter
-
+from quicksom_seq.som_seq import get_blosum62,seqmetric
+from quicksom_seq.utils import jax_imports
+from quicksom_seq.utils import minsptree
+from quicksom_seq.quicksom import som
 
 def get_max_occurance(li):
     count_keys = list(Counter(li).keys())
@@ -15,6 +15,70 @@ def get_max_occurance(li):
     m = max(count_values)
     idxs_m = [i for i, j in enumerate(count_values) if j == m]
     return [count_keys[idx] for idx in idxs_m]
+
+def load_som(filename):
+    #Load the SOM
+    with open(filename, 'rb') as fileaux:
+        somobj = pickle.load(fileaux)
+    b62 = get_blosum62()
+    if somobj.jax:
+        somobj.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
+    else:
+       somobj.metric = functools.partial(seqmetric, b62=b62)
+    somobj.metric = functools.partial(seqmetric, b62=b62)
+    return somobj
+
+def load_dmatrix(somobj):
+    #Load localadj matrix. It contains the Umatrix distances between input sequences
+    if not hasattr(somobj, 'localadj'):
+        localadj, localadj_paths = minsptree.get_localadjmat(somobj.umat,somobj.adj,somobj.bmus,verbose=True)
+        somobj.localadj = localadj
+        somobj.localadj_paths = localadj_paths
+    dmatrix = somobj.localadj.tocsr()
+    dmatrix = dmatrix.todense()
+    dmatrix = np.asarray(dmatrix)
+    #Setting to inf the distances between unnconected bmus
+    dmatrix[dmatrix == 0] = np.inf
+    return dmatrix
+
+def split_data(types,bmus,del_unclassified,titles=[]):
+    #Split the data between classified and unclassified
+    idxs_unclassified = np.squeeze(np.asarray(np.where(types == del_unclassified)))
+    idxs_classified = np.squeeze(np.asarray(np.where(types != del_unclassified)))
+    types_unclassified = np.delete(types,idxs_classified)
+    types_classified = np.delete(types,idxs_unclassified)
+    bmus_unclassified = np.delete(bmus,idxs_classified)
+    bmus_classified = np.delete(bmus,idxs_unclassified)
+    if len(titles)>0:
+        titles_unclassified = np.delete(titles,idxs_classified)
+        titles_classidied = np.delete(titles,idxs_unclassified)
+        return idxs_unclassified,idxs_classified,types_unclassified,types_classified,bmus_unclassified,   bmus_classified,titles_unclassified,titles_classidied
+    else:
+        return idxs_unclassified,idxs_classified,types_unclassified,types_classified,bmus_unclassified,   bmus_classified
+
+def get_bmu_type_dic(bmus,types,del_unclassified):
+    bmu_type = {}
+    for i,bmu in enumerate(bmus):
+        if bmu not in bmu_type:
+            bmu_type[bmu] = types[i]
+        else:
+            if bmu_type[bmu] == types[i]: pass
+            else:
+                if bmu_type[bmu] == del_unclassified: bmu_type[bmu] = types[i]
+                elif types[i] == del_unclassified: pass
+                else:
+                    print('In the %d BMU there are sequences from %s and %s'%(bmu,bmu_type[bmu],          types[i]))
+                    if bmu_type[bmu] == 'A-delta': bmu_type[bmu] == types[i]
+                    else: continue
+    return bmu_type
+
+def get_b62_dmatrix(aln,outname=None):
+    aln = AlignIO.read(open(aln), 'fasta')
+    calculatorb62 = DistanceCalculator('blosum62')
+    dmatrixb62 = calculatorb62.get_distance(aln)
+    if outname!=None:
+        with open(outname,'wb') as outp:
+            pickle.dump(dmatrixb62,outp)
 
 class KNeighborsBMU(object):
     """

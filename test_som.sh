@@ -43,4 +43,5 @@ then
 else
     mkdir testout
 fi
-python -m som_seq -a =(head -60 data/T6SS/TssB/TssB.aln) -b 10 --nepochs 1 --alpha 0.5 -o testout/som
+python -m som_seq -a =(head -60 data/T6SS/TssB/TssB.fasta) -b 10 --nepochs 1 --alpha 0.5 -o testout/som
+python -m som_seq -a =(head -60 data/T6SS/TssB/TssB.fasta) -b 10 --nepochs 100 --alpha 0.5 -o testout/somjax -j

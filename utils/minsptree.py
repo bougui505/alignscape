@@ -4,12 +4,12 @@ import scipy.sparse
 import matplotlib.pyplot as plt
 import itertools
 import numpy as np
-from utils.Timer import Timer
 from tqdm import tqdm
 import networkx as nx
-import quicksom.utils
 from skimage.feature import peak_local_max
 from sklearn.cluster import AgglomerativeClustering
+from quicksom_seq.utils.Timer import Timer
+from quicksom_seq.quicksom.utils import bmus_to_label
 
 TIMER = Timer(autoreset=True)
 
@@ -255,36 +255,36 @@ def get_minsptree(localadj,paths,verbose=True):
     mstree_pairs = np.vstack((mstree_pairs[0], mstree_pairs[1])).T
     return mstree,mstree_pairs,paths
 
-def get_unfold_msptree(msptree_pairs, msptree_paths, somsize, unfsomsize, mapping):#, uadj):
+def get_unfold_mstree(mstree_pairs, mstree_paths, somsize, unfsomsize, mapping):#, uadj):
     #dok = uadj.todok()
-    unf_msptree_pairs = []
+    unf_mstree_pairs = []
     unf_rpaths = {}
-    unf_msptree = {'data': [], 'row': [], 'col': []}
-    #Get the coordinates of the msptree pairs in the unfold umatrix
-    for pair in msptree_pairs:
+    unf_mstree = {'data': [], 'row': [], 'col': []}
+    #Get the coordinates of the mstree pairs in the unfold umatrix
+    for pair in mstree_pairs:
         unf_rpair = [get_uumat_ravel_cell(pair[0],somsize,unfsomsize,mapping), get_uumat_ravel_cell(pair[1],somsize,unfsomsize,mapping)]
-        unf_msptree_pairs.append(unf_rpair)
-    #Get the coordinates of the paths between msptree pairs in the unfold matrix
-    for k in msptree_paths:
+        unf_mstree_pairs.append(unf_rpair)
+    #Get the coordinates of the paths between mstree pairs in the unfold matrix
+    for k in mstree_paths:
         unf_rk = (get_uumat_ravel_cell(k[0],somsize,unfsomsize,mapping), get_uumat_ravel_cell(k[1],somsize,unfsomsize,mapping))
-        unf_rpath = [get_uumat_ravel_cell(step,somsize,unfsomsize,mapping) for step in msptree_paths[k]]
+        unf_rpath = [get_uumat_ravel_cell(step,somsize,unfsomsize,mapping) for step in mstree_paths[k]]
         unf_rpaths[unf_rk] = unf_rpath
-    #for i,pair in enumerate(np.asarray(unf_msptree_pairs)):
+    #for i,pair in enumerate(np.asarray(unf_mstree_pairs)):
     #    dist = get_pathDist(dok,unf_rpaths[tuple(pair)])
-    #    unf_msptree['row'].extend([pair[0]])
-    #    unf_msptree['col'].extend([pair[1]])
-    #    unf_msptree['data'].extend([dist])
-    #dim = max(unf_msptree['row'] + unf_msptree['col'])
-    #unf_msptree = scipy.sparse.coo_matrix((unf_msptree['data'], (unf_msptree['row'], unf_msptree['col'])),shape=(dim+1,dim+1))
-    #return unf_msptree, np.asarray(unf_msptree_pairs), unf_rpaths
-    return np.asarray(unf_msptree_pairs), unf_rpaths
+    #    unf_mstree['row'].extend([pair[0]])
+    #    unf_mstree['col'].extend([pair[1]])
+    #    unf_mstree['data'].extend([dist])
+    #dim = max(unf_mstree['row'] + unf_mstree['col'])
+    #unf_mstree = scipy.sparse.coo_matrix((unf_mstree['data'], (unf_mstree['row'], unf_mstree['col'])),shape=(dim+1,dim+1))
+    #return unf_mstree, np.asarray(unf_mstree_pairs), unf_rpaths
+    return np.asarray(unf_mstree_pairs), unf_rpaths
 
 def from_mstree_to_graph(mstree,bmus,labels,somsize):
     mstree = mstree.tocoo()
     bmus = np.asarray(bmus)
     mstree_nodes = np.concatenate((mstree.row,mstree.col))
     mstree_nodes = list(set(list(mstree_nodes)))
-    mstree_nodes_labels = quicksom.utils.bmus_to_label(mstree_nodes,bmus,labels,somsize)
+    mstree_nodes_labels = bmus_to_label(mstree_nodes,bmus,labels,somsize)
     mstree_nodes_labels = [';'.join(node_label).replace(">","") for node_label in mstree_nodes_labels]
     mapping = dict(zip(mstree_nodes,mstree_nodes_labels))
 

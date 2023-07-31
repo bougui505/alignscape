@@ -4,13 +4,13 @@ from itertools import count
 import dill as pickle
 import functools
 import scipy.sparse.csgraph as csgraph
-from som_seq import seqmetric
-from som_seq import get_blosum62
-from utils import jax_imports
-from quicksom import somax
-from quicksom import som
-from utils import minsptree
-from utils.Timer import Timer
+from quicksom_seq.som_seq import seqmetric
+from quicksom_seq.som_seq import get_blosum62
+from quicksom_seq.quicksom import somax
+from quicksom_seq.quicksom import som
+from quicksom_seq.utils import minsptree
+from quicksom_seq.utils import jax_imports
+from quicksom_seq.utils.Timer import Timer
 
 timer = Timer(autoreset=True)
 
@@ -73,7 +73,7 @@ def main(somfile,outname='umat',delimiter=None,hideSeqs=False,mst=False, clst=Fa
         auxbmus = unfbmus
         if mst:
             timer.start('get the minsptree paths in the unfold umat')
-            mstree_pairs, mstree_paths = minsptree.get_unfold_msptree(mstree_pairs, mstree_paths, somobj.umat.shape, somobj.uumat.shape, mapping)
+            mstree_pairs, mstree_paths = minsptree.get_unfold_mstree(mstree_pairs, mstree_paths, somobj.umat.shape, somobj.uumat.shape, mapping)
             timer.stop()
         timer.stop()
     else:

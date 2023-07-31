@@ -17,64 +17,7 @@ from collections import OrderedDict
 from Bio import AlignIO
 from Bio.Phylo.TreeConstruction import DistanceCalculator
 import fastaf
-
-def load_som(filename):
-    #Load the SOM
-    with open(filename, 'rb') as fileaux:
-        som = pickle.load(fileaux)
-    b62 = som_seq.get_blosum62()
-    som.metric = functools.partial(som_seq.seqmetric, b62=b62)
-    return som
-
-def load_dmatrix(som):
-    #Load localadj matrix. It contains the Umatrix distances between input sequences
-    dmatrix = som.localadj.tocsr()
-    dmatrix = dmatrix.todense()
-    dmatrix = np.asarray(dmatrix)
-    #Setting to inf the distances between unnconected bmus
-    dmatrix[dmatrix == 0] = np.inf
-    return dmatrix
-
-def split_data(types,bmus,del_unclassified,titles=[]):
-    #Split the data between classified and unclassified
-    idxs_unclassified = np.squeeze(np.asarray(np.where(types == del_unclassified)))
-    idxs_classified = np.squeeze(np.asarray(np.where(types != del_unclassified)))
-    types_unclassified = np.delete(types,idxs_classified)
-    types_classified = np.delete(types,idxs_unclassified)
-
-    bmus_unclassified = np.delete(bmus,idxs_classified)
-    bmus_classified = np.delete(bmus,idxs_unclassified)
-
-    if len(titles)>0:
-        titles_unclassified = np.delete(titles,idxs_classified)
-        titles_classidied = np.delete(titles,idxs_unclassified)
-        return idxs_unclassified,idxs_classified,types_unclassified,types_classified,bmus_unclassified,bmus_classified,titles_unclassified,titles_classidied
-    else:
-        return idxs_unclassified,idxs_classified,types_unclassified,types_classified,bmus_unclassified,bmus_classified
-
-def get_bmu_type_dic(bmus,types,del_unclassified):
-    bmu_type = {}
-    for i,bmu in enumerate(bmus):
-        if bmu not in bmu_type:
-            bmu_type[bmu] = types[i]
-        else:
-            if bmu_type[bmu] == types[i]: pass
-            else:
-                if bmu_type[bmu] == del_unclassified: bmu_type[bmu] = types[i]
-                elif types[i] == del_unclassified: pass
-                else:
-                    print('In the %d BMU there are sequences from %s and %s'%(bmu,bmu_type[bmu],types[i]))
-                    if bmu_type[bmu] == 'A-delta': bmu_type[bmu] == types[i]
-                    else: continue
-    return bmu_type
-
-def get_b62_dmatrix(aln,outname=None):
-    aln = AlignIO.read(open(aln), 'fasta')
-    calculatorb62 = DistanceCalculator('blosum62')
-    dmatrixb62 = calculatorb62.get_distance(aln)
-    if outname!=None:
-        with open(outname,'wb') as outp:
-            pickle.dump(dmatrixb62,outp)
+from quicksom_seq.utils import models
 
 if __name__ == '__main__':
 
@@ -94,10 +37,10 @@ if __name__ == '__main__':
 
     #Get and load the SOMs
     filename_kinome = '%skinome_article/kinome.p'%datadir
-    som_kinome = load_som(filename_kinome)
+    som_kinome = models.load_som(filename_kinome)
     n1_kinome,n2_kinome = som_kinome.umat.shape
     filename_gpcrs = '%sgpcrs_article/gpcrs.p'%datadir
-    som_gpcrs = load_som(filename_gpcrs)
+    som_gpcrs = models.load_som(filename_gpcrs)
     n1_gpcrs,n2_gpcrs = som_gpcrs.umat.shape
     exit()
 
@@ -108,10 +51,10 @@ if __name__ == '__main__':
     types_gpcrs = np.asarray([label.replace('>','').split('_')[-1] for label in som_gpcrs.labels])
     bmus_kinome = np.asarray([np.ravel_multi_index(bmu,(n1_kinome,n2_kinome)) for bmu in som_kinome.bmus])
     bmus_gpcrs = np.asarray([np.ravel_multi_index(bmu,(n1_gpcrs,n2_gpcrs)) for bmu in som_gpcrs.bmus])
-    bmu_type_kinome = get_bmu_type_dic(bmus_kinome,types_kinome,'OTHER')
+    bmu_type_kinome = models.get_bmu_type_dic(bmus_kinome,types_kinome,'OTHER')
     uniq_bmus_kinome = np.asarray(list(bmu_type_kinome.keys()))
     uniq_types_kinome = np.asarray(list(bmu_type_kinome.values()))
-    bmu_type_gpcrs = get_bmu_type_dic(bmus_gpcrs,types_gpcrs,'A-other')
+    bmu_type_gpcrs = models.get_bmu_type_dic(bmus_gpcrs,types_gpcrs,'A-other')
     uniq_bmus_gpcrs = np.asarray(list(bmu_type_gpcrs.keys()))
     uniq_types_gpcrs = np.asarray(list(bmu_type_gpcrs.values()))
     print(f'Total sequences kinome: {len(titles_kinome)}')
@@ -120,8 +63,8 @@ if __name__ == '__main__':
     print(f'Total mapped units kinome: {len(bmu_type_gpcrs)}')
 
     #Load the distance matrices between SOM units
-    dmatrix_kinome = load_dmatrix(som_kinome)
-    dmatrix_gpcrs = load_dmatrix(som_gpcrs)
+    dmatrix_kinome = models.load_dmatrix(som_kinome)
+    dmatrix_gpcrs = models.load_dmatrix(som_gpcrs)
 
     #Create or load the b62 distances matrices of the original alignment
     with open('%skinome_article/kinome_matrixb62.p'%datadir,'rb') as inp:
@@ -130,9 +73,9 @@ if __name__ == '__main__':
         dmatrixb62_gpcrs = pickle.load(inp)
 
     #Test to decide k of k-nearest neighbours for kinome and gpcrs at unit level
-    idxs_unclass_k,idxs_class_k,types_unclass_k,types_class_k,bmus_unclass_k,bmus_class_k = split_data(uniq_types_kinome,uniq_bmus_kinome,'OTHER')
+    idxs_unclass_k,idxs_class_k,types_unclass_k,types_class_k,bmus_unclass_k,bmus_class_k = models.split_data(uniq_types_kinome,uniq_bmus_kinome,'OTHER')
 
-    idxs_unclass_g,idxs_class_g,types_unclass_g,types_class_g,bmus_unclass_g,bmus_class_g = split_data(uniq_types_gpcrs,uniq_bmus_gpcrs,'A-other')
+    idxs_unclass_g,idxs_class_g,types_unclass_g,types_class_g,bmus_unclass_g,bmus_class_g = models.split_data(uniq_types_gpcrs,uniq_bmus_gpcrs,'A-other')
 
     scoresBMU_k = OrderedDict()
     scoresBMU_g = OrderedDict()
@@ -304,6 +247,7 @@ if __name__ == '__main__':
 
     auxbmus_kinome = list(zip(*som_kinome.bmus.T))
     auxbmus_gpcrs = list(zip(*som_gpcrs.bmus.T))
+
     #Regular umat with MST and unclassified as Other
     plot_umat._plot_umat(som_kinome.umat,auxbmus_kinome,types_kinome, hideSeqs=False, legend=False, dic_colors = kinome_colors, dotsize=15)
     plot_umat._plot_msptree(som_kinome.msptree_pairs, som_kinome.msptree_paths, som_kinome.umat.shape)

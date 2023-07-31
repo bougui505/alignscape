@@ -42,7 +42,7 @@ import dill as pickle
 from Bio.Align import substitution_matrices
 import numpy as np
 import torch
-from utils import seqdataloader
+from quicksom_seq.utils import seqdataloader
 
 aalist = list('ABCDEFGHIKLMNPQRSTVWXYZ|-')
 
@@ -248,10 +248,10 @@ def main(ali=None,
 
     if use_jax:
         import jax
-        from utils import jax_imports
-        from quicksom import somax
+        from quicksom_seq.utils import jax_imports
+        from quicksom_seq.quicksom import somax
     else:
-        from quicksom import som
+        from quicksom_seq.quicksom import som
 
     # Get the data ready
     dataset = seqdataloader.SeqDataset(ali)
@@ -360,11 +360,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='')
     # parser.add_argument(name or flags...[, action][, nargs][, const][, default][, type][, choices][, required][, help][, metavar][, dest])
     parser.add_argument('-a', '--aln', help='Alignment file')
-    parser.add_argument('-b', '--batch', help='Batch size (default: 100)', default=10, type=int)
-    parser.add_argument('--somside', help='Size of the side of the square SOM', default=50, type=int)
+    parser.add_argument('-b', '--batch', help='Batch size (default: 10)', default=10, type=int)
+    parser.add_argument('--somside', help='Size of the side of the square SOM (default: 50)', default=50, type=int)
     parser.add_argument('--alpha', help='learning rate', default=None, type=float)
     parser.add_argument('--sigma', help='Learning radius for the SOM', default=None, type=float)
-    parser.add_argument('--nepochs', help='Number of SOM epochs', default=2, type=int)
+    parser.add_argument('--nepochs', help='Number of SOM epochs (default: 2)', default=2, type=int)
     parser.add_argument("-o", "--out_name", default='som', help="basename (default som)")
     parser.add_argument('--noplot', help='Do not plot the resulting U-matrix', action='store_false', dest='doplot')
     parser.add_argument('--plot_ext', help='Filetype extension for the U-matrix plot (default: pdf)', default='pdf')
