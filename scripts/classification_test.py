@@ -1,23 +1,12 @@
-import sys
-sys.path.insert(1,'../')
-from models import KNeighborsBMU,KNeighborsB62
-import som_seq
-#import quicksom.som
-#import quicksom
-#import pickle
 import dill as pickle
-import functools
 import numpy as np
-from collections import Counter
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-import plot_umat
-import minsptree as mspt
 from collections import OrderedDict
-from Bio import AlignIO
-from Bio.Phylo.TreeConstruction import DistanceCalculator
-import fastaf
 from quicksom_seq.utils import models
+from quicksom_seq.models import KNeighborsBMU, KNeighborsB62
+from quicksom_seq import plot_umat
+from quicksom_seq import minsptree
 
 if __name__ == '__main__':
 
@@ -25,11 +14,7 @@ if __name__ == '__main__':
 
     #Load the alignments (as a dict)
     ali_kinome = '%skinome_article/alignments_kinome/human_kinome_nature_inf_upper_noPLK5.aln'%datadir
-    fasta_kinome = fastaf.Alignment(aliname=ali_kinome)
-    fastadic_kinome = {title:seq for title,seq in zip(fasta_kinome.names,fasta_kinome.seqs)}
     ali_gpcrs = '%sgpcrs_article/alignments_gpcrs/gpcrs_human_inf.aln'%datadir
-    fasta_gpcrs = fastaf.Alignment(aliname=ali_gpcrs)
-    fastadic_gpcrs = {title:seq for title,seq in zip(fasta_gpcrs.names,fasta_gpcrs.seqs)}
 
     #Coloring scheme
     kinome_colors = {'CMGC':'black','CAMK':'white','TKL':'red','AGC':'orange','RGC':'pink','OTHER':'yellow','CK1':'lime','STE':'cyan','NEK':'magenta','TYR':'blue'}
@@ -37,20 +22,20 @@ if __name__ == '__main__':
 
     #Get and load the SOMs
     filename_kinome = '%skinome_article/kinome.p'%datadir
-    som_kinome = models.load_som(filename_kinome)
+    somobj_kinome = models.load_som(filename_kinome)
     n1_kinome,n2_kinome = som_kinome.umat.shape
     filename_gpcrs = '%sgpcrs_article/gpcrs.p'%datadir
-    som_gpcrs = models.load_som(filename_gpcrs)
-    n1_gpcrs,n2_gpcrs = som_gpcrs.umat.shape
+    somobj_gpcrs = models.load_som(filename_gpcrs)
+    n1_gpcrs,n2_gpcrs = somobj_gpcrs.umat.shape
     exit()
 
     #Parse all data (titles,types and BMUs as lists and as dicts)
-    titles_kinome = np.asarray([label.replace('>','') for label in som_kinome.labels])
-    titles_gpcrs = np.asarray([label.replace('>','') for label in som_gpcrs.labels])
-    types_kinome = np.asarray([label.replace('>','').split('_')[0] for label in som_kinome.labels])
-    types_gpcrs = np.asarray([label.replace('>','').split('_')[-1] for label in som_gpcrs.labels])
-    bmus_kinome = np.asarray([np.ravel_multi_index(bmu,(n1_kinome,n2_kinome)) for bmu in som_kinome.bmus])
-    bmus_gpcrs = np.asarray([np.ravel_multi_index(bmu,(n1_gpcrs,n2_gpcrs)) for bmu in som_gpcrs.bmus])
+    titles_kinome = np.asarray([label.replace('>','') for label in somobj_kinome.labels])
+    titles_gpcrs = np.asarray([label.replace('>','') for label in somobj_gpcrs.labels])
+    types_kinome = np.asarray([label.replace('>','').split('_')[0] for label in somobj_kinome.labels])
+    types_gpcrs = np.asarray([label.replace('>','').split('_')[-1] for label in somobj_gpcrs.labels])
+    bmus_kinome = np.asarray([np.ravel_multi_index(bmu,(n1_kinome,n2_kinome)) for bmu in somobj_kinome.bmus])
+    bmus_gpcrs = np.asarray([np.ravel_multi_index(bmu,(n1_gpcrs,n2_gpcrs)) for bmu in somobj_gpcrs.bmus])
     bmu_type_kinome = models.get_bmu_type_dic(bmus_kinome,types_kinome,'OTHER')
     uniq_bmus_kinome = np.asarray(list(bmu_type_kinome.keys()))
     uniq_types_kinome = np.asarray(list(bmu_type_kinome.values()))
@@ -63,8 +48,8 @@ if __name__ == '__main__':
     print(f'Total mapped units kinome: {len(bmu_type_gpcrs)}')
 
     #Load the distance matrices between SOM units
-    dmatrix_kinome = models.load_dmatrix(som_kinome)
-    dmatrix_gpcrs = models.load_dmatrix(som_gpcrs)
+    dmatrix_kinome = models.load_dmatrix(somobj_kinome)
+    dmatrix_gpcrs = models.load_dmatrix(somobj_gpcrs)
 
     #Create or load the b62 distances matrices of the original alignment
     with open('%skinome_article/kinome_matrixb62.p'%datadir,'rb') as inp:
@@ -245,31 +230,18 @@ if __name__ == '__main__':
     plt.savefig('classification_test_gpcrs.pdf')
 
 
-    auxbmus_kinome = list(zip(*som_kinome.bmus.T))
-    auxbmus_gpcrs = list(zip(*som_gpcrs.bmus.T))
+    auxbmus_kinome = list(zip(*somobj_kinome.bmus.T))
+    auxbmus_gpcrs = list(zip(*somobj_gpcrs.bmus.T))
 
     #Regular umat with MST and unclassified as Other
-    plot_umat._plot_umat(som_kinome.umat,auxbmus_kinome,types_kinome, hideSeqs=False, legend=False, dic_colors = kinome_colors, dotsize=15)
-    plot_umat._plot_msptree(som_kinome.msptree_pairs, som_kinome.msptree_paths, som_kinome.umat.shape)
+    plot_umat._plot_umat(somobj_kinome.umat,auxbmus_kinome,types_kinome, hideSeqs=False, legend=False, dic_colors = kinome_colors, dotsize=15)
+    plot_umat._plot_mstree(somobj_kinome.mstree_pairs, somobj_kinome.mstree_paths, somobj_kinome.umat.shape)
     plt.savefig('kinome_notpredicted_umat.pdf')
-    plot_umat._plot_umat(som_gpcrs.umat,auxbmus,types_gpcrs, hideSeqs=False, legend=False, dic_colors = gpcrs_colors, dotsize=15)
-    plot_umat._plot_msptree(som_gpcrs.msptree_pairs, som_gpcrs.msptree_paths, som_gpcrs.umat.shape)
+    plot_umat._plot_umat(somobj_gpcrs.umat,auxbmus,types_gpcrs, hideSeqs=False, legend=False, dic_colors = gpcrs_colors, dotsize=15)
+    plot_umat._plot_mstree(somobj_gpcrs.mstree_pairs, somobj_gpcrs.mstree_paths, somobj_gpcrs.umat.shape)
     plt.savefig('gpcrs_notpredicted_umat.pdf')
 
     #Unfold umat with MST and unclassified as Other
-    uumat_kinome,mapping_kinome,reversed_mapping_kinome = mspt.get_unfold_umat(som_kinome.umat, som_kinome.adj, auxbmus_kinome, som_kinome.msptree)
-    unfbmus_kinome = [mapping_kinome[bmu] for bmu in auxbmus_kinome]
-    unf_msptree_pairs_kinome, unf_msptree_paths_kinome= mspt.get_unfold_msptree(som_kinome.msptree_pairs, som_kinome.msptree_paths, som_kinome.umat.shape, uumat_kinome.shape, mapping_kinome)
-    plot_umat._plot_umat(uumat_kinome, unfbmus_kinome, types_kinome, hideSeqs=False, legend=False, dic_colors = kinome_colors, dotsize=15)
-    plot_umat._plot_msptree(unf_msptree_pairs_kinome, unf_msptree_paths_kinome, uumat_kinome.shape)
-    plt.savefig('kinome_unf_notpredicted_umat.pdf')
-    uumat_gpcrs,mapping_gpcrs,reversed_mapping_gpcrs = mspt.get_unfold_umat(som_gpcrs.umat, som_gpcrs.adj, auxbmus_gpcrs, som_gpcrs.msptree)
-    unfbmus_gpcrs = [mapping_gpcrs[bmu] for bmu in auxbmus_gpcrs]
-    unf_msptree_pairs_gpcrs, unf_msptree_paths_gpcrs= mspt.get_unfold_msptree(som_gpcrs.msptree_pairs, som_gpcrs.msptree_paths, som_gpcrs.umat.shape, uumat_gpcrs.shape, mapping_gpcrs)
-    plot_umat._plot_umat(uumat_gpcrs, unfbmus_gpcrs, types_gpcrs, hideSeqs=False, legend=False, dic_colors = gpcrs_colors, dotsize=15)
-    plot_umat._plot_msptree(unf_msptree_pairs_gpcrs, unf_msptree_paths_gpcrs, uumat_gpcrs.shape)
-    plt.savefig('gpcrs_unf_notpredicted_umat.pdf')
-
     #Predict unclassified type
     k=2
     knn = KNeighborsBMU(k)
@@ -287,11 +259,23 @@ if __name__ == '__main__':
     #Plot umat with MST and unclassified with predicted type
     plot_umat._plot_umat(som.umat,auxbmus,types, hideSeqs=False,legend=False, dic_colors = kinome_colors, dotsize=15)
     plot_umat._plot_umat(som.umat,auxbmus,types, hideSeqs=False,legend=False,  dic_colors = gpcrs_colors, dotsize=15)
-    plot_umat._plot_msptree(som.msptree_pairs, som.msptree_paths, som.umat.shape)
+    plot_umat._plot_mstree(som.mstree_pairs, som.mstree_paths, som.umat.shape)
     plt.savefig('predicted_umat%d.pdf'%k)
 
     #Plot Unfold umat with MST and unclassified with predicted type
     plot_umat._plot_umat(uumat, unfbmus, types, hideSeqs=False, legend=False, dic_colors = kinome_colors, dotsize=15)
     plot_umat._plot_umat(uumat, unfbmus, types, hideSeqs=False, legend=False, dic_colors = gpcrs_colors, dotsize=15)
-    plot_umat._plot_msptree(unf_msptree_pairs, unf_msptree_paths, uumat.shape)
+    plot_umat._plot_mstree(unf_mstree_pairs, unf_mstree_paths, uumat.shape)
     plt.savefig('unf_predicted_umat%d.pdf'%k)
+    uumat_kinome,mapping_kinome,reversed_mapping_kinome = minsptree.get_unfold_umat(somobj_kinome.umat, somobj_kinome.adj, auxbmus_kinome, somobj_kinome.mstree)
+    unfbmus_kinome = [mapping_kinome[bmu] for bmu in auxbmus_kinome]
+    unf_mstree_pairs_kinome, unf_mstree_paths_kinome= minsptree.get_unfold_mstree(somobj_kinome.mstree_pairs, somobj_kinome.mstree_paths, somobj_kinome.umat.shape, uumat_kinome.shape, mapping_kinome)
+    plot_umat._plot_umat(uumat_kinome, unfbmus_kinome, types_kinome, hideSeqs=False, legend=False, dic_colors = kinome_colors, dotsize=15)
+    plot_umat._plot_mstree(unf_mstree_pairs_kinome, unf_mstree_paths_kinome, uumat_kinome.shape)
+    plt.savefig('kinome_unf_notpredicted_umat.pdf')
+    uumat_gpcrs,mapping_gpcrs,reversed_mapping_gpcrs = minsptree.get_unfold_umat(somobj_gpcrs.umat, somobj_gpcrs.adj, auxbmus_gpcrs, somobj_gpcrs.mstree)
+    unfbmus_gpcrs = [mapping_gpcrs[bmu] for bmu in auxbmus_gpcrs]
+    unf_mstree_pairs_gpcrs, unf_mstree_paths_gpcrs= minsptree.get_unfold_mstree(somobj_gpcrs.mstree_pairs, somobj_gpcrs.mstree_paths, somobj_gpcrs.umat.shape, uumat_gpcrs.shape, mapping_gpcrs)
+    plot_umat._plot_umat(uumat_gpcrs, unfbmus_gpcrs, types_gpcrs, hideSeqs=False, legend=False, dic_colors = gpcrs_colors, dotsize=15)
+    plot_umat._plot_mstree(unf_mstree_pairs_gpcrs, unf_mstree_paths_gpcrs, uumat_gpcrs.shape)
+    plt.savefig('gpcrs_unf_notpredicted_umat.pdf')
