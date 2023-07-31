@@ -15,6 +15,7 @@ from quicksom_seq.utils import minsptree
 from quicksom_seq.utils import models
 from quicksom_seq.analysis import dmatrix
 from quicksom_seq.analysis import cmatrix
+from quicksom_seq.analysis import mutation_pathway
 
 somfile = 'testout/som.pickle'
 somfile_jax = 'testout/somjax.pickle'
@@ -31,7 +32,6 @@ somobj_jax.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
 bmus = list(zip(*somobj.bmus[0:100].T))
 bmus_jax = list(zip(*somobj_jax.bmus[0:100].T))
 timer.stop()
-"""
 
 timer.start('computing localadj between queries')
 localadj, paths = minsptree.get_localadjmat(somobj.umat,somobj.adj,bmus)
@@ -128,7 +128,6 @@ plot_umat._plot_umat(somobj_jax.umat,somobj_jax.bmus,types_jax,hideSeqs=False)
 plot_umat._plot_mstree(mstree_pairs_jax, mstree_paths_jax, somobj_jax.umat.shape)
 plt.savefig('testout/umat_predicted_jax.pdf')
 timer.stop()
-"""
 
 timer.start('Test distance matrix')
 dmobj = dmatrix.Dmatrix(somfile=somfile,querieslist=somobj.labels,output='testout/dmatrix',delimiter='_')
@@ -137,4 +136,8 @@ timer.stop()
 
 timer.start('Test correlation matrix')
 cmatrix.Cmatrix(dmatrices=['testout/dmatrix.p','testout/dmatrix_jax.p'],labels=['dm','dm_jax'],outname='testout/cmatrix')
+timer.stop()
+
+timer.start('Test mutation pathway')
+mutation_pathway.main(unit1=somobj.bmus[0],unit2=somobj.bmus[1],somfile=somfile,outname='testout/mutation_pathway',verbose=False)
 timer.stop()

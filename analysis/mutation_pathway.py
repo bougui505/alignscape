@@ -1,51 +1,53 @@
+import torch
 import pickle
-import sys
-sys.path.insert(1,'../')
-import som_seq
 import functools
-import jax_imports
 import numpy as np
-import seqdataloader as seqdataloader
 import matplotlib.pyplot as plt
 from adjustText import adjust_text
-import minsptree as mspt
-from Timer import Timer
+from quicksom_seq.utils.Timer import Timer
+from quicksom_seq.som_seq import get_blosum62,seqmetric
+from quicksom_seq.utils import jax_imports
+from quicksom_seq.utils import seqdataloader
+from quicksom_seq.utils import minsptree
 
 aalist = list('ABCDEFGHIKLMNPQRSTVWXYZ|-')
 timer = Timer(autoreset=True)
 
 
-def main(cell1,cell2,somfile,threshold,outname,allinp,unfold,verbose = True):
+def main(unit1,unit2,somfile,outname,threshold=0.2,allinp=False,unfold=False,verbose = True):
 
     #Load and safecheck the data
-    if len(cell1) != 2:
+    if len(unit1) != 2:
         raise ValueError('c1 must provide a two elements list with the row and column of the first cell')
-    cell1 = tuple(cell1)
-    if len(cell2) != 2:
+    unit1 = tuple(unit1)
+    if len(unit2) != 2:
         raise ValueError('c1 must provide a two elements list with the row and column of the second cell')
-    cell2 = tuple(cell2)
+    unit2 = tuple(unit2)
     with open(somfile, 'rb') as somfileaux:
-            som = pickle.load(somfileaux)
-    b62 = som_seq.get_blosum62()
-    som.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
+            somobj = pickle.load(somfileaux)
+    b62 = get_blosum62()
+    if somobj.jax:
+        somobj.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
+    else:
+        somobj.metric = functools.partial(seqmetric, b62=b62)
     threshold = float(threshold)
 
     #Parse the data
     subtypes = list()
-    bmus = [tuple(bmu) for bmu in som.bmus]
-    labels = ['_'.join(label.split("_")[1:]) for label in som.labels]
-    subtypes = [label.replace(">","").split("_")[0] for label in som.labels]
+    bmus = [tuple(bmu) for bmu in somobj.bmus]
+    labels = ['_'.join(label.split("_")[1:]) for label in somobj.labels]
+    subtypes = [label.replace(">","").split("_")[0] for label in somobj.labels]
 
-    #Get the shortest path between cell1 and cell2
-    n1, n2 = som.umat.shape
-    indx_cell1 = np.ravel_multi_index(cell1,(n1,n2))
-    indx_cell2 = np.ravel_multi_index(cell2,(n1,n2))
+    #Get the shortest path between unit1 and unit2
+    n1, n2 = somobj.umat.shape
+    indx_unit1 = np.ravel_multi_index(unit1,(n1,n2))
+    indx_unit2 = np.ravel_multi_index(unit2,(n1,n2))
 
     if verbose:
-        print('Computing shortest path between: ' + str(cell1) + ' ' + str(cell2))
-    path = mspt.get_shortestPath(som.adj,indx_cell1, indx_cell2)
-    dok = som.adj.todok()
-    pathDist = mspt.get_pathDist(dok,path)
+        print('Computing shortest path between: ' + str(unit1) + ' ' + str(unit2))
+    path = minsptree.get_shortestPath(somobj.adj,indx_unit1, indx_unit2)
+    dok = somobj.adj.todok()
+    pathDist = minsptree.get_pathDist(dok,path)
     if verbose:
         print(path)
         print(pathDist)
@@ -54,9 +56,13 @@ def main(cell1,cell2,somfile,threshold,outname,allinp,unfold,verbose = True):
     if verbose:
         print(unrpath)
 
-    #Get the consensus sequences of the cells of the spath between cell1 and cell2
+    #Get the consensus sequences of the cells of the spath between unit1 and unit2
     fout = open(outname+'.fasta','w')
-    smap = np.asarray(som.centroids).reshape((som.m, som.n, -1))
+    if isinstance(somobj.centroids,torch.Tensor):
+        centroids = somobj.centroids.detach().cpu().numpy()
+        smap = centroids.reshape((somobj.m, somobj.n, -1))
+    else:
+        smap = np.asarray(somobj.centroids).reshape((somobj.m, somobj.n, -1))
     for cell in unrpath:
         cell = tuple(cell)
         neuron = smap[cell]
@@ -67,49 +73,51 @@ def main(cell1,cell2,somfile,threshold,outname,allinp,unfold,verbose = True):
         #str(tuple(np.asarray(cell).T)) + " " + subtypes[indx] + "_" +labels[indx]
         else:
             title = ">[" + str(cell[0]) + "|" + str(cell[1]) + "]"
-        print(title)
+        if verbose:
+            print(title)
         fout.write(title+"\n")
-        print(cseq)
+        if verbose:
+            print(cseq)
         fout.write(cseq+"\n")
     fout.close()
 
     if unfold:
-        if not hasattr(som, 'localadj'):
+        if not hasattr(somobj, 'localadj'):
             timer.start('computing localadj between queries')
-            localadj, localadj_paths = mspt.get_localadjmat(som.umat,som.adj,bmus,verbose=True)
+            localadj, localadj_paths = minsptree.get_localadjmat(somobj.umat,somobj.adj,bmus,verbose=True)
             timer.stop()
-            som.localadj = localadj
-            som.localadj_paths = localadj_paths
+            somobj.localadj = localadj
+            somobj.localadj_paths = localadj_paths
         else:
-            localajd = som.localadj
-            localadj_paths = som.localadj_paths
-        if not hasattr(som,'msptree'):
-            timer.start('compute the msptree')
-            msptree, msptree_pairs, msptree_paths = mspt.get_minsptree(localadj,localadj_paths)
+            localajd = somobj.localadj
+            localadj_paths = somobj.localadj_paths
+        if not hasattr(somobj,'mstree'):
+            timer.start('compute the mstree')
+            mstree, mstree_pairs, mstree_paths = minsptree.get_minsptree(localadj,localadj_paths)
             timer.stop()
-            som.msptree = msptree
-            som.msptree_pairs = msptree_pairs
-            som.msptree_paths = msptree_paths
+            somobj.mstree = mstree
+            somobj.mstree_pairs = mstree_pairs
+            somobj.mstree_paths = mstree_paths
         else:
-            msptree = som.msptree
-            msptree_pairs = som.msptree_pairs
-            msptree_paths = som.msptree_paths
+            mstree = somobj.mstree
+            mstree_pairs = somobj.mstree_pairs
+            mstree_paths = somobj.mstree_paths
         timer.start('compute the umap unfolding')
-        uumat,mapping,reversed_mapping = mspt.get_unfold_umat(som.umat, som.adj, bmus, msptree)
+        uumat,mapping,reversed_mapping = minsptree.get_unfold_umat(somobj.umat, somobj.adj, bmus, mstree)
         timer.stop()
-        som.uumat = uumat
-        som.mapping = mapping
-        som.reversed_mapping = reversed_mapping
+        somobj.uumat = uumat
+        somobj.mapping = mapping
+        somobj.reversed_mapping = reversed_mapping
         auxumat = uumat
         unfbmus = [mapping[bmu] for bmu in bmus]
         auxbmus = unfbmus
         auxpath = np.asarray([np.asarray(mapping[tuple(path)]) for path in unrpath])
     else:
         auxbmus = bmus
-        auxumat = som.umat
+        auxumat = somobj.umat
         auxpath = unrpath
 
-    #Print the shortest path between cell1 and cell2
+    #Print the shortest path between unit1 and unit2
     plt.matshow(auxumat)
     plt.colorbar()
     for j,step in enumerate(auxpath):
@@ -185,11 +193,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('--c1', nargs='+', help = 'First umat cell coordinates (row-col format)', required = True, type=int)
     parser.add_argument('--c2', nargs='+', help = 'First umat cell coordinates (row-col format)', required = True, type=int)
-    parser.add_argument('-s', '--som', help = 'Som file', required = True)
+    parser.add_argument('-s', '--somfile', help = 'Som file', required = True)
     parser.add_argument('-o', '--outname', help = 'Fasta outname', required = True)
-    parser.add_argument('--freq_thres', help = 'Frequency threshold to assign the most frequent residue for each site', default = 0.5)
+    parser.add_argument('--freq_thres', help = 'Frequency threshold to assign the most frequent residue for each site', default = 0.2)
     parser.add_argument('--allinp',help='plot all input data',default = False, action = 'store_true')
     parser.add_argument('--unfold',help='Unfold the Umat', default = False,action = 'store_true')
     args = parser.parse_args()
 
-    main(cell1=args.c1, cell2=args.c2, somfile=args.som, threshold=args.freq_thres,outname=args.outname,allinp=args.allinp,unfold=args.unfold)
+    main(unit1=args.c1, unit2=args.c2, somfile=args.somfile, threshold=args.freq_thres,outname=args.outname,allinp=args.allinp,unfold=args.unfold)
