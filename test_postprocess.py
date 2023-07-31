@@ -1,9 +1,7 @@
 import functools
 import pickle
 import matplotlib.pyplot as plt
-import newick
 import numpy as np
-import networkx as nx
 from quicksom_seq import som_seq
 from quicksom_seq import plot_umat
 from quicksom_seq.som_seq import seqmetric
@@ -16,6 +14,7 @@ from quicksom_seq.utils import models
 from quicksom_seq.analysis import dmatrix
 from quicksom_seq.analysis import cmatrix
 from quicksom_seq.analysis import mutation_pathway
+from quicksom_seq.analysis import classification
 
 somfile = 'testout/som.pickle'
 somfile_jax = 'testout/somjax.pickle'
@@ -91,42 +90,10 @@ plot_umat.main(somfile_jax,outname='testout/umat_minsptree_unfold_clst_jax',deli
 timer.stop()
 
 timer.start('Test k-neighbours')
-k=1
-knn = models.KNeighborsBMU(k)
-titles = ['_'.join(label.split('_')[1:]) for label in somobj.labels]
-types = [label.split('_')[0].replace('>','') for label in somobj.labels]
-bmus = np.asarray([np.ravel_multi_index(bmu,somobj.umat.shape) for bmu in somobj.bmus])
-dm = models.load_dmatrix(somobj)
-idxs_unclass,idxs_class,types_unclass,types_class,bmus_unclass,bmus_class = models.split_data(np.asarray(types),np.asarray(bmus),'unk')
-titles_unclass = [titles[idx] for idx in idxs_unclass]
-knn.fit(dm, bmus_class, types_class, bmus_unclass)
-f = open('testout/classification.csv','w')
-for idx,bmu,title in zip(idxs_unclass,bmus_unclass,titles_unclass):
-    predicted_type = knn.predict(bmu)
-    types[idx] = predicted_type
-    f.write(f'{title},{predicted_type}\n')
-f.close()
-plot_umat._plot_umat(somobj.umat,somobj.bmus,types,hideSeqs=False)
-plot_umat._plot_mstree(mstree_pairs, mstree_paths, somobj.umat.shape)
-plt.savefig('testout/umat_predicted.pdf')
-
-knn_jax = models.KNeighborsBMU(k)
-titles_jax = ['_'.join(label.split('_')[1:]) for label in somobj_jax.labels]
-types_jax = [label.split('_')[0].replace('>','') for label in somobj_jax.labels]
-bmus_jax = np.asarray([np.ravel_multi_index(bmu,somobj_jax.umat.shape) for bmu in somobj_jax.bmus])
-dm_jax = models.load_dmatrix(somobj_jax)
-idxs_unclass_jax,idxs_class_jax,types_unclass_jax,types_class_jax,bmus_unclass_jax,bmus_class_jax = models.split_data(np.asarray(types_jax),np.asarray(bmus_jax),'unk')
-titles_unclass_jax = [titles[idx] for idx in idxs_unclass_jax]
-knn_jax.fit(dm_jax, bmus_class_jax, types_class_jax, bmus_unclass_jax)
-f = open('testout/classification_jax.csv','w')
-for idx,bmu,title in zip(idxs_unclass_jax,bmus_unclass_jax,titles_unclass_jax):
-    predicted_type = knn_jax.predict(bmu)
-    types_jax[idx] = predicted_type
-    f.write(f'{title},{predicted_type}\n')
-f.close()
-plot_umat._plot_umat(somobj_jax.umat,somobj_jax.bmus,types_jax,hideSeqs=False)
-plot_umat._plot_mstree(mstree_pairs_jax, mstree_paths_jax, somobj_jax.umat.shape)
-plt.savefig('testout/umat_predicted_jax.pdf')
+classification.main(somfile=somfile, outname='testout/classification',
+                    delimiter='_', uclass='unk', k=1)
+classification.main(somfile=somfile_jax, outname='testout/classification_jax',
+                    delimiter='_', uclass='unk', k=1)
 timer.stop()
 
 timer.start('Test distance matrix')
