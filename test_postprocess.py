@@ -96,10 +96,10 @@ knn = models.KNeighborsBMU(k)
 titles = ['_'.join(label.split('_')[1:]) for label in somobj.labels]
 types = [label.split('_')[0].replace('>','') for label in somobj.labels]
 bmus = np.asarray([np.ravel_multi_index(bmu,somobj.umat.shape) for bmu in somobj.bmus])
-dmatrix = models.load_dmatrix(somobj)
+dm = models.load_dmatrix(somobj)
 idxs_unclass,idxs_class,types_unclass,types_class,bmus_unclass,bmus_class = models.split_data(np.asarray(types),np.asarray(bmus),'unk')
 titles_unclass = [titles[idx] for idx in idxs_unclass]
-knn.fit(dmatrix, bmus_class, types_class, bmus_unclass)
+knn.fit(dm, bmus_class, types_class, bmus_unclass)
 f = open('testout/classification.csv','w')
 for idx,bmu,title in zip(idxs_unclass,bmus_unclass,titles_unclass):
     predicted_type = knn.predict(bmu)
@@ -114,10 +114,10 @@ knn_jax = models.KNeighborsBMU(k)
 titles_jax = ['_'.join(label.split('_')[1:]) for label in somobj_jax.labels]
 types_jax = [label.split('_')[0].replace('>','') for label in somobj_jax.labels]
 bmus_jax = np.asarray([np.ravel_multi_index(bmu,somobj_jax.umat.shape) for bmu in somobj_jax.bmus])
-dmatrix_jax = models.load_dmatrix(somobj_jax)
+dm_jax = models.load_dmatrix(somobj_jax)
 idxs_unclass_jax,idxs_class_jax,types_unclass_jax,types_class_jax,bmus_unclass_jax,bmus_class_jax = models.split_data(np.asarray(types_jax),np.asarray(bmus_jax),'unk')
 titles_unclass_jax = [titles[idx] for idx in idxs_unclass_jax]
-knn_jax.fit(dmatrix_jax, bmus_class_jax, types_class_jax, bmus_unclass_jax)
+knn_jax.fit(dm_jax, bmus_class_jax, types_class_jax, bmus_unclass_jax)
 f = open('testout/classification_jax.csv','w')
 for idx,bmu,title in zip(idxs_unclass_jax,bmus_unclass_jax,titles_unclass_jax):
     predicted_type = knn_jax.predict(bmu)
