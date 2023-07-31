@@ -13,6 +13,8 @@ from quicksom_seq.utils import jax_imports
 from quicksom_seq.utils.Timer import Timer
 from quicksom_seq.utils import minsptree
 from quicksom_seq.utils import models
+from quicksom_seq.analysis import dmatrix
+from quicksom_seq.analysis import cmatrix
 
 somfile = 'testout/som.pickle'
 somfile_jax = 'testout/somjax.pickle'
@@ -29,6 +31,7 @@ somobj_jax.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
 bmus = list(zip(*somobj.bmus[0:100].T))
 bmus_jax = list(zip(*somobj_jax.bmus[0:100].T))
 timer.stop()
+"""
 
 timer.start('computing localadj between queries')
 localadj, paths = minsptree.get_localadjmat(somobj.umat,somobj.adj,bmus)
@@ -106,4 +109,32 @@ f.close()
 plot_umat._plot_umat(somobj.umat,somobj.bmus,types,hideSeqs=False)
 plot_umat._plot_mstree(mstree_pairs, mstree_paths, somobj.umat.shape)
 plt.savefig('testout/umat_predicted.pdf')
+
+knn_jax = models.KNeighborsBMU(k)
+titles_jax = ['_'.join(label.split('_')[1:]) for label in somobj_jax.labels]
+types_jax = [label.split('_')[0].replace('>','') for label in somobj_jax.labels]
+bmus_jax = np.asarray([np.ravel_multi_index(bmu,somobj_jax.umat.shape) for bmu in somobj_jax.bmus])
+dmatrix_jax = models.load_dmatrix(somobj_jax)
+idxs_unclass_jax,idxs_class_jax,types_unclass_jax,types_class_jax,bmus_unclass_jax,bmus_class_jax = models.split_data(np.asarray(types_jax),np.asarray(bmus_jax),'unk')
+titles_unclass_jax = [titles[idx] for idx in idxs_unclass_jax]
+knn_jax.fit(dmatrix_jax, bmus_class_jax, types_class_jax, bmus_unclass_jax)
+f = open('testout/classification_jax.csv','w')
+for idx,bmu,title in zip(idxs_unclass_jax,bmus_unclass_jax,titles_unclass_jax):
+    predicted_type = knn_jax.predict(bmu)
+    types_jax[idx] = predicted_type
+    f.write(f'{title},{predicted_type}\n')
+f.close()
+plot_umat._plot_umat(somobj_jax.umat,somobj_jax.bmus,types_jax,hideSeqs=False)
+plot_umat._plot_mstree(mstree_pairs_jax, mstree_paths_jax, somobj_jax.umat.shape)
+plt.savefig('testout/umat_predicted_jax.pdf')
+timer.stop()
+"""
+
+timer.start('Test distance matrix')
+dmobj = dmatrix.Dmatrix(somfile=somfile,querieslist=somobj.labels,output='testout/dmatrix',delimiter='_')
+dmobj_jax = dmatrix.Dmatrix(somfile=somfile_jax,querieslist=somobj_jax.labels,output='testout/dmatrix_jax',delimiter='_')
+timer.stop()
+
+timer.start('Test correlation matrix')
+cmatrix.Cmatrix(dmatrices=['testout/dmatrix.p','testout/dmatrix_jax.p'],labels=['dm','dm_jax'],outname='testout/cmatrix')
 timer.stop()

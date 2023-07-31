@@ -1,4 +1,3 @@
-import dmatrix
 import math
 import random
 import numpy as np
@@ -7,19 +6,20 @@ import seaborn as sns
 import pickle
 from scipy.stats import pearsonr
 import pylab
+from quicksom_seq.analysis import dmatrix
 
 class Cmatrix(object):
     """
     Correlation matrix
     """
-    def __init__(self,dmatrices,labels,outname,rand=True,replacement=True,sampling=1,tolerance=math.inf):
+    def __init__(self,dmatrices,labels,outname=None,rand=True,replacement=True,sampling=1,tolerance=math.inf):
         """
         """
         self.dmatrices = dmatrices
         #Load the Dataframe of each Dmatrix
         self.dfs = list()
-        for dmatrix in self.dmatrices:
-            df = pickle.load(open(dmatrix,'rb'))
+        for dm in self.dmatrices:
+            df = pickle.load(open(dm,'rb'))
             self.dfs.append(df)
         self.labels = labels
         self.outname = outname
@@ -32,6 +32,9 @@ class Cmatrix(object):
             raise ValueError ("Labels must have the same lenght than dmatrices")
 
         self.get_Cmatrix()
+        if self.outname != None:
+            self.plot()
+            self.save()
 
     def get_Cmatrix(self):
         """

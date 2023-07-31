@@ -1,7 +1,5 @@
-import quicksom.som
 import functools
 import os
-import seqdataloader as seqdataloader
 import numpy as np
 import scipy.sparse
 import torch
@@ -12,6 +10,11 @@ import seaborn as sns
 from adjustText import adjust_text
 import ast
 import warnings
+import functools
+from quicksom_seq.quicksom import som
+from quicksom_seq.som_seq import seqmetric,get_blosum62
+from quicksom_seq.utils import jax_imports
+from quicksom_seq.utils import seqdataloader
 
 def seqmetric(seqs1, seqs2, b62):
     nchar = 25
@@ -55,7 +58,7 @@ class Dmatrix(object):
     """
     Distance matrix
     """
-    def __init__(self, somfile=None, queries=None, output=None, load=None,  delimiter=None):
+    def __init__(self, somfile=None, queries=None, querieslist= None, output=None, load=None,  delimiter=None):
         """
         """
         #Parse initial data
@@ -63,38 +66,48 @@ class Dmatrix(object):
         self.delimiter = delimiter
 
         #Load an already calculated Dmatrix object
-        if load is not None and all(x is None for x in [somfile,queries]):
+        if load is not None and all(x is None for x in [somfile,queries,querieslist]):
             self.load = load
             self.df = pickle.load(open(load,'rb'))
             self.columns=self.df.columns
-        #Calculate a Dmatrix using a list of queries and a somfile
-        elif all(x is not None for x in [somfile,queries])  and load is None:
+        #Calculate a Dmatrix using a file/list of queries and a somfile
+        elif somfile is not None and (queries is not None or querieslist is not None) and load is None:
             with open(somfile, 'rb') as somaux:
-                self.som = pickle.load(somaux)
-            allbmus = self.som.bmus
+                self.somobj = pickle.load(somaux)
+            b62 = get_blosum62()
+            if self.somobj.jax:
+                self.somobj.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
+            else:
+                self.somobj.metric = functools.partial(seqmetric, b62=b62)
+            allbmus = self.somobj.bmus
             allbmus = list(zip(*allbmus.T))
-            titles = self.som.labels
+            titles = self.somobj.labels
             titles = [title.replace(">","") for title in titles]
-            f = open(queries,'r')
-            self.queries = list()
             self.bmus = list()
             self.indxs = list()
-            for query in f:
-                query = query.replace("\n","").replace('>','')
-                #indx = np.where(np.char.find(allbmus[:,-1,], query)>=0)
+            if queries is not None and querieslist is not None:
+                raise ValueError('just queries or querieslist not both')
+            elif queries is not None:
+                f = open(queries,'r')
+                self.queries = [query.replace("\n","").replace('>','') for query in f]
+            elif querieslist is not None:
+                self.queries = [query.replace('>','') for query in querieslist]
+            for query in self.queries:
                 indx = list(np.where(np.asarray(titles) == query)[0])
                 if len(indx) == 0:
-                    warnings.warn(f'The query: %s is not find in the som'%query)
+                    warnings.warn(f'The query: %s is not find in the somobj'%query)
                     continue
                 elif len(indx) > 1:
-                    warnings.warn(f'The query: %s is find multiple times in the som'%query)
+                    warnings.warn(f'The query: %s is find multiple times in the somobj'%query)
                 indx = indx[0]
                 self.bmus.append((int(allbmus[indx][0]),int(allbmus[indx][1])))
-                self.queries.append(query)
                 self.indxs.append(indx)
-            self.umat = self.som.umat
-            self.dim = self.som.umat.shape[0]
+            self.umat = self.somobj.umat
+            self.dim = self.somobj.umat.shape[0]
             self.get_SOMDmatrix()
+            if self.out != None:
+                self.plot(out=self.out)
+                self.save(out=self.out)
         else:
             raise ValueError("To initialize a Dmatrix either use 'load' or 'som+bmus+queries'")
 
@@ -189,13 +202,13 @@ if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser(description='')
-    parser.add_argument('-s', '--som', help = 'Som file', required = True)
+    parser.add_argument('-s', '--somfile', help = 'Som file', required = True)
     parser.add_argument('-q', '--queries', help = 'Sequences to be remmaped',required = True)
     parser.add_argument('-o', '--out', help = 'Output name for the dmatrix plot and pickle file',default='dmatrix')
     parser.add_argument('--deli',help = 'Delimiter to trim the queries tittles',default = None, type = str)
     args = parser.parse_args()
 
-    dmatrix = Dmatrix(somfile=args.som,
+    dmatrix = Dmatrix(somfile=args.somfile,
             queries=args.queries,
             output=args.out,
             delimiter=args.deli)
