@@ -5,7 +5,7 @@ The SOMseq package takes an MSA as input and uses a self-organizing map to compu
 
 SOMseq can be utilized as a Jupyter Notebook on their local machines or within a Google Colaboratory Notebook, supporting both CPUs and GPUs.
 
-[Google Collab](https://colab.research.google.com/drive/1xB2WhoygCt1EzjdadGwYzq5OtX27Q8IK#scrollTo=Dq3y42vftIoZ)
+[SOMseq Google Colab](https://colab.research.google.com/drive/1xB2WhoygCt1EzjdadGwYzq5OtX27Q8IK#scrollTo=Dq3y42vftIoZ)
 
 
 
