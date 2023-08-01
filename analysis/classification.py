@@ -4,7 +4,7 @@ from quicksom_seq import plot_umat
 import matplotlib.pyplot as plt
 
 
-def main(somfile, outname, delimiter, uclass, k, plot_ext):
+def main(somfile, outname, delimiter, uclass, k, plot_ext='png'):
     knn = models.KNeighborsBMU(k)
     somobj = models.load_som(somfile)
     titles = [delimiter.join(label.split(delimiter)[1:])
