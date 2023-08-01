@@ -14,7 +14,7 @@ aalist = list('ABCDEFGHIKLMNPQRSTVWXYZ|-')
 timer = Timer(autoreset=True)
 
 
-def main(unit1,unit2,somfile,outname,threshold=0.2,allinp=False,unfold=False,verbose = True):
+def main(unit1,unit2,somfile,outname,threshold=0.2,allinp=False,unfold=False,verbose=True,plot_ext='png'):
 
     #Load and safecheck the data
     if len(unit1) != 2:
@@ -184,7 +184,7 @@ def main(unit1,unit2,somfile,outname,threshold=0.2,allinp=False,unfold=False,ver
                 plt.scatter(bmu[1], bmu[0],c='blue',s=2)
 
 
-    plt.savefig(outname+'.pdf',dpi=500)
+    plt.savefig(outname+'.'+plot_ext,dpi=500)
     plt.show()
 
 if __name__ == '__main__':
@@ -198,6 +198,8 @@ if __name__ == '__main__':
     parser.add_argument('--freq_thres', help = 'Frequency threshold to assign the most frequent residue for each site', default = 0.2)
     parser.add_argument('--allinp',help='plot all input data',default = False, action = 'store_true')
     parser.add_argument('--unfold',help='Unfold the Umat', default = False,action = 'store_true')
+    parser.add_argument('--plot_ext', help='Filetype extension for'
+                        ' the UMAT plots (default: png)', default='png')
     args = parser.parse_args()
 
-    main(unit1=args.c1, unit2=args.c2, somfile=args.somfile, threshold=args.freq_thres,outname=args.outname,allinp=args.allinp,unfold=args.unfold)
+    main(unit1=args.c1, unit2=args.c2, somfile=args.somfile, threshold=args.freq_thres,outname=args.outname,allinp=args.allinp,unfold=args.unfold,plot_ext=args.plot_ext)

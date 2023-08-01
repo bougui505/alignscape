@@ -58,12 +58,13 @@ class Dmatrix(object):
     """
     Distance matrix
     """
-    def __init__(self, somfile=None, queries=None, querieslist= None, output=None, load=None,  delimiter=None):
+    def __init__(self, somfile=None, queries=None, querieslist= None, output=None, load=None,  delimiter=None, plot_ext='png'):
         """
         """
         #Parse initial data
         self.out = output
         self.delimiter = delimiter
+        self.plot_ext=plot_ext
 
         #Load an already calculated Dmatrix object
         if load is not None and all(x is None for x in [somfile,queries,querieslist]):
@@ -182,11 +183,11 @@ class Dmatrix(object):
 
         #Save the plot
         if out == None and self.out != None:
-            plt.savefig("%s.pdf"%self.out,dpi = 300)
+            plt.savefig("%s.%s"%(self.out,self.plot_ext),dpi = 300)
         elif out != None:
-            plt.savefig("%s.pdf"%out,dpi = 300)
+            plt.savefig("%s.%s"%(out,self.plot_ext),dpi = 300)
         else:
-            plt.savefig("dmatrix.pdf",dpi = 300)
+            plt.savefig("dmatrix.%s"%self.plot_ext,dpi = 300)
 
     def update(self,dmatrix2):
         """
@@ -206,11 +207,14 @@ if __name__ == '__main__':
     parser.add_argument('-q', '--queries', help = 'Sequences to be remmaped',required = True)
     parser.add_argument('-o', '--out', help = 'Output name for the dmatrix plot and pickle file',default='dmatrix')
     parser.add_argument('--deli',help = 'Delimiter to trim the queries tittles',default = None, type = str)
+    parser.add_argument('--plot_ext', help='Filetype extension for'
+                        ' the UMAT plots (default: png)', default='png')
     args = parser.parse_args()
 
     dmatrix = Dmatrix(somfile=args.somfile,
             queries=args.queries,
             output=args.out,
-            delimiter=args.deli)
+            delimiter=args.deli,
+            plot_ext=args.plot_ext)
     dmatrix.plot()
     dmatrix.save()

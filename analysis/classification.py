@@ -4,7 +4,7 @@ from quicksom_seq import plot_umat
 import matplotlib.pyplot as plt
 
 
-def main(somfile, outname, delimiter, uclass, k):
+def main(somfile, outname, delimiter, uclass, k, plot_ext):
     knn = models.KNeighborsBMU(k)
     somobj = models.load_som(somfile)
     titles = [delimiter.join(label.split(delimiter)[1:])
@@ -24,7 +24,7 @@ def main(somfile, outname, delimiter, uclass, k):
         f.write(f'{title},{predicted_type}\n')
     f.close()
     plot_umat._plot_umat(somobj.umat, somobj.bmus, types, hideSeqs=False)
-    plt.savefig(outname+'.pdf')
+    plt.savefig(outname+'.'+plot_ext)
 
 
 if __name__ == '__main__':
@@ -40,7 +40,9 @@ if __name__ == '__main__':
                         'unclassified sequences', required=True)
     parser.add_argument('-k', '--k', help='K of k-neighbours alhorithm',
                         default=2)
+    parser.add_argument('--plot_ext', help='Filetype extension for'
+                        ' the UMAT plots (default: png)', default='png')
 
     args = parser.parse_args()
     main(somfile=args.somfile, outname=args.outname, delimiter=args.delimiter,
-         uclass=args.uclass, k=args.k)
+         uclass=args.uclass, k=args.k, plot_ext=args.plot_ext)
