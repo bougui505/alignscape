@@ -3,7 +3,7 @@
 
 The SOMseq package takes an MSA as input and uses a self-organizing map to compute the sequence landscape of the input data.
 
-![GitFigure](https://github.com/bougui505/quicksom_seq/assets/27772386/45d27201-2085-466f-9ac8-9fdce39a3b7a)
+![GitFigure](https://github.com/bougui505/quicksom_seq/assets/27772386/39490a0b-8802-4ec1-9fcc-8bbee90a1fca)
 
 SOMseq can be utilized as a Jupyter Notebook on their local machines or within a Google Colaboratory Notebook, supporting both CPUs and GPUs.
 
