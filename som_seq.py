@@ -154,10 +154,8 @@ def score_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC
         scores = scores + max_gaps_aggregated * gap_s + max_exts_aggregated * gap_e
     else:
         for i in range(len(vec1)):
-            # scores.shape = (a, b) with a: size of batch and b size of SOM
             scores[i] += torch.maximum(gaps1[i, ...], gaps2).sum(axis=1) * gap_s
             scores[i] += torch.maximum(exts1[i, ...], exts2).sum(axis=1) * gap_e
-        # scores = list(scores.to('cpu').numpy())
     if len(scores) == 1:
         return scores[0]
     else:
@@ -165,17 +163,6 @@ def score_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC
 
 
 def iscore_matrix_vec(vec1, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC44=None, verbose=False):
-    """
-    >>> batch = 10
-    >>> sites = 750
-    >>> vec1 = torch.ones(batch, sites, 25)
-    >>> b62 = torchify(get_blosum62())
-    >>> scores = iscore_matrix_vec(vec1, b62=b62, verbose=True)
-    vec1[..., :-2]: torch.Size([10, 750, 23])
-    matv2.shape: torch.Size([10, 23, 750])
-    >>> scores.shape
-    torch.Size([10])
-    """
     if dtype == 'prot':
         matrix = b62
     elif dtype == 'nucl':
@@ -353,12 +340,9 @@ def main(ali=None,
 
 if __name__ == '__main__':
     import argparse
-    import doctest
     import sys
 
-    # argparse.ArgumentParser(prog=None, usage=None, description=None, epilog=None, parents=[], formatter_class=argparse.HelpFormatter, prefix_chars='-', fromfile_prefix_chars=None, argument_default=None, conflict_handler='error', add_help=True, allow_abbrev=True, exit_on_error=True)
     parser = argparse.ArgumentParser(description='')
-    # parser.add_argument(name or flags...[, action][, nargs][, const][, default][, type][, choices][, required][, help][, metavar][, dest])
     parser.add_argument('-a', '--aln', help='Alignment file')
     parser.add_argument('-b', '--batch', help='Batch size (default: 10)', default=10, type=int)
     parser.add_argument('--somside', help='Size of the side of the square SOM (default: 50)', default=50, type=int)
@@ -374,12 +358,7 @@ if __name__ == '__main__':
                         default='exp')
     parser.add_argument('-j', '--jax', help='To use the jax version', action='store_true')
     parser.add_argument('--load', help='Load the given som pickle file and use it as starting point for a new training')
-    parser.add_argument('--test', help='Test the code', action='store_true')
     args = parser.parse_args()
-
-    if args.test:
-        doctest.testmod(optionflags=doctest.ELLIPSIS | doctest.REPORT_ONLY_FIRST_FAILURE)
-        sys.exit()
 
     main(ali=args.aln,
          batch_size=args.batch,
