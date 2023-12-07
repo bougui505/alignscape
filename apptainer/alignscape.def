@@ -1,0 +1,22 @@
+BOOTSTRAP: docker
+FROM: debian:12.1
+
+%post
+################################# APT INSTALL #################################
+apt-get update
+apt-get install -y python3-pip python3-biopython python3-matplotlib python3-scipy \
+                   python3-pandas python3-seaborn python3-tqdm python3-networkx \
+                   python3-skimage python3-sklearn python3-termcolor python3-dill
+###############################################################################
+
+################################# PYTORCH #################################
+pip3 install --break-system-packages torch torchvision torchaudio
+###########################################################################
+
+################################# PIP PACKAGES ############################
+pip3 install --break-system-packages adjustText
+###########################################################################
+
+############################ QUICKSOM #####################################
+pip3 install --break-system-packages quicksom
+###########################################################################
