@@ -16,7 +16,8 @@ set -x
 MYTMP=$(mktemp -d)  # Temporary directory for the current script. Use it to put temporary files.
 trap 'rm -rvf "$MYTMP"' EXIT INT  # Will be removed at the end of the script
 
+ALIGNSCAPEDIR="/usr/local/lib/python3.11/dist-packages/alignscape"
+
 [ ! -d testout ] && mkdir testout
-head -60 ../data/T6SS/TssB/TssB.fasta > $MYTMP/TssB60.fasta
-cd ..
-singularity run --nv apptainer/alignscape.sif ./som_seq.py -a $MYTMP/TssB60.fasta -b 10 --nepochs 1 --alpha 0.5 -o testout/som
+singularity run alignscape.sif head -60 $ALIGNSCAPEDIR/data/T6SS/TssB/TssB.fasta > $MYTMP/TssB60.fasta
+singularity run --nv alignscape.sif $ALIGNSCAPEDIR/som_seq.py -a $MYTMP/TssB60.fasta -b 10 --nepochs 1 --alpha 0.5 -o testout/som

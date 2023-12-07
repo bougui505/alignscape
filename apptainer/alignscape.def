@@ -6,7 +6,8 @@ FROM: debian:12.1
 apt-get update
 apt-get install -y python3-pip python3-biopython python3-matplotlib python3-scipy \
                    python3-pandas python3-seaborn python3-tqdm python3-networkx \
-                   python3-skimage python3-sklearn python3-termcolor python3-dill
+                   python3-skimage python3-sklearn python3-termcolor python3-dill \
+                   git
 ###############################################################################
 
 ################################# PYTORCH #################################
@@ -17,6 +18,12 @@ pip3 install --break-system-packages torch torchvision torchaudio
 pip3 install --break-system-packages adjustText
 ###########################################################################
 
+########################## ALIGNSCAPE #####################################
+cd /usr/local/lib/python3.11/dist-packages \
+    && git clone --single-branch --branch dev https://github.com/bougui505/alignscape.git
+###########################################################################
+
 ############################ QUICKSOM #####################################
-pip3 install --break-system-packages quicksom
+cd /usr/local/lib/python3.11/dist-packages/alignscape \
+    && git clone https://github.com/bougui505/quicksom.git
 ###########################################################################
