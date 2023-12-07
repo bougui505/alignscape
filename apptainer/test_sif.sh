@@ -20,4 +20,4 @@ ALIGNSCAPEDIR="/usr/local/lib/python3.11/dist-packages/alignscape"
 
 [ ! -d testout ] && mkdir testout
 singularity run alignscape.sif head -60 $ALIGNSCAPEDIR/data/T6SS/TssB/TssB.fasta > $MYTMP/TssB60.fasta
-singularity run --nv alignscape.sif $ALIGNSCAPEDIR/som_seq.py -a $MYTMP/TssB60.fasta -b 10 --nepochs 1 --alpha 0.5 -o testout/som
+singularity run --nv alignscape.sif $ALIGNSCAPEDIR/som_seq.py -a $MYTMP/TssB60.fasta -b 10 --nepochs 100 --alpha 0.5 -o testout/som
