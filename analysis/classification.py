@@ -1,6 +1,6 @@
 import numpy as np
-from quicksom_seq.utils import models
-from quicksom_seq import plot_umat
+from alignscape.utils import models
+from alignscape import plot_umat
 import matplotlib.pyplot as plt
 
 

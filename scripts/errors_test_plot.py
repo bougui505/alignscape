@@ -2,9 +2,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-kinome_data = '/home/ifilella/Projects/quicksom_seq/results/kinome_article/QE_TE_erorrs/kinome_errors.csv'
-gpcrs_data = '/home/ifilella/Projects/quicksom_seq/results/gpcrs_article/QE_TE_erorrs/gpcrs_errors.csv'
-tssb_data = '/home/ifilella/Projects/quicksom_seq/results/TssB_article/QE_TE_erorrs/TssB_errors.csv'
+kinome_data = '/home/ifilella/Projects/alignscape/results/kinome_article/QE_TE_erorrs/kinome_errors.csv'
+gpcrs_data = '/home/ifilella/Projects/alignscape/results/gpcrs_article/QE_TE_erorrs/gpcrs_errors.csv'
+tssb_data = '/home/ifilella/Projects/alignscape/results/TssB_article/QE_TE_erorrs/TssB_errors.csv'
 labels = ['Kinome','GPCRs','TssB']
 f_QE = plt.figure(1)
 f_TE = plt.figure(2)

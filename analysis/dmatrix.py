@@ -11,10 +11,10 @@ from adjustText import adjust_text
 import ast
 import warnings
 import functools
-from quicksom_seq.quicksom import som
-from quicksom_seq.som_seq import seqmetric,get_blosum62
-from quicksom_seq.utils import jax_imports
-from quicksom_seq.utils import seqdataloader
+from alignscape.quicksom import som
+from alignscape.som_seq import seqmetric,get_blosum62
+from alignscape.utils import jax_imports
+from alignscape.utils import seqdataloader
 
 def seqmetric(seqs1, seqs2, b62):
     nchar = 25

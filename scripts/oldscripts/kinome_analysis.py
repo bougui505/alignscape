@@ -5,7 +5,7 @@ import numpy as np
 
 #Total sequences and different families from database
 """
-data = '/work/ifilella/quicksom_seq/data/Human_kinome/human_kinome.fasta'
+data = '/work/ifilella/alignscape/data/Human_kinome/human_kinome.fasta'
 fa = fastaf.fastaf(data,fulltitle=True)
 print('Total sequences: %d'%len(fa.homolseqs))
 titles = [seq.title for seq in fa.homolseqs]
@@ -17,7 +17,7 @@ print('Families: ',set(families2))
 
 #Clustering
 """
-out = '/work/ifilella/quicksom_seq/data/Human_kinome/human_kinome.99.fasta'
+out = '/work/ifilella/alignscape/data/Human_kinome/human_kinome.99.fasta'
 subprocess.run("cd-hit -i %s -o %s -c 0.99"%(data,out),shell=True,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
 output = subprocess.run("grep '>' %s | wc"%out, shell=True,capture_output=True)
 totalseqs = int(output.stdout.split()[0])
@@ -57,7 +57,7 @@ print(np.mean(identities))
 
 #Total sequences and different families from MSA from the nature paper
 """
-data = '/work/ifilella/quicksom_seq/data/Human_kinome/human_kinome_nature_inf_upper.aln'
+data = '/work/ifilella/alignscape/data/Human_kinome/human_kinome_nature_inf_upper.aln'
 fa = fastaf.fastaf(data,fulltitle=True)
 print('Total sequences: %d'%len(fa.homolseqs))
 titles = [seq.title for seq in fa.homolseqs]
@@ -67,7 +67,7 @@ print('Families: ',set(families))
 
 #Overlapings
 """
-bmus = np.genfromtxt('/work/ifilella/quicksom_seq/Kinome/90x90_200e/kinome_bmus.txt',dtype=str)
+bmus = np.genfromtxt('/work/ifilella/alignscape/Kinome/90x90_200e/kinome_bmus.txt',dtype=str)
 bmudic = {}
 for bmu in bmus:
     key = (bmu[0],bmu[1])

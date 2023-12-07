@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from adjustText import adjust_text
 import ast
 from random import randint
-sys.path.insert(1, '/work/ifilella/quicksom_seq')
+sys.path.insert(1, '/work/ifilella/alignscape')
 import seqdataloader as seqdataloader
 import som_seq
 import jax_imports

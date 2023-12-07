@@ -4,11 +4,11 @@ import functools
 import numpy as np
 import matplotlib.pyplot as plt
 from adjustText import adjust_text
-from quicksom_seq.utils.Timer import Timer
-from quicksom_seq.som_seq import get_blosum62,seqmetric
-from quicksom_seq.utils import jax_imports
-from quicksom_seq.utils import seqdataloader
-from quicksom_seq.utils import minsptree
+from alignscape.utils.Timer import Timer
+from alignscape.som_seq import get_blosum62,seqmetric
+from alignscape.utils import jax_imports
+from alignscape.utils import seqdataloader
+from alignscape.utils import minsptree
 
 aalist = list('ABCDEFGHIKLMNPQRSTVWXYZ|-')
 timer = Timer(autoreset=True)

@@ -5,13 +5,13 @@ import fastaf
 import ast
 import os
 
-fsubtypes = '/home/ifilella/Projects/quicksom_seq/data/T6SS/subtypes.txt'
+fsubtypes = '/home/ifilella/Projects/alignscape/data/T6SS/subtypes.txt'
 f = open(fsubtypes, 'r')
 contents = f.read()
 dsubtypes = ast.literal_eval(contents)
 f.close()
 prot = 'VgrG'
-directory = '/home/ifilella/Projects/quicksom_seq/data/T6SS/' + prot
+directory = '/home/ifilella/Projects/alignscape/data/T6SS/' + prot
 print(dsubtypes)
 exit()
 queries = []

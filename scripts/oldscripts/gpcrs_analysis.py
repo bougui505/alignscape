@@ -4,8 +4,8 @@ import numpy as np
 
 """
 #Data
-data = '/work/ifilella/quicksom_seq/data/Human_gpcr/pcbi.1004805.s002.csv'
-alif = '/work/ifilella/quicksom_seq/data/Human_gpcr/gross-alignment.aln'
+data = '/work/ifilella/alignscape/data/Human_gpcr/pcbi.1004805.s002.csv'
+alif = '/work/ifilella/alignscape/data/Human_gpcr/gross-alignment.aln'
 
 #Data parsing
 data = np.genfromtxt(data,dtype=str,delimiter=',',skip_header=1)
@@ -31,12 +31,12 @@ for i in filtindxs:
     del ali.homolseqs[i]
 
 ali.do_shuffle_homolseqs()
-ali.print_fasta('/work/ifilella/quicksom_seq/data/Human_gpcr/gpcrs_human.aln')
+ali.print_fasta('/work/ifilella/alignscape/data/Human_gpcr/gpcrs_human.aln')
 """
 
 #Print all families
 """
-faf = '/work/ifilella/quicksom_seq/data/Human_gpcr/gpcrs_human_inf.99.aln'
+faf = '/work/ifilella/alignscape/data/Human_gpcr/gpcrs_human_inf.99.aln'
 fa = fastaf.fastaf(faf,fulltitle=True)
 print('Total sequences: %d'%len(fa.homolseqs))
 titles = [seq.title for seq in fa.homolseqs]
@@ -46,7 +46,7 @@ print('Families: ',set(families))
 
 #Overlapings
 """
-bmus = np.genfromtxt('/work/ifilella/quicksom_seq/GPCRs/90x90_200e/gpcrs_bmus.txt',dtype=str)
+bmus = np.genfromtxt('/work/ifilella/alignscape/GPCRs/90x90_200e/gpcrs_bmus.txt',dtype=str)
 bmudic = {}
 for bmu in bmus:
     key = (bmu[0],bmu[1])

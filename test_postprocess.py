@@ -2,19 +2,19 @@ import functools
 import pickle
 import matplotlib.pyplot as plt
 import numpy as np
-from quicksom_seq import som_seq
-from quicksom_seq import plot_umat
-from quicksom_seq.som_seq import seqmetric
-from quicksom_seq.quicksom import somax
-from quicksom_seq.quicksom import som
-from quicksom_seq.utils import jax_imports
-from quicksom_seq.utils.Timer import Timer
-from quicksom_seq.utils import minsptree
-from quicksom_seq.utils import models
-from quicksom_seq.analysis import dmatrix
-from quicksom_seq.analysis import cmatrix
-from quicksom_seq.analysis import mutation_pathway
-from quicksom_seq.analysis import classification
+from alignscape import som_seq
+from alignscape import plot_umat
+from alignscape.som_seq import seqmetric
+from alignscape.quicksom import somax
+from alignscape.quicksom import som
+from alignscape.utils import jax_imports
+from alignscape.utils.Timer import Timer
+from alignscape.utils import minsptree
+from alignscape.utils import models
+from alignscape.analysis import dmatrix
+from alignscape.analysis import cmatrix
+from alignscape.analysis import mutation_pathway
+from alignscape.analysis import classification
 
 somfile = 'testout/som.pickle'
 somfile_jax = 'testout/somjax.pickle'

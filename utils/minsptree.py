@@ -8,8 +8,8 @@ from tqdm import tqdm
 import networkx as nx
 from skimage.feature import peak_local_max
 from sklearn.cluster import AgglomerativeClustering
-from quicksom_seq.utils.Timer import Timer
-from quicksom_seq.quicksom.utils import bmus_to_label
+from alignscape.utils.Timer import Timer
+from alignscape.quicksom.utils import bmus_to_label
 
 TIMER = Timer(autoreset=True)
 

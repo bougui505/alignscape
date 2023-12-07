@@ -3,14 +3,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from collections import OrderedDict
-from quicksom_seq.utils import models
-from quicksom_seq.models import KNeighborsBMU, KNeighborsB62
-from quicksom_seq import plot_umat
-from quicksom_seq import minsptree
+from alignscape.utils import models
+from alignscape.models import KNeighborsBMU, KNeighborsB62
+from alignscape import plot_umat
+from alignscape import minsptree
 
 if __name__ == '__main__':
 
-    datadir = '/home/cactus/ifilella/Projects/quicksom_seq/results/'
+    datadir = '/home/cactus/ifilella/Projects/alignscape/results/'
 
     #Load the alignments (as a dict)
     ali_kinome = '%skinome_article/alignments_kinome/human_kinome_nature_inf_upper_noPLK5.aln'%datadir

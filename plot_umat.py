@@ -4,13 +4,13 @@ from itertools import count
 import dill as pickle
 import functools
 import scipy.sparse.csgraph as csgraph
-from quicksom_seq.som_seq import seqmetric
-from quicksom_seq.som_seq import get_blosum62
-from quicksom_seq.quicksom import somax
-from quicksom_seq.quicksom import som
-from quicksom_seq.utils import minsptree
-from quicksom_seq.utils import jax_imports
-from quicksom_seq.utils.Timer import Timer
+from alignscape.som_seq import seqmetric
+from alignscape.som_seq import get_blosum62
+from alignscape.quicksom import somax
+from alignscape.quicksom import som
+from alignscape.utils import minsptree
+from alignscape.utils import jax_imports
+from alignscape.utils.Timer import Timer
 
 timer = Timer(autoreset=True)
 

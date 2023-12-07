@@ -6,7 +6,7 @@ import pickle
 import quicksom.som
 import quicksom.somax
 import functools
-sys.path.insert(2, '/work/ifilella/quicksom_seq')
+sys.path.insert(2, '/work/ifilella/alignscape')
 import som_seq
 import jax_imports
 import seqdataloader as seqdataloader

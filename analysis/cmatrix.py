@@ -6,7 +6,7 @@ import seaborn as sns
 import pickle
 from scipy.stats import pearsonr
 import pylab
-from quicksom_seq.analysis import dmatrix
+from alignscape.analysis import dmatrix
 
 class Cmatrix(object):
     """

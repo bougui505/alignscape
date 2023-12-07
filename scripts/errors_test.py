@@ -1,7 +1,7 @@
 import numpy as np
-from quicksom_seq import quicksom
-from quicksom_seq import som_seq
-from quicksom_seq.utils import seqdataloader
+from alignscape import quicksom
+from alignscape import som_seq
+from alignscape.utils import seqdataloader
 
 epochs2 = np.arange(start=1,stop=21,step=2)
 epochs5 = np.arange(start=24,stop=105,step=5)

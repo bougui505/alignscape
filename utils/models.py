@@ -4,10 +4,10 @@ import numpy as np
 from collections import Counter
 import matplotlib.pyplot as plt
 from operator import itemgetter
-from quicksom_seq.som_seq import get_blosum62,seqmetric
-from quicksom_seq.utils import jax_imports
-from quicksom_seq.utils import minsptree
-from quicksom_seq.quicksom import som
+from alignscape.som_seq import get_blosum62,seqmetric
+from alignscape.utils import jax_imports
+from alignscape.utils import minsptree
+from alignscape.quicksom import som
 
 def get_max_occurance(li):
     count_keys = list(Counter(li).keys())

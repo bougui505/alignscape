@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(1, '/home/ifilella/Projects/quicksom_seq')
+sys.path.insert(1, '/home/ifilella/Projects/alignscape')
 import fastaf
 import plot_umat
 import som_seq
@@ -10,17 +10,17 @@ import matplotlib.pyplot as plt
 import minsptree as mspt
 
 #Input data
-somfile1 = '/home/ifilella/Projects/quicksom_seq/results/PEFASES/PEFall/round1/som.pickle'
-somfile2 = '/home/ifilella/Projects/quicksom_seq/results/PEFASES/PEFall/round2/som.pickle'
-somfilePET = '/home/ifilella/Projects/quicksom_seq/results/PEFASES/PETonly/round2/som.pickle'
-peledata = '/home/ifilella/Projects/quicksom_seq/data/PEFASES/Final_ranking_PEF3.csv'
-outliersfile = '/home/ifilella/Projects/quicksom_seq/data/PEFASES/alignments/Final_fasta_PEF3.round1_output_rejected.fasta'
-glidedata= '/home/ifilella/Projects/quicksom_seq/data/PEFASES/Glide_score_PEF3.csv'
-bedata = '/home/ifilella/Projects/quicksom_seq/data/PEFASES/ranking_binding_energy.csv'
-oxydata = '/home/ifilella/Projects/quicksom_seq/data/PEFASES/ranking_oxyanion.csv'
-mhet = '/home/ifilella/Projects/quicksom_seq/data/PEFASES/MHET-like_sequences.fasta'
-pet = '/home/ifilella/Projects/quicksom_seq/data/PEFASES/PET-like_sequences.fasta'
-fsc = '/home/ifilella/Projects/quicksom_seq/data/PEFASES/FsC-like_sequences.fasta'
+somfile1 = '/home/ifilella/Projects/alignscape/results/PEFASES/PEFall/round1/som.pickle'
+somfile2 = '/home/ifilella/Projects/alignscape/results/PEFASES/PEFall/round2/som.pickle'
+somfilePET = '/home/ifilella/Projects/alignscape/results/PEFASES/PETonly/round2/som.pickle'
+peledata = '/home/ifilella/Projects/alignscape/data/PEFASES/Final_ranking_PEF3.csv'
+outliersfile = '/home/ifilella/Projects/alignscape/data/PEFASES/alignments/Final_fasta_PEF3.round1_output_rejected.fasta'
+glidedata= '/home/ifilella/Projects/alignscape/data/PEFASES/Glide_score_PEF3.csv'
+bedata = '/home/ifilella/Projects/alignscape/data/PEFASES/ranking_binding_energy.csv'
+oxydata = '/home/ifilella/Projects/alignscape/data/PEFASES/ranking_oxyanion.csv'
+mhet = '/home/ifilella/Projects/alignscape/data/PEFASES/MHET-like_sequences.fasta'
+pet = '/home/ifilella/Projects/alignscape/data/PEFASES/PET-like_sequences.fasta'
+fsc = '/home/ifilella/Projects/alignscape/data/PEFASES/FsC-like_sequences.fasta'
 
 
 #Load PELE data (~1500)
