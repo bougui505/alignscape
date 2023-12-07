@@ -20,7 +20,9 @@ pip3 install --break-system-packages adjustText
 
 ########################## ALIGNSCAPE #####################################
 cd /usr/local/lib/python3.11/dist-packages \
-    && git clone https://github.com/bougui505/alignscape.git
+    && git clone https://github.com/bougui505/alignscape.git \
+    && cd /usr/local/bin \
+    && ln -s /usr/local/lib/python3.11/dist-packages/alignscape/som_seq.py alignscape
 ###########################################################################
 
 ############################ QUICKSOM #####################################
