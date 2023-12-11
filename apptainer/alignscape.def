@@ -22,7 +22,7 @@ pip3 install --break-system-packages adjustText
 cd /usr/local/lib/python3.11/dist-packages \
     && git clone https://github.com/bougui505/alignscape.git \
     && cd /usr/local/bin \
-    && ln -s /usr/local/lib/python3.11/dist-packages/alignscape/alignscape.py alignscape
+    && ln -s /usr/local/lib/python3.11/dist-packages/alignscape/align_scape.py align_scape
 ###########################################################################
 
 ############################ QUICKSOM #####################################

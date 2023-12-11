@@ -18,7 +18,7 @@ for epoch in epochs[15:]:
     f_out.write('epochs,QE,TE\n')
     for i in range(repetitions):
         print(f'Epoch {epoch}, repetition {i}')
-        somobj = alignscape.main(ali=ali,batch_size=batch_size,outname='/data/ifilella/test',somside=somside,nepochs=epoch,scheduler="exp",alpha=alpha,sigma=np.sqrt(somside*somside)/4.0)
+        somobj = align_scape.main(ali=ali,batch_size=batch_size,outname='/data/ifilella/test',somside=somside,nepochs=epoch,scheduler="exp",alpha=alpha,sigma=np.sqrt(somside*somside)/4.0)
 
         quantization_error = np.mean(somobj.error)
 

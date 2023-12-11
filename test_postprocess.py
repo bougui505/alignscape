@@ -1,9 +1,9 @@
 import functools
 import pickle
 import numpy as np
-from alignscape import alignscape
+from alignscape import align_scape
 from alignscape import plot_umat
-from alignscape.alignscape import seqmetric
+from alignscape.align_scape import seqmetric
 from alignscape.utils.Timer import Timer
 from alignscape.utils import minsptree
 from alignscape.analysis import dmatrix
@@ -17,7 +17,7 @@ timer = Timer(autoreset=True)
 timer.start('loading the som')
 with open(somfile, 'rb') as somfileaux:
     somobj = pickle.load(somfileaux)
-b62 = alignscape.get_blosum62()
+b62 = align_scape.get_blosum62()
 somobj.metric = functools.partial(seqmetric, b62=b62)
 bmus = list(zip(*somobj.bmus[0:100].T))
 timer.stop()
