@@ -4,8 +4,8 @@ from itertools import count
 import dill as pickle
 import functools
 import scipy.sparse.csgraph as csgraph
-from alignscape.som_seq import seqmetric
-from alignscape.som_seq import get_blosum62
+from alignscape.alignscape import seqmetric
+from alignscape.alignscape import get_blosum62
 from alignscape.quicksom import somax
 from alignscape.quicksom import som
 from alignscape.utils import minsptree

@@ -2,9 +2,9 @@ import functools
 import pickle
 import matplotlib.pyplot as plt
 import numpy as np
-from alignscape import som_seq
+from alignscape import alignscape
 from alignscape import plot_umat
-from alignscape.som_seq import seqmetric
+from alignscape.alignscape import seqmetric
 from alignscape.quicksom import somax
 from alignscape.quicksom import som
 from alignscape.utils import jax_imports
@@ -25,7 +25,7 @@ with open(somfile, 'rb') as somfileaux:
     somobj = pickle.load(somfileaux)
 with open(somfile_jax, 'rb') as somfileaux:
     somobj_jax = pickle.load(somfileaux)
-b62 = som_seq.get_blosum62()
+b62 = alignscape.get_blosum62()
 somobj.metric = functools.partial(seqmetric, b62=b62)
 somobj_jax.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
 bmus = list(zip(*somobj.bmus[0:100].T))

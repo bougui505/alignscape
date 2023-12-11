@@ -2,7 +2,7 @@ import sys
 sys.path.insert(1, '/home/ifilella/Projects/alignscape')
 import fastaf
 import plot_umat
-import som_seq
+import alignscape
 import pickle
 import quicksom.som
 import functools
@@ -75,8 +75,8 @@ with open(somfile2, 'rb') as somfileaux:
     som2 = pickle.load(somfileaux)
 with open(somfilePET, 'rb') as somfileaux:
     somPET = pickle.load(somfileaux)
-b62 = som_seq.get_blosum62()
-som1.metric = functools.partial(som_seq.seqmetric, b62=b62)
+b62 = alignscape.get_blosum62()
+som1.metric = functools.partial(alignscape.seqmetric, b62=b62)
 bmus1 = list(zip(*som1.bmus.T))
 bmus2 = list(zip(*som2.bmus.T))
 bmusPET = list(zip(*somPET.bmus.T))

@@ -12,7 +12,7 @@ import ast
 import warnings
 import functools
 from alignscape.quicksom import som
-from alignscape.som_seq import seqmetric,get_blosum62
+from alignscape.alignscape import seqmetric,get_blosum62
 from alignscape.utils import jax_imports
 from alignscape.utils import seqdataloader
 

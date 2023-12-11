@@ -9,7 +9,7 @@
 #                                                                           #
 #  Redistribution and use in source and binary forms, with or without       #
 #  modification, are permitted provided that the following conditions       #
-#  are met:                                                                 #    
+#  are met:                                                                 #
 #                                                                           #
 #  1. Redistributions of source code must retain the above copyright        #
 #  notice, this list of conditions and the following disclaimer.            #
@@ -81,7 +81,7 @@ if [ $ALNDIR = 'None' ]; then
 fi
 
 if [ $SOMCMD = 'None' ]; then
-    echo "\nYou must specify a SOM command to run with -s, --somcmd option\ne.g.\n ./som_seq.py -b 50 --nepochs 10 --alpha 0.5 --periodic\n"
+    echo "\nYou must specify a SOM command to run with -s, --somcmd option\ne.g.\n ./alignscape.py -b 50 --nepochs 10 --alpha 0.5 --periodic\n"
     usage
     exit 1
 fi

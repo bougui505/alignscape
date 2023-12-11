@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from adjustText import adjust_text
 from alignscape.utils.Timer import Timer
-from alignscape.som_seq import get_blosum62,seqmetric
+from alignscape.alignscape import get_blosum62,seqmetric
 from alignscape.utils import jax_imports
 from alignscape.utils import seqdataloader
 from alignscape.utils import minsptree

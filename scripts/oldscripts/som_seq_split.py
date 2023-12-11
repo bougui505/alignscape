@@ -43,7 +43,7 @@ import numpy as np
 import torch
 from pathlib import Path
 import re
-import som_seq
+import alignscape
 
 file_pattern = re.compile(r'.*?(\d+).*?')
 
@@ -129,7 +129,7 @@ if __name__ == '__main__':
     for i, ali in enumerate(filelist):
         outname = f'soms/{baseoutname}_{i}.p'
         if i == 0:
-            som_seq.main(ali=ali,
+            alignscape.main(ali=ali,
                          batch_size=args.batch,
                          somside=args.somside,
                          nepochs=args.nepochs,
@@ -146,14 +146,14 @@ if __name__ == '__main__':
             # load previous SOM as starting point
             prev_som = f'soms/{baseoutname}_{i-1}.p'
             som = pickle.load(open(prev_som, 'rb'))
-            seqnames, sequences = som_seq.read_fasta(ali)
+            seqnames, sequences = alignscape.read_fasta(ali)
             seqnames = np.asarray(seqnames)
-            inputvectors = som_seq.vectorize(sequences, dtype='prot')
+            inputvectors = alignscape.vectorize(sequences, dtype='prot')
             inputvectors, seqnames = get_trainset(somobj=som,
                                                   dataset=inputvectors,
                                                   seqnames=seqnames,
                                                   memory=args.memory)
-            som_seq.main(inputvectors=inputvectors,
+            alignscape.main(inputvectors=inputvectors,
                          seqnames=seqnames,
                          batch_size=args.batch,
                          somside=args.somside,

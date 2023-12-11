@@ -7,7 +7,7 @@ import quicksom.som
 import quicksom.somax
 import functools
 sys.path.insert(2, '/work/ifilella/alignscape')
-import som_seq
+import alignscape
 import jax_imports
 import seqdataloader as seqdataloader
 import itertools
@@ -21,7 +21,7 @@ def main(somfile,bmusfile,outname='reumat.pdf',unfold=False,minsptree=False,save
     allbmus = np.genfromtxt(bmusfile, dtype=str, skip_header=1)
     with open(somfile, 'rb') as somfileaux:
             som = pickle.load(somfileaux)
-    b62 = som_seq.get_blosum62()
+    b62 = alignscape.get_blosum62()
     som.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
 
     #Parse the data

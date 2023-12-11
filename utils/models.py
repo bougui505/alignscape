@@ -4,7 +4,7 @@ import numpy as np
 from collections import Counter
 import matplotlib.pyplot as plt
 from operator import itemgetter
-from alignscape.som_seq import get_blosum62,seqmetric
+from alignscape.alignscape import get_blosum62,seqmetric
 from alignscape.utils import jax_imports
 from alignscape.utils import minsptree
 from alignscape.quicksom import som

@@ -12,7 +12,7 @@ import ast
 from random import randint
 sys.path.insert(1, '/work/ifilella/alignscape')
 import seqdataloader as seqdataloader
-import som_seq
+import alignscape
 import jax_imports
 import minsptree as msptree
 import scipy.sparse
@@ -28,7 +28,7 @@ def main(somfile,bmusfile,queriesfile,outname='reumat.pdf',delimiter=None,subtyp
     queries = open(queriesfile,'r')
     with open(somfile, 'rb') as somfileaux:
             som = pickle.load(somfileaux)
-    b62 = som_seq.get_blosum62()
+    b62 = alignscape.get_blosum62()
     som.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
     if subtypes != None:
         f = open(subtypes, 'r')

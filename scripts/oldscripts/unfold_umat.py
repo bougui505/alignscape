@@ -39,7 +39,7 @@
 import pickle
 import functools
 import jax_imports
-import som_seq
+import alignscape
 import matplotlib.pyplot as plt
 
 
@@ -74,7 +74,7 @@ if __name__ == '__main__':
 
     with open(args.som, 'rb') as somfile:
         som = pickle.load(somfile)
-    b62 = som_seq.get_blosum62()
+    b62 = alignscape.get_blosum62()
     som.metric = functools.partial(jax_imports.seqmetric_jax, b62=b62)
     som.compute_umat(unfold=True)
     plt.matshow(som.umat)

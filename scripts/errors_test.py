@@ -1,6 +1,6 @@
 import numpy as np
 from alignscape import quicksom
-from alignscape import som_seq
+from alignscape import alignscape
 from alignscape.utils import seqdataloader
 
 epochs2 = np.arange(start=1,stop=21,step=2)
@@ -18,7 +18,7 @@ for epoch in epochs[15:]:
     f_out.write('epochs,QE,TE\n')
     for i in range(repetitions):
         print(f'Epoch {epoch}, repetition {i}')
-        somobj = som_seq.main(ali=ali,batch_size=batch_size,outname='/data/ifilella/test',somside=somside,nepochs=epoch,scheduler="exp",alpha=alpha,sigma=np.sqrt(somside*somside)/4.0)
+        somobj = alignscape.main(ali=ali,batch_size=batch_size,outname='/data/ifilella/test',somside=somside,nepochs=epoch,scheduler="exp",alpha=alpha,sigma=np.sqrt(somside*somside)/4.0)
 
         quantization_error = np.mean(somobj.error)
 

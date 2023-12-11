@@ -422,7 +422,7 @@ def torch_test(torch_batch_vecs, torch_centroid_vecs, torch_b62):
 
     # TODO : This result is very surprising !
     #  The matrices have the same shape as in the SOM, there are on the GPU exactly the same
-    #  The distance code is a copy from the one run by som_seq.
+    #  The distance code is a copy from the one run by alignscape.
     #  However, on the gpu, functorch is MUCH faster for the som (0.0110 vs 0.00075)
     #    and approx the same here (native time double check:  0.0168, vec time triple check:  0.0151)
     #  I don't get it !
