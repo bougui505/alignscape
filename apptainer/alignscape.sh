@@ -15,4 +15,15 @@ set -o noclobber  # prevent overwritting redirection
 # Full path to the directory of the current script
 DIRSCRIPT="$(dirname "$(readlink -f "$0")")"
 
-singularity run --nv $DIRSCRIPT/alignscape.sif align_scape $@
+ARGS="$@"
+[ -z "$ARGS" ] && ARGS="-h"
+
+if [[ $(lspci | grep -c -i '.* vga .* nvidia .*') -gt 0 ]]; then
+    echo "GPU detected"
+    NVOPTION="--nv"
+else
+    echo "CPU only"
+    NVOPTION=""
+fi
+
+singularity run -B $(pwd) $NVOPTION $DIRSCRIPT/alignscape.sif align_scape $ARGS \

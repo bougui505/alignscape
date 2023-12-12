@@ -20,4 +20,12 @@ ALIGNSCAPEDIR="/usr/local/lib/python3.11/dist-packages/alignscape"
 
 [ ! -d testout ] && mkdir testout
 singularity run alignscape.sif head -60 $ALIGNSCAPEDIR/data/T6SS/TssB/TssB.fasta > $MYTMP/TssB60.fasta
-singularity run --nv alignscape.sif $ALIGNSCAPEDIR/align_scape.py -a $MYTMP/TssB60.fasta -b 10 --nepochs 100 --alpha 0.5 -o testout/som
+if [[ $(lspci | grep -c -i '.* vga .* nvidia .*') -gt 0 ]]; then
+    echo "GPU detected"
+    NVOPTION="--nv"
+else
+    echo "CPU only"
+    NVOPTION=""
+fi
+
+singularity run -B $(pwd) $NVOPTION alignscape.sif $ALIGNSCAPEDIR/align_scape.py -a $MYTMP/TssB60.fasta -b 10 --nepochs 100 -o testout/som
