@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from adjustText import adjust_text
-import ast
 import warnings
 import functools
 from alignscape.quicksom import som
