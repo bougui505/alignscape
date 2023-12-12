@@ -237,7 +237,7 @@ def load_localadjmat(localadjmat):
 def get_clusterized_umat(umat,adj,somsize,min_distance=7):
     local_min = peak_local_max(-umat, min_distance=min_distance)
     n_local_min = local_min.shape[0]
-    clusterer = AgglomerativeClustering(affinity='precomputed', linkage='average',n_clusters=n_local_min)
+    clusterer = AgglomerativeClustering(metric='precomputed', linkage='average',n_clusters=n_local_min)
     all_to_all_dist = csgraph.shortest_path(adj, directed=False)
     try:
         clustered_umat = clusterer.fit_predict(all_to_all_dist)
