@@ -82,7 +82,8 @@ def read_fasta(fastafilename, names=None):
 def get_blosum62():
     b62 = np.zeros((23, 23))
     for pair, value in substitution_matrices.load('BLOSUM62').items():
-        if '*' in pair: continue
+        if '*' in pair:
+            continue
         i0 = aalist.index(pair[0])
         i1 = aalist.index(pair[1])
         b62[i0, i1] = value
@@ -100,7 +101,8 @@ def torchify(x, device='cuda' if torch.cuda.is_available() else 'cpu'):
     return x
 
 
-def rscore_matrix_vec(vec1, vec2, dtype='prot', gap_s=5, gap_e=1, b62=None, NUC44=None):
+def rscore_matrix_vec(vec1, vec2, dtype='prot', gap_s=5, gap_e=1,
+                      b62=None, NUC44=None):
     """
     PyTorch Implementation
     """
@@ -119,12 +121,15 @@ def rscore_matrix_vec(vec1, vec2, dtype='prot', gap_s=5, gap_e=1, b62=None, NUC4
         vec2 = vec2[None, ...]
     nchars = len(aalist)
     rscore = np.shape(vec1)[1] * ((matrix.sum()) + nchars *
-                                  (gap_s + gap_e)) / (np.shape(matrix)[0] * np.shape(matrix)[1] + nchars * 2)
+                                  (gap_s + gap_e)) / (np.shape(matrix)[0]
+                                                      * np.shape(matrix)[1]
+                                                      + nchars * 2)
     rscores = torch.tile(rscore, (np.shape(vec1)[0], np.shape(vec2)[0]))
     return rscores
 
 
-def score_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC44=None):
+def score_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1,
+                     b62=None, NUC44=None):
     """
     PyTorch Implementation
     """
@@ -141,7 +146,8 @@ def score_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC
         vec1 = vec1[None, ...]
     if vec2.ndim == 2:
         vec2 = vec2[None, ...]
-    matv2 = torch.matmul(matrix[None, ...], torch.swapaxes(vec2[..., :-2], 1, 2))
+    matv2 = torch.matmul(matrix[None, ...],
+                         torch.swapaxes(vec2[..., :-2], 1, 2))
     scores = torch.einsum('aij,bji->ab', vec1[..., :-2], matv2)
     gaps1, gaps2 = vec1[..., -2], vec2[..., -2]
     exts1, exts2 = vec1[..., -1], vec2[..., -1]
@@ -151,18 +157,22 @@ def score_matrix_vec(vec1, vec2, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC
         max_gaps_aggregated = max_gaps.sum(axis=2)
         max_exts = vmax(exts1, exts2)
         max_exts_aggregated = max_exts.sum(axis=2)
-        scores = scores + max_gaps_aggregated * gap_s + max_exts_aggregated * gap_e
+        scores = scores + max_gaps_aggregated * gap_s + \
+            max_exts_aggregated * gap_e
     else:
         for i in range(len(vec1)):
-            scores[i] += torch.maximum(gaps1[i, ...], gaps2).sum(axis=1) * gap_s
-            scores[i] += torch.maximum(exts1[i, ...], exts2).sum(axis=1) * gap_e
+            scores[i] += torch.maximum(gaps1[i, ...], gaps2).sum(axis=1) \
+                * gap_s
+            scores[i] += torch.maximum(exts1[i, ...], exts2).sum(axis=1) \
+                * gap_e
     if len(scores) == 1:
         return scores[0]
     else:
         return scores
 
 
-def iscore_matrix_vec(vec1, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC44=None, verbose=False):
+def iscore_matrix_vec(vec1, dtype="prot", gap_s=-5, gap_e=-1,
+                      b62=None, NUC44=None, verbose=False):
     if dtype == 'prot':
         matrix = b62
     elif dtype == 'nucl':
@@ -173,7 +183,8 @@ def iscore_matrix_vec(vec1, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC44=No
     matrix = matrix.float()
     if vec1.ndim == 2:
         vec1 = vec1[None, ...]
-    matv2 = torch.matmul(matrix[None, ...], torch.swapaxes(vec1[..., :-2], 1, 2))
+    matv2 = torch.matmul(matrix[None, ...],
+                         torch.swapaxes(vec1[..., :-2], 1, 2))
     if verbose:
         print(f"vec1[..., :-2]: {vec1[..., :-2].shape}")
         print(f"matv2.shape: {matv2.shape}")
@@ -187,7 +198,7 @@ def iscore_matrix_vec(vec1, dtype="prot", gap_s=-5, gap_e=-1, b62=None, NUC44=No
 
 
 def seqmetric(seqs1, seqs2, b62):
-    #seqs1 is the batch of input vectors and seqs2 the SOM
+    # seqs1 is the batch of input vectors and seqs2 the SOM
     nchar = 25
     batch_size = seqs1.shape[0]
     seqlenght = seqs1.shape[-1] // nchar
@@ -205,7 +216,7 @@ def seqmetric(seqs1, seqs2, b62):
 
     iscores = (iscores1.reshape(-1, 1) + iscores2) / 2
 
-    #Compute the B62 based distance
+    # Compute the B62 based distance
     denominators = iscores - rscores
     nominators = scores - rscores
     nominators[nominators < 0] = 0.001
@@ -214,8 +225,10 @@ def seqmetric(seqs1, seqs2, b62):
 
     return dists
 
-def bmu_to_label(bmu,label, bmus):
+
+def bmu_to_label(bmu, label, bmus):
     pass
+
 
 def main(ali=None,
          batch_size=None,
@@ -249,8 +262,7 @@ def main(ali=None,
                                              shuffle=True,
                                              num_workers=num_workers,
                                              pin_memory=True,
-                                             worker_init_fn=functools.partial(seqdataloader.workinit,
-                                                                              fastafilename=ali))
+                                             worker_init_fn=functools.partial(seqdataloader.workinit,fastafilename=ali))
     n_inp = dataset.__len__()
     print('n_input:', n_inp)
     dim = dataset.__dim__()
@@ -272,26 +284,26 @@ def main(ali=None,
     else:
         if use_jax:
             somobj = somax.SOM(somside,
-                                     somside,
-                                     device=device,
-                                     n_epoch=nepochs,
-                                     dim=dim,
-                                     alpha=alpha,
-                                     sigma=sigma,
-                                     periodic=periodic,
-                                     metric=functools.partial(jax_imports.seqmetric_jax, b62=b62),
-                                     sched=scheduler)
+                               somside,
+                               device=device,
+                               n_epoch=nepochs,
+                               dim=dim,
+                               alpha=alpha,
+                               sigma=sigma,
+                               periodic=periodic,
+                               metric=functools.partial(jax_imports.seqmetric_jax, b62=b62),
+                               sched=scheduler)
             somobj.jax = True
         else:
             somobj = som.SOM(somside,
-                                   somside,
-                                   n_epoch=nepochs,
-                                   dim=dim,
-                                   alpha=alpha,
-                                   sigma=sigma,
-                                   periodic=periodic,
-                                   metric=functools.partial(seqmetric, b62=b62),
-                                   sched=scheduler)
+                             somside,
+                             n_epoch=nepochs,
+                             dim=dim,
+                             alpha=alpha,
+                             sigma=sigma,
+                             periodic=periodic,
+                             metric=functools.partial(seqmetric, b62=b62),
+                             sched=scheduler)
             somobj.jax = False
     somobj.to_device(device)
 
@@ -300,22 +312,23 @@ def main(ali=None,
     if somobj.alpha is not None:
         print('alpha:', somobj.alpha)
     somobj.fit(dataset=dataloader,
-            batch_size=batch_size,
-            do_compute_all_dists=False,
-            unfold=False,
-            normalize_umat=False,
-            sigma=sigma,
-            alpha=alpha,
-            logfile=f'{baseoutname}.log')
+               batch_size=batch_size,
+               do_compute_all_dists=False,
+               unfold=False,
+               normalize_umat=False,
+               sigma=sigma,
+               alpha=alpha,
+               logfile=f'{baseoutname}.log')
     print('Computing BMUS')
-    somobj.bmus, somobj.error, somobj.labels = somobj.predict(dataset=dataset,
-                                                  batch_size=batch_size,
-                                                  return_density=False,
-                                                  num_workers=1,
-                                                  return_errors=False)
+    somobj.bmus, somobj.error, somobj.labels = \
+        somobj.predict(dataset=dataset, batch_size=batch_size,
+                       return_density=False, num_workers=1,
+                       return_errors=False)
 
     index = np.arange(len(somobj.bmus))
-    out_arr = np.zeros(n_inp, dtype=[('bmu_r', int), ('bmu_c', int), ('error', float), ('index', int), ('label', 'U512')])
+    out_arr = np.zeros(n_inp, dtype=[('bmu_r', int), ('bmu_c', int),
+                                     ('error', float), ('index', int),
+                                     ('label', 'U512')])
     out_arr['bmu_r'] = somobj.bmus[:, 0]
     out_arr['bmu_c'] = somobj.bmus[:, 1]
     out_arr['error'] = somobj.error
@@ -323,9 +336,11 @@ def main(ali=None,
     out_arr['label'] = somobj.labels
     out_fmt = ['%d', '%d', '%.4g', '%d', '%s']
     out_header = '#bmu_r #bmu_c #error #index #label'
-    np.savetxt(f"{baseoutname}_bmus.txt", out_arr, fmt=out_fmt, header=out_header, comments='')
+    np.savetxt(f"{baseoutname}_bmus.txt", out_arr, fmt=out_fmt,
+               header=out_header, comments='')
     # f = open(f"{baseoutname}_errors.txt", "w")
-    # f.write("#quantification_error #topo_error\n%.8f %.8f" % (quantification_error, topo_error))
+    # f.write("#quantification_error #topo_error\n%.8f %.8f" \
+    #        % (quantification_error, topo_error))
     if doplot:
         import matplotlib.pyplot as plt
         plt.switch_backend('agg')
@@ -338,34 +353,48 @@ def main(ali=None,
     somobj.save_pickle(f'{baseoutname}.pickle')
     return somobj
 
+
 if __name__ == '__main__':
     import argparse
-    import sys
 
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('-a', '--aln', help='Alignment file')
-    parser.add_argument('-b', '--batch', help='Batch size (default: 10)', default=10, type=int)
-    parser.add_argument('--somside', help='Size of the side of the square SOM (default: 50)', default=50, type=int)
-    parser.add_argument('--alpha', help='learning rate', default=None, type=float)
-    parser.add_argument('--sigma', help='Learning radius for the SOM', default=None, type=float)
-    parser.add_argument('--nepochs', help='Number of SOM epochs (default: 2)', default=2, type=int)
-    parser.add_argument("-o", "--out_name", default='som', help="basename (default som)")
-    parser.add_argument('--noplot', help='Do not plot the resulting U-matrix', action='store_false', dest='doplot')
-    parser.add_argument('--plot_ext', help='Filetype extension for the U-matrix plot (default: pdf)', default='pdf')
-    parser.add_argument('--noperiodic', help='Non periodic toroidal SOM', action='store_false', default=True)
+    parser.add_argument('-b', '--batch', help='Batch size (default: 10)',
+                        default=10, type=int)
+    parser.add_argument('--somside', help='Size of the side of the square \
+                        SOM (default: 50)', default=50, type=int)
+    parser.add_argument('--alpha', help='learning rate', default=0.5,
+                        type=float)
+    parser.add_argument('--sigma', help='Learning radius for the SOM',
+                        default=None, type=float)
+    parser.add_argument('--nepochs', help='Number of SOM epochs (default: 2)',
+                        default=2, type=int)
+    parser.add_argument("-o", "--out_name", default='som',
+                        help="basename (default som)")
+    parser.add_argument('--noplot', help='Do not plot the resulting U-matrix',
+                        action='store_false', dest='doplot')
+    parser.add_argument('--plot_ext', help='Filetype extension for the \
+                        U-matrix plot (default: pdf)', default='pdf')
+    parser.add_argument('--noperiodic', help='Non periodic toroidal SOM',
+                        action='store_false', default=True)
     parser.add_argument('--scheduler',
-                        help='Which scheduler to use, can be linear, exp or half (exp by default)',
-                        default='exp')
-    parser.add_argument('-j', '--jax', help='To use the jax version', action='store_true')
-    parser.add_argument('--load', help='Load the given som pickle file and use it as starting point for a new training')
+                        help='Which scheduler to use, can be linear,\
+                        exp or half (exp by default)', default='exp')
+    parser.add_argument('-j', '--jax', help='To use the jax version',
+                        action='store_true')
+    parser.add_argument('--load', help='Load the given som pickle file \
+                        and use it as starting point for a new training')
     args = parser.parse_args()
+
+    if args.sigma is None:
+        sigma = np.sqrt(args.somside*args.somside)/4.0
 
     main(ali=args.aln,
          batch_size=args.batch,
          somside=args.somside,
          nepochs=args.nepochs,
          alpha=args.alpha,
-         sigma=args.sigma,
+         sigma=sigma,
          load=args.load,
          periodic=args.noperiodic,
          scheduler=args.scheduler,
