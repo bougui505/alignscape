@@ -242,7 +242,8 @@ def main(ali=None,
          outname=None,
          doplot=True,
          use_jax=False,
-         plot_ext='png'):
+         plot_ext='png',
+         seed=0):
     if ali is None:
         raise ValueError('ali argument must be set')
 
@@ -257,6 +258,7 @@ def main(ali=None,
     dataset = seqdataloader.SeqDataset(ali)
     # dataset.len = 20
     num_workers = os.cpu_count()
+    torch.manual_seed(seed)
     dataloader = torch.utils.data.DataLoader(dataset,
                                              batch_size=batch_size,
                                              shuffle=True,
@@ -292,7 +294,8 @@ def main(ali=None,
                                sigma=sigma,
                                periodic=periodic,
                                metric=functools.partial(jax_imports.seqmetric_jax, b62=b62),
-                               sched=scheduler)
+                               sched=scheduler,
+                               seed=seed)
             somobj.jax = True
         else:
             somobj = som.SOM(somside,
@@ -303,7 +306,8 @@ def main(ali=None,
                              sigma=sigma,
                              periodic=periodic,
                              metric=functools.partial(seqmetric, b62=b62),
-                             sched=scheduler)
+                             sched=scheduler,
+                             seed=seed)
             somobj.jax = False
     somobj.to_device(device)
 
@@ -384,6 +388,8 @@ if __name__ == '__main__':
                         action='store_true')
     parser.add_argument('--load', help='Load the given som pickle file \
                         and use it as starting point for a new training')
+    parser.add_argument('--seed', help='Seed for random inicialization and random \
+                        batch selection', default=0)
     args = parser.parse_args()
 
     if args.sigma is None:
@@ -401,4 +407,5 @@ if __name__ == '__main__':
          outname=args.out_name,
          doplot=args.doplot,
          plot_ext=args.plot_ext,
-         use_jax=args.jax)
+         use_jax=args.jax,
+         seed=int(args.seed))
