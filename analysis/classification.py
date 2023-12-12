@@ -14,7 +14,10 @@ def main(somfile, outname, delimiter, uclass, k, plot_ext='png'):
     bmus = np.asarray([np.ravel_multi_index(bmu, somobj.umat.shape)
                        for bmu in somobj.bmus])
     dm = models.load_dmatrix(somobj)
-    idxs_unclass, idxs_class, types_unclass, types_class, bmus_unclass, bmus_class = models.split_data(np.asarray(types),np.asarray(bmus),uclass)
+    idxs_unclass, idxs_class, types_unclass, types_class, \
+        bmus_unclass, bmus_class = models.split_data(np.asarray(types),
+                                                     np.asarray(bmus),
+                                                     uclass)
     titles_unclass = [titles[idx] for idx in idxs_unclass]
     knn.fit(dm, bmus_class, types_class, bmus_unclass)
     f = open(outname+'.csv', 'w')
