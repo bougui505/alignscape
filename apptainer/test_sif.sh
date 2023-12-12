@@ -28,5 +28,5 @@ else
     NVOPTION=""
 fi
 
-#singularity run -B $(pwd) $NVOPTION alignscape.sif $ALIGNSCAPEDIR/align_scape.py -a $MYTMP/TssB60.fasta -b 10 --nepochs 100 -o testout/som
-singularity run -B $(pwd) $NVOPTION alignscape.sif python3 $ALIGNSCAPEDIR/scripts/test_postprocess.py
+singularity run -B $(pwd) $NVOPTION alignscape.sif $ALIGNSCAPEDIR/align_scape.py -a $MYTMP/TssB60.fasta -b 10 --nepochs 100 -o testout/som
+singularity run -B $(pwd) $NVOPTION alignscape.sif $ALIGNSCAPEDIR/scripts/test_postprocess.py
