@@ -30,6 +30,8 @@ def main(somfile, outname='umat', delimiter=None, hideSeqs=False,
         labels = [title.split(delimiter)[0] for title in titles]
     else:
         labels = []
+    if max_ppmd:
+        float(max_ppmd)
 
     if mst or unfold:
         # Compute the local Adjacency Matrix between the qbmus
@@ -246,4 +248,4 @@ if __name__ == '__main__':
          clst=args.clst,
          unfold=args.unfold,
          plot_ext=args.plot_ext,
-         max_ppmd=float(args.max_ppmd))
+         max_ppmd=args.max_ppmd)
