@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: UTF8 -*-
+
 import functools
 import pickle
 import numpy as np

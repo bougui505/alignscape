@@ -15,7 +15,7 @@ pip3 install --break-system-packages torch torchvision torchaudio
 ###########################################################################
 
 ################################# PIP PACKAGES ############################
-pip3 install --break-system-packages adjustText
+pip3 install --break-system-packages adjustText jax jaxlib
 ###########################################################################
 
 ########################## ALIGNSCAPE #####################################
