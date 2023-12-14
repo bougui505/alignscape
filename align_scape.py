@@ -43,6 +43,7 @@ from Bio.Align import substitution_matrices
 import numpy as np
 import torch
 from alignscape.utils import seqdataloader
+from alignscape.utils import memory
 
 aalist = list('ABCDEFGHIKLMNPQRSTVWXYZ|-')
 
@@ -274,9 +275,14 @@ def main(ali=None,
     b62 = get_blosum62()
     if use_jax:
         device = jax.devices()[0]
+        if device == 'cuda':
+            device = memory.select_device()
         b62 = jax.device_put(b62, device=device)
     else:
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        if device == 'cuda':
+            device = memory.select_device()
+        print(device)
         b62 = torchify(b62, device=device)
 
     if load is not None:
