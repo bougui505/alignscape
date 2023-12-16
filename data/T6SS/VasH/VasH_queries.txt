@@ -1,5 +1,5 @@
->Ah-VasH|ahj:V469_13120
->Pa2-VasH|paei:N296_1709
->Pa3-VasH|paei:N296_2433
->Pp2-VasH|bph:Bphy_6153
->Vc-VasH|vcm:VCM66_A0115
+>i1_Ah|ahj:V469_13120
+>i1_Pa2|paei:N296_1709
+>i4b_Pa3|paei:N296_2433
+>i3_Pp2|bph:Bphy_6153
+>i1_Vc|vcm:VCM66_A0115
