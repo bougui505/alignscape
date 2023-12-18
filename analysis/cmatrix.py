@@ -174,10 +174,14 @@ if __name__ == '__main__':
     labels = ['TssA', 'TssB', 'TssC', 'TssE', 'TssF', 'TssG', 'TssK',
               'TssL', 'TssM', 'ClpV', 'VgrG', 'hcp', 'TssJ']
     dmatrices = list()
-    for l in labels:
-        dmatrices.append("results/dmatrix/%s/%s.phylo.p" % (l, l))
+
+    for label in labels:
+        dm_file = "../data/T6SS/%s/phylogenetictree/%s_dm_phylo.p"\
+            % (label, label)
+        dmatrices.append(dm_file)
+
     print(dmatrices)
-    cmatrix = Cmatrix(dmatrices=dmatrices, labels=labels,
+    cmatrix = Cmatrix(dmarices=dmatrices, labels=labels,
                       outname='T6SS_phylo_cmatrix')
     cmatrix.save()
     cmatrix.plot(vmin=0, vmax=1)

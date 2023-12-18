@@ -6,6 +6,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 import warnings
+import itertools
+from Bio import AlignIO
+from Bio.Phylo.TreeConstruction import DistanceCalculator
+from Bio import Phylo
 from alignscape.align_scape import seqmetric, get_blosum62
 from alignscape.utils import jax_imports
 
@@ -40,6 +44,27 @@ def get_neighbors(i, j, X, Y, ravel=True):
         return neighbors
 
 
+def get_phyloDmatrix(nwkphylo):
+    """
+    """
+    nwkphylo = nwkphylo
+    tree = Phylo.read(nwkphylo, 'newick')
+    keys = []
+    for x in tree.get_terminals():
+        keys.append(x.name)
+    d = {key: {key: 0 for key in keys} for key in keys}
+    for x, y in itertools.combinations(tree.get_terminals(), 2):
+        v = tree.distance(x, y)
+        xname = x.name
+        yname = y.name
+        d[xname][yname] = v
+        d[yname][xname] = v
+        d[xname][xname] = 0
+        d[yname][yname] = 0
+    df = pd.DataFrame(d)
+    return df
+
+
 class Dmatrix(object):
     """
     Distance matrix
@@ -59,6 +84,7 @@ class Dmatrix(object):
             self.load = load
             self.df = pickle.load(open(load, 'rb'))
             self.columns = self.df.columns
+            self.queries = self.df.columns.tolist()
         # Calculate a Dmatrix using a file/list of queries and a somfile
         elif somfile is not None and (queries is not None or querieslist
                                       is not None) and load is None:
