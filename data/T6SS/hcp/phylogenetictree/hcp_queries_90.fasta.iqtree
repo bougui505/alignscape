@@ -1,0 +1,292 @@
+IQ-TREE 1.6.12 built Aug 15 2019
+
+Input file name: ../../alignscape/data/T6SS/hcp/hcp_queries_90.fasta
+Type of analysis: tree reconstruction + non-parametric bootstrap (1000 replicates)
+Random seed number: 445481
+
+REFERENCES
+----------
+
+To cite IQ-TREE please use:
+
+Lam-Tung Nguyen, Heiko A. Schmidt, Arndt von Haeseler, and Bui Quang Minh
+(2015) IQ-TREE: A fast and effective stochastic algorithm for estimating
+maximum likelihood phylogenies. Mol Biol Evol, 32:268-274.
+https://doi.org/10.1093/molbev/msu300
+
+SEQUENCE ALIGNMENT
+------------------
+
+Input data: 51 sequences with 197 amino-acid sites
+Number of constant sites: 1 (= 0.507614% of all sites)
+Number of invariant (constant or ambiguous constant) sites: 1 (= 0.507614% of all sites)
+Number of parsimony informative sites: 193
+Number of distinct site patterns: 197
+
+SUBSTITUTION PROCESS
+--------------------
+
+Model of substitution: LG+G4
+
+State frequencies: (model)
+
+Model of rate heterogeneity: Gamma with 4 categories
+Gamma shape alpha: 4.1028
+
+ Category  Relative_rate  Proportion
+  1         0.4599         0.2500
+  2         0.7787         0.2500
+  3         1.0844         0.2500
+  4         1.6770         0.2500
+Relative rates are computed as MEAN of the portion of the Gamma distribution falling in the category.
+
+MAXIMUM LIKELIHOOD TREE
+-----------------------
+
+Log-likelihood of the tree: -9030.2866 (s.e. 302.7625)
+Unconstrained log-likelihood (without tree): -1040.7911
+Number of free parameters (#branches + #model parameters): 100
+Akaike information criterion (AIC) score: 18260.5733
+Corrected Akaike information criterion (AICc) score: 18470.9899
+Bayesian information criterion (BIC) score: 18588.8936
+
+Total tree length (sum of branch lengths): 18.8104
+Sum of internal branch lengths: 11.4337 (60.7841% of tree length)
+
+WARNING: 3 near-zero internal branches (<0.0051) should be treated with caution
+         Such branches are denoted by '**' in the figure below
+
+NOTE: Tree is UNROOTED although outgroup taxon 'i4b_Ab_abaz_P795_10900' is drawn at root
+Numbers in parentheses are  standard bootstrap support (%)
+
++------i4b_Ab_abaz_P795_10900
+|
+|                                                       +--i1_Ah_ahj_V469_13200
+|                                                    +--| (70)
+|                                                    |  +--i1_EAEC1_eck_EC55989_0235
+|                                                 +--| (60)
+|                                                 |  |  +**i1_Yp6_ype_YPO3708
+|                                                 |  +--| (100)
+|                                                 |     +**i1_Yps1_ypi_YpsIP31758_0312
+|                                              +--| (59)
+|                                              |  +--i1_Vc_vcm_VCM66_A0016
+|                                           +--| (34)
+|                                           |  +----i1_Pf_pfn_HZ99_05065
+|                                        +--| (83)
+|                                        |  |      +--i1_Cj_cjl_PJ17_05090
+|                                        |  +------| (96)
+|                                        |         +--i1_Hh_hhe_HH_0243
+|                                     +--| (56)
+|                                     |  +--------i1_Vp2_vpa_VP1393
+|                           +---------| (90)
+|                           |         +---i1_Pa2_paei_N296_1554
+|                    +------| (67)
+|                    |      |             +--i2_Bc1_bceo_I35_4153
+|                    |      +-------------| (100)
+|                    |                    |        +--i2_Cf1_cfd_CFNIH1_02175
+|                    |                    |     +--| (32)
+|                    |                    |     |  |           +**i2_Yp2_ype_YPO0973
+|                    |                    |     |  |        +**| (17)
+|                    |                    |     |  |        |  +**i2_Yp3_ype_YPO1470
+|                    |                    |     |  |     +**| (17)
+|                    |                    |     |  |     |  +**i2_Yps2_ypi_YpsIP31758_0731
+|                    |                    |     |  |  +**| (62)
+|                    |                    |     |  |  |  +**i2_Yps5_ypi_YpsIP31758_2506
+|                    |                    |     |  +--| (100)
+|                    |                    |     |     +--i2_Yps3_ypi_YpsIP31758_0782
+|                    |                    |  +--| (26)
+|                    |                    |  |  +--i2_Kp1_kpu_KP1_2398
+|                    |                    +--| (78)
+|                    |                       +--i2_EAEC3_eck_EC55989_3335
+|          +---------| (97)
+|          |         |                          +--i1_Bm5_bmal_DM55_4700
+|          |         +--------------------------| (100)
+|          |                                    +**i1_Bps4_bps_BPSS1498
++----------| (100)
+|          |                            +--i5_At_atf_Ach5_45120
+|          |                  +---------| (99)
+|          |                  |         +--i5_Rl_rlb_RLEG3_07690
+|          |        +---------| (97)
+|          |        |         +------------------i5_Vp1_vpa_VPA1027
+|          |     +--| (38)
+|          |     |  |                         +**i3_Bm1_bmal_DM55_3343
+|          |     |  |                 +-------| (100)
+|          |     |  |                 |       +**i3_Bps5_bps_BPSS2098
+|          |     |  |        +--------| (100)
+|          |     |  |        |        +---i3_Sm2_serf_L085_13770
+|          |     |  |     +--| (32)
+|          |     |  |     |  |                                +--i3_Bm4_bmal_DM55_4023
+|          |     |  |     |  |                           +----| (100)
+|          |     |  |     |  |                           |    +**i3_Bps3_bps_BPSS0518
+|          |     |  |     |  |                        +--| (61)
+|          |     |  |     |  |                        |  +--i3_Sm1_serf_L085_12855
+|          |     |  |     |  |  +---------------------| (100)
+|          |     |  |     |  |  |                     |  +**i3_Yp1_ype_YPO0502
+|          |     |  |     |  |  |                     +--| (100)
+|          |     |  |     |  |  |                        +**i3_Yps6_ypi_YpsIP31758_3434
+|          |     |  |     |  +--| (32)
+|          |     |  |     |     |  +---i3_Pa1_paei_N296_91
+|          |     |  |     |     +--| (56)
+|          |     |  |     |        |              +**i3_Xc_xac_XAC4145
+|          |     |  |     |        +--------------| (100)
+|          |     |  |     |                       +--i3_Xp_xph_XppCFBP6546_13685
+|          |     |  |  +--| (53)
+|          |     |  |  |  |              +**i3_Bm2_bmal_DM55_3875
+|          |     |  |  |  |           +--| (100)
+|          |     |  |  |  |           |  +**i3_Bps2_bps_BPSS0171
+|          |     |  |  |  |        +--| (86)
+|          |     |  |  |  |        |  +--i3_Pp2_bph_Bphy_6112
+|          |     |  |  |  |     +--| (34)
+|          |     |  |  |  |     |  |  +----i3_Bps1_bps_BPSS0099
+|          |     |  |  |  |     |  +--| (49)
+|          |     |  |  |  |     |     |        +--i3_Ye_yet_CH48_3195
+|          |     |  |  |  |     |     +--------| (100)
+|          |     |  |  |  |     |              |  +**i3_Yp5_ype_YPO2937
+|          |     |  |  |  |     |              +--| (100)
+|          |     |  |  |  |     |                 +**i3_Yps4_ypi_YpsIP31758_1369
+|          |     |  |  |  +-----| (91)
+|          |     |  |  |        +----i3_Stm_setc_CFSAN001921_16010
+|          |     |  +--| (43)
+|          |     |     +---------------------i4b_Et_etr_ETAE_2431
+|          +-----| (78)
+|                |        +---i4a_Cf2_cfd_CFNIH1_08895
+|                |    +---| (70)
+|                |    |   +----i4b_Pa3_paei_N296_2441
+|                +----| (95)
+|                     +------------i4a_Pp1_bph_Bphy_5980
+|
+|      +--i4b_Bc2_bceo_I35_0334
+|   +--| (100)
+|   |  +--i4b_Bps6_bps_BPSL3105
++---| (91)
+    +--i4b_Rs_rso_RSp0745
+
+Tree in newick format:
+
+(i4b_Ab_abaz_P795_10900:0.3728515944,((((((((((i1_Ah_ahj_V469_13200:0.0606671397,i1_EAEC1_eck_EC55989_0235:0.1621229550)70:0.0474529471,(i1_Yp6_ype_YPO3708:0.0000022424,i1_Yps1_ypi_YpsIP31758_0312:0.0000022424)100:0.0940934892)60:0.0610640231,i1_Vc_vcm_VCM66_A0016:0.1309095710)59:0.0898081794,i1_Pf_pfn_HZ99_05065:0.2817440009)34:0.0563058770,(i1_Cj_cjl_PJ17_05090:0.1793176377,i1_Hh_hhe_HH_0243:0.0733263461)96:0.3411057506)83:0.1763010160,i1_Vp2_vpa_VP1393:0.4543359335)56:0.0751441795,i1_Pa2_paei_N296_1554:0.1963088850)90:0.5141257028,(i2_Bc1_bceo_I35_4153:0.1189921391,(((i2_Cf1_cfd_CFNIH1_02175:0.0638166564,((((i2_Yp2_ype_YPO0973:0.0000022424,i2_Yp3_ype_YPO1470:0.0000022424)17:0.0000022424,i2_Yps2_ypi_YpsIP31758_0731:0.0000022424)17:0.0000022424,i2_Yps5_ypi_YpsIP31758_2506:0.0000022424)62:0.0000022596,i2_Yps3_ypi_YpsIP31758_0782:0.0061219424)100:0.0890260304)32:0.0191687931,i2_Kp1_kpu_KP1_2398:0.0126326240)26:0.0105039371,i2_EAEC3_eck_EC55989_3335:0.0212217225)78:0.1498148543)100:0.6736321324)67:0.3648952374,(i1_Bm5_bmal_DM55_4700:0.0066626486,i1_Bps4_bps_BPSS1498:0.0000022424)100:1.2894532998)97:0.4935090221,((((i5_At_atf_Ach5_45120:0.0416093575,i5_Rl_rlb_RLEG3_07690:0.0593072391)99:0.4922042900,i5_Vp1_vpa_VPA1027:0.9133108528)97:0.4994455573,(((((i3_Bm1_bmal_DM55_3343:0.0000022424,i3_Bps5_bps_BPSS2098:0.0000022424)100:0.4102544602,i3_Sm2_serf_L085_13770:0.2040533296)100:0.4620710578,((((i3_Bm4_bmal_DM55_4023:0.0064549744,i3_Bps3_bps_BPSS0518:0.0000024772)100:0.2660585370,i3_Sm1_serf_L085_12855:0.0404799126)61:0.0465893297,(i3_Yp1_ype_YPO0502:0.0000022424,i3_Yps6_ypi_YpsIP31758_3434:0.0000022424)100:0.0577160182)100:1.0723718992,(i3_Pa1_paei_N296_91:0.2103300890,(i3_Xc_xac_XAC4145:0.0000028739,i3_Xp_xph_XppCFBP6546_13685:0.0260863093)100:0.7519224896)56:0.0795263351)32:0.1128112978)32:0.1257155161,((((i3_Bm2_bmal_DM55_3875:0.0000022424,i3_Bps2_bps_BPSS0171:0.0000022424)100:0.1051879477,i3_Pp2_bph_Bphy_6112:0.0820098816)86:0.0883624819,(i3_Bps1_bps_BPSS0099:0.2642012752,(i3_Ye_yet_CH48_3195:0.0209431001,(i3_Yp5_ype_YPO2937:0.0000022424,i3_Yps4_ypi_YpsIP31758_1369:0.0000022424)100:0.0290424272)100:0.4278030073)49:0.0986982932)34:0.0637016721,i3_Stm_setc_CFSAN001921_16010:0.2437608125)91:0.3012107637)53:0.1507816225,i4b_Et_etr_ETAE_2431:1.0459110745)43:0.1338774893)38:0.0812224293,((i4a_Cf2_cfd_CFNIH1_08895:0.2122849695,i4b_Pa3_paei_N296_2441:0.2390863414)70:0.1907874844,i4a_Pp1_bph_Bphy_5980:0.6602938115)95:0.2837726966)78:0.2945575589)100:0.5615201872,((i4b_Bc2_bceo_I35_0334:0.0890938972,i4b_Bps6_bps_BPSL3105:0.0073671737)100:0.1755558082,i4b_Rs_rso_RSp0745:0.1727184236)91:0.2218703525);
+
+CONSENSUS TREE
+--------------
+
+Consensus tree is constructed from 1000bootstrap trees
+Log-likelihood of consensus tree: -9031.525783
+Robinson-Foulds distance between ML tree and consensus tree: 14
+
+Branches with support >0.000000% are kept (extended consensus)
+Branch lengths are optimized by maximum likelihood on original alignment
+Numbers in parentheses are bootstrap supports (%)
+
++------i4b_Ab_abaz_P795_10900
+|
+|                                                       +--i1_Ah_ahj_V469_13200
+|                                                    +--| (70)
+|                                                    |  +--i1_EAEC1_eck_EC55989_0235
+|                                                 +--| (60)
+|                                                 |  |  +--i1_Yp6_ype_YPO3708
+|                                                 |  +--| (100)
+|                                                 |     +--i1_Yps1_ypi_YpsIP31758_0312
+|                                              +--| (59)
+|                                              |  +--i1_Vc_vcm_VCM66_A0016
+|                                           +--| (35)
+|                                           |  |       +--i1_Cj_cjl_PJ17_05090
+|                                           |  +-------| (96)
+|                                           |          +--i1_Hh_hhe_HH_0243
+|                                        +--| (83)
+|                                        |  +----i1_Pf_pfn_HZ99_05065
+|                                     +--| (56)
+|                                     |  +--------i1_Vp2_vpa_VP1393
+|                           +---------| (90)
+|                           |         +---i1_Pa2_paei_N296_1554
+|                    +------| (67)
+|                    |      |             +--i2_Bc1_bceo_I35_4153
+|                    |      +-------------| (100)
+|                    |                    |        +--i2_Cf1_cfd_CFNIH1_02175
+|                    |                    |     +--| (30)
+|                    |                    |     |  +--i2_EAEC3_eck_EC55989_3335
+|                    |                    |  +--| (39)
+|                    |                    |  |  +--i2_Kp1_kpu_KP1_2398
+|                    |                    +--| (78)
+|                    |                       |        +--i2_Yp2_ype_YPO0973
+|                    |                       |     +--| (18)
+|                    |                       |     |  +--i2_Yps2_ypi_YpsIP31758_0731
+|                    |                       |  +--| (62)
+|                    |                       |  |  |  +--i2_Yp3_ype_YPO1470
+|                    |                       |  |  +--| (18)
+|                    |                       |  |     +--i2_Yps5_ypi_YpsIP31758_2506
+|                    |                       +--| (100)
+|                    |                          +--i2_Yps3_ypi_YpsIP31758_0782
+|          +---------| (97)
+|          |         |                           +--i1_Bm5_bmal_DM55_4700
+|          |         +---------------------------| (100)
+|          |                                     +--i1_Bps4_bps_BPSS1498
++----------| (100)
+|          |                            +--i5_At_atf_Ach5_45120
+|          |                  +---------| (99)
+|          |                  |         +--i5_Rl_rlb_RLEG3_07690
+|          |        +---------| (97)
+|          |        |         +-------------------i5_Vp1_vpa_VPA1027
+|          |     +--| (39)
+|          |     |  |        +---i4a_Cf2_cfd_CFNIH1_08895
+|          |     |  |    +---| (70)
+|          |     |  |    |   +---i4b_Pa3_paei_N296_2441
+|          |     |  +----| (95)
+|          |     |       +------------i4a_Pp1_bph_Bphy_5980
+|          +-----| (78)
+|                |                          +--i3_Bm1_bmal_DM55_3343
+|                |                  +-------| (100)
+|                |                  |       +--i3_Bps5_bps_BPSS2098
+|                |        +---------| (100)
+|                |        |         +---i3_Sm2_serf_L085_13770
+|                |     +--| (32)
+|                |     |  |                                 +--i3_Bm4_bmal_DM55_4023
+|                |     |  |                            +----| (100)
+|                |     |  |                            |    +--i3_Bps3_bps_BPSS0518
+|                |     |  |                         +--| (61)
+|                |     |  |                         |  +--i3_Sm1_serf_L085_12855
+|                |     |  |  +----------------------| (100)
+|                |     |  |  |                      |  +--i3_Yp1_ype_YPO0502
+|                |     |  |  |                      +--| (100)
+|                |     |  |  |                         +--i3_Yps6_ypi_YpsIP31758_3434
+|                |     |  +--| (32)
+|                |     |     |  +---i3_Pa1_paei_N296_91
+|                |     |     +--| (56)
+|                |     |        |               +--i3_Xc_xac_XAC4145
+|                |     |        +---------------| (100)
+|                |     |                        +--i3_Xp_xph_XppCFBP6546_13685
+|                |  +--| (53)
+|                |  |  |               +--i3_Bm2_bmal_DM55_3875
+|                |  |  |            +--| (100)
+|                |  |  |            |  +--i3_Bps2_bps_BPSS0171
+|                |  |  |         +--| (86)
+|                |  |  |         |  +--i3_Pp2_bph_Bphy_6112
+|                |  |  |      +--| (49)
+|                |  |  |      |  +-----i3_Stm_setc_CFSAN001921_16010
+|                |  |  +------| (91)
+|                |  |         |  +----i3_Bps1_bps_BPSS0099
+|                |  |         +--| (49)
+|                |  |            |        +--i3_Ye_yet_CH48_3195
+|                |  |            +--------| (100)
+|                |  |                     |  +--i3_Yp5_ype_YPO2937
+|                |  |                     +--| (100)
+|                |  |                        +--i3_Yps4_ypi_YpsIP31758_1369
+|                +--| (43)
+|                   +----------------------i4b_Et_etr_ETAE_2431
+|
+|       +--i4b_Bc2_bceo_I35_0334
+|    +--| (100)
+|    |  +--i4b_Bps6_bps_BPSL3105
++----| (91)
+     +--i4b_Rs_rso_RSp0745
+
+
+Consensus tree in newick format: 
+
+(i4b_Ab_abaz_P795_10900:0.3454059200,((((((((((i1_Ah_ahj_V469_13200:0.0602452479,i1_EAEC1_eck_EC55989_0235:0.1624383423)70:0.0471260008,(i1_Yp6_ype_YPO3708:0.0000022424,i1_Yps1_ypi_YpsIP31758_0312:0.0000022424)100:0.0942544427)60:0.0707209954,i1_Vc_vcm_VCM66_A0016:0.1208840861)59:0.0786791235,(i1_Cj_cjl_PJ17_05090:0.1727057073,i1_Hh_hhe_HH_0243:0.0803384639)96:0.3727444821)35:0.0550465757,i1_Pf_pfn_HZ99_05065:0.2625978335)83:0.1821105154,i1_Vp2_vpa_VP1393:0.4299143951)56:0.0855663000,i1_Pa2_paei_N296_1554:0.2151959162)90:0.5002373927,(i2_Bc1_bceo_I35_4153:0.1152441513,(((i2_Cf1_cfd_CFNIH1_02175:0.0745959267,i2_EAEC3_eck_EC55989_3335:0.0235590499)30:0.0126024872,i2_Kp1_kpu_KP1_2398:0.0080370503)39:0.0331591239,(((i2_Yp2_ype_YPO0973:0.0000022424,i2_Yps2_ypi_YpsIP31758_0731:0.0000022424)18:0.0000022424,(i2_Yp3_ype_YPO1470:0.0000022424,i2_Yps5_ypi_YpsIP31758_2506:0.0000022424)18:0.0000022424)62:0.0000022424,i2_Yps3_ypi_YpsIP31758_0782:0.0061292871)100:0.0714648300)78:0.1340169461)100:0.6744119934)67:0.3425050559,(i1_Bm5_bmal_DM55_4700:0.0066737196,i1_Bps4_bps_BPSS1498:0.0000028253)100:1.3157896997)97:0.5063203708,((((i5_At_atf_Ach5_45120:0.0373757674,i5_Rl_rlb_RLEG3_07690:0.0639436112)99:0.4611589547,i5_Vp1_vpa_VPA1027:0.9520678656)97:0.4734027723,((i4a_Cf2_cfd_CFNIH1_08895:0.2234501396,i4b_Pa3_paei_N296_2441:0.2278566269)70:0.2086733037,i4a_Pp1_bph_Bphy_5980:0.6447417907)95:0.2610445274)39:0.1564621029,(((((i3_Bm1_bmal_DM55_3343:0.0000022424,i3_Bps5_bps_BPSS2098:0.0000022424)100:0.4115771050,i3_Sm2_serf_L085_13770:0.2034889589)100:0.4647742162,((((i3_Bm4_bmal_DM55_4023:0.0064659741,i3_Bps3_bps_BPSS0518:0.0000022424)100:0.2667856873,i3_Sm1_serf_L085_12855:0.0404163177)61:0.0465726609,(i3_Yp1_ype_YPO0502:0.0000022424,i3_Yps6_ypi_YpsIP31758_3434:0.0000022424)100:0.0581824534)100:1.0705163813,(i3_Pa1_paei_N296_91:0.2208343042,(i3_Xc_xac_XAC4145:0.0000028739,i3_Xp_xph_XppCFBP6546_13685:0.0261612919)100:0.7405222474)56:0.0816545660)32:0.1127761474)32:0.0797557215,((((i3_Bm2_bmal_DM55_3875:0.0000022424,i3_Bps2_bps_BPSS0171:0.0000022424)100:0.1047107548,i3_Pp2_bph_Bphy_6112:0.0830876425)86:0.0832635840,i3_Stm_setc_CFSAN001921_16010:0.2882241523)49:0.0612602366,(i3_Bps1_bps_BPSS0099:0.2636052000,(i3_Ye_yet_CH48_3195:0.0210943053,(i3_Yp5_ype_YPO2937:0.0000022424,i3_Yps4_ypi_YpsIP31758_1369:0.0000022424)100:0.0289965741)100:0.4294948624)49:0.0637882261)91:0.3325602865)53:0.1629733962,i4b_Et_etr_ETAE_2431:1.0839145562)43:0.1074679161)78:0.3079440089)100:0.5479535217,((i4b_Bc2_bceo_I35_0334:0.0906960598,i4b_Bps6_bps_BPSL3105:0.0054877073)100:0.1806206105,i4b_Rs_rso_RSp0745:0.1697527637)91:0.2491574332);
+
+TIME STAMP
+----------
+
+Date and time: Sun Dec 17 03:38:38 2023
+Total CPU time used: 85.050459 seconds (0h:1m:25s)
+Total wall-clock time used: 28.96121693 seconds (0h:0m:28s)
+
