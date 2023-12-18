@@ -65,6 +65,27 @@ def get_phyloDmatrix(nwkphylo):
     return df
 
 
+def get_b62Dmatrix(alignment):
+    aln = AlignIO.read(open(alignment), 'fasta')
+    calculator = DistanceCalculator('blosum62')
+    dm = calculator.get_distance(aln)
+    names = dm.names
+    d = {key: {key: 0 for key in names} for key in names}
+    for i, n1 in enumerate(names):
+        for j, n2 in enumerate(names):
+            if i == j:
+                d[n1][n2] = 0
+            elif j > i:
+                continue
+            else:
+                ind1 = names.index(n1)
+                ind2 = names.index(n2)
+                d[n1][n2] = dm[ind1][ind2]
+                d[n2][n1] = d[n1][n2]
+    df = pd.DataFrame(d)
+    return df
+
+
 class Dmatrix(object):
     """
     Distance matrix
