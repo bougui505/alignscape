@@ -369,8 +369,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('-a', '--aln', help='Alignment file')
-    parser.add_argument('-b', '--batch', help='Batch size (default: 10)',
-                        default=10, type=int)
+    parser.add_argument('-b', '--batch', help='Batch size (default: 5)',
+                        default=5, type=int)
     parser.add_argument('--somside', help='Size of the side of the square \
                         SOM (default: 50)', default=50, type=int)
     parser.add_argument('--alpha', help='learning rate', default=0.5,
