@@ -43,5 +43,5 @@ then
 else
     mkdir testout
 fi
-python -m align_scape -a =(head -60 data/T6SS/TssB/TssB.fasta) -b 10 --nepochs 100 --alpha 0.5 -o testout/som
+python -m align_scape -a =(head -60 data/T6SS/TssB/TssB.fasta) --nepochs 100 --alpha 0.5 -o testout/som
 python scripts/test_postprocess.py
