@@ -35,7 +35,7 @@ PLEASE NOTE: Singularity mounts only a part of your file system. To ensure that 
 
 Plotting the U-matrix
 ```
-singularity run --nv alignscape.sif python3 /usr/local/lib/python3.11/dist-packages/alignscape/plot_umat.py -s somfile -o outname
+singularity run --nv alignscape.sif python3 /usr/local/lib/python3.11/dist-packages/alignscape/plot_umat.py -s somfile.pickle -o outname
 ```
 
 ## AlignScape locally within a conda environment
@@ -68,7 +68,7 @@ python -m alignscape.align_scape -a alignment.fasta
 Plotting the U-matrix
 
 ```
-python -m alignscape.plot_umat -s somfile -o outname
+python -m alignscape.plot_umat -s somfile.pickle -o outname
 ```
 
 ## Test
