@@ -33,6 +33,11 @@ singularity run --nv alignscape.sif align_scape -a alignment.fasta --nepochs 100
 
 PLEASE NOTE: Singularity mounts only a part of your file system. To ensure that your fasta file is accessible within the singularity image, you should place it in your home directory or in your home directory hierarchy. This should guarantee its availability for use.
 
+Plotting the U-matrix
+```
+singularity run --nv alignscape.sif python3 /usr/local/lib/python3.11/dist-packages/alignscape/plot_umat.py -s somfile -o outname
+```
+
 ## AlignScape locally within a conda environment
 
 ### Create a conda enviroment and install AlignScape on it:
