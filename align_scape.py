@@ -368,7 +368,7 @@ if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser(description='')
-    parser.add_argument('-a', '--aln', help='Alignment file')
+    parser.add_argument('-a', '--aln', help='Alignment file (fasta format)')
     parser.add_argument('-b', '--batch', help='Batch size (default: 5)',
                         default=5, type=int)
     parser.add_argument('--somside', help='Size of the side of the square \
@@ -377,8 +377,8 @@ if __name__ == '__main__':
                         type=float)
     parser.add_argument('--sigma', help='Learning radius for the SOM',
                         default=None, type=float)
-    parser.add_argument('--nepochs', help='Number of SOM epochs (default: 2)',
-                        default=2, type=int)
+    parser.add_argument('--nepochs', help='Number of SOM epochs (default: 100)',
+                        default=100, type=int)
     parser.add_argument("-o", "--out_name", default='som',
                         help="basename (default som)")
     parser.add_argument('--noplot', help='Do not plot the resulting U-matrix',
