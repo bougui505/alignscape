@@ -18,7 +18,7 @@ DIRSCRIPT="$(dirname "$(readlink -f "$0")")"
 ARGS="$@"
 [ -z "$ARGS" ] && ARGS="-h"
 
-if [[ $(lspci | grep -c -i '.* vga .* nvidia .*') -gt 0 ]]; then
+if [[ $(lspci | grep -c -i 'nvidia') -gt 0 ]]; then
     echo "GPU detected"
     NVOPTION="--nv"
 else

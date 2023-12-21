@@ -3,13 +3,25 @@
 
 The AlignScape package takes an MSA as input and uses a self-organizing map to compute the sequence landscape of the input data.
 
-![GitFigure](https://github.com/bougui505/quicksom_seq/assets/27772386/39490a0b-8802-4ec1-9fcc-8bbee90a1fca)
+![GitFigure](https://github.com/bougui505/alignscape/assets/27772386/39490a0b-8802-4ec1-9fcc-8bbee90a1fca)
 
 AlignScape can be utilized as a Jupyter Notebook on their local machines or within a Google Colaboratory Notebook, supporting both CPUs and GPUs.
 
 [AlignScape Google Colab](https://github.com/bougui505/alignscape/blob/master/alignscape.ipynb)
 
+## Using alignscape locally using a Singularity/Apptainer image
 
+### Download the image `alignscape.sif`
+The image can be downloaded using the following link on Zenodo platform:
+
+https://zenodo.org/records/10417520
+
+### Using the Singularity image
+The image can be used as follow:
+
+```
+singularity run alignscape.sif
+```
 
 ## Installation
 
