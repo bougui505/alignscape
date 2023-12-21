@@ -25,6 +25,12 @@ singularity run --nv alignscape.sif align_scape -h
 
 If you don't have a GPU on your computer removed the `--nv` option.
 
+To run alignscape on a alignment in fasta format, simply run:
+
+```
+singularity run --nv alignscape.sif align_scape -a alignment.fasta
+```
+
 ## Installation
 
 To install AlignScape localy:
