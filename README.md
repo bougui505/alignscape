@@ -9,7 +9,7 @@ AlignScape can be utilized as a Jupyter Notebook on their local machines or with
 
 [AlignScape Google Colab](https://github.com/bougui505/alignscape/blob/master/alignscape.ipynb)
 
-## Using alignscape locally using a Singularity/Apptainer image
+## AlignScape locally with a Singularity/Apptainer image
 
 ### Download the image `alignscape.sif`
 The image can be downloaded using the following link on Zenodo platform:
@@ -17,50 +17,64 @@ The image can be downloaded using the following link on Zenodo platform:
 https://zenodo.org/records/10417520
 
 ### Using the Singularity image
-The image can be used as follow:
+The image can be used as follows:
 
 ```
 singularity run --nv alignscape.sif align_scape -h
 ```
 
-If you don't have a GPU on your computer removed the `--nv` option.
+If you don't have a GPU on your computer, remove the `--nv` option.
 
-To run alignscape on a alignment in fasta format, simply run:
+To run AlignScape on a alignment in fasta format, simply run:
 
 ```
 singularity run --nv alignscape.sif align_scape -a alignment.fasta
 ```
 
-## Installation
+## AlignScape locally within a conda environment
 
-To install AlignScape localy:
+### Create a conda enviroment and install AlignScape on it:
 
 ```bash
-  git clone https://github.com/bougui505/alignscape
-  cd alignscape
-  git clone https://github.com/bougui505/quicksom
+conda create -n alignscape python=3.12
+ENV_PATH=$(conda info --envs | grep 'alignscape' | awk '{print $NF}')
+cd $ENV_PATH/lib/python3.12/site-packages/
+git clone https://github.com/bougui505/alignscape
+cd alignscape
+git clone https://github.com/bougui505/quicksom
 ```
-    
+
+A list of the needed dependencies can be found at `apptainer/alignscape.def`
+
+### Using AlignScape in the conda environment:
+
+```
+conda activate alignscape
+```
+
+To run AlignScape on a alignment in fasta format, simply run
+
+```
+python -m alignscape.align_scape -a alignment.fasta
+```
+
+Plotting the U-matrix
+
+```
+python -m alignscape.plot_umat -s somfile -o outname
+```
+
 ## Tests
 
-To check AlignScape local installation run the following commands
+To check AlignScape local singularity image:
+```
+
+```
+
+To check AlignScape local installation:
 
 ```bash
 ./test_som.sh
-python test_postprocess.py
-```
-
-
-## Usage/Examples
-
-Compute the SOM
-```bash
-python -m alignscape.align_scape -a alignment.fasta -b 10 --somside 90 --alpha 0.5 --nepochs 200 -o outname
-```
-
-Plot the U-matrix
-```bash
-python -m alignscape.plot_umat -s somfile -o outname -d delimiter 
 ```
 
 
