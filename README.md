@@ -20,8 +20,10 @@ https://zenodo.org/records/10417520
 The image can be used as follow:
 
 ```
-singularity run alignscape.sif
+singularity run --nv alignscape.sif align_scape -h
 ```
+
+If you don't have a GPU on your computer removed the `--nv` option.
 
 ## Installation
 
