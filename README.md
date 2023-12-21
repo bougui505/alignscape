@@ -28,8 +28,10 @@ If you don't have a GPU on your computer, remove the `--nv` option.
 To run AlignScape on a alignment in fasta format, simply run:
 
 ```
-singularity run --nv alignscape.sif align_scape -a alignment.fasta
+singularity run --nv alignscape.sif align_scape -a alignment.fasta --nepochs 100
 ```
+
+PLEASE NOTE: Singularity mounts only a part of your file system. To ensure that your fasta file is accessible within the singularity image, you should place it in your home directory or in your home directory hierarchy. This should guarantee its availability for use.
 
 ## AlignScape locally within a conda environment
 
@@ -64,12 +66,7 @@ Plotting the U-matrix
 python -m alignscape.plot_umat -s somfile -o outname
 ```
 
-## Tests
-
-To check AlignScape local singularity image:
-```
-
-```
+## Test
 
 To check AlignScape local installation:
 
