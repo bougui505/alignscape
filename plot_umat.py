@@ -9,12 +9,14 @@ from alignscape.align_scape import get_blosum62
 from alignscape.utils import minsptree
 from alignscape.utils import jax_imports
 from alignscape.utils.Timer import Timer
+import json
 
 timer = Timer(autoreset=True)
 
 
 def main(somfile, outname='umat', delimiter=None, hideSeqs=False,
-         mst=False, clst=False, unfold=False, plot_ext='png', max_ppmd=None):
+         mst=False, clst=False, unfold=False, plot_ext='png', max_ppmd=None,
+         dic_colors=None):
 
     # Load the data and parse it
     with open(somfile, 'rb') as somfileaux:
@@ -123,7 +125,7 @@ def main(somfile, outname='umat', delimiter=None, hideSeqs=False,
 
     # Plotting
     _plot_umat(umat=auxumat, bmus=auxbmus, labels=labels, hideSeqs=hideSeqs,
-               max_ppmd=max_ppmd)
+               max_ppmd=max_ppmd, dic_colors=dic_colors)
 
     if mst and not unfold:
         _plot_mstree(mstree_pairs, mstree_paths, somobj.umat.shape)
@@ -240,6 +242,10 @@ if __name__ == '__main__':
                         plots (default: png)', default='png')
     parser.add_argument('--max_ppmd', help='Maximum PPMd value for which to color \
                         the Umat', default=None)
+    parser.add_argument('--dic_colors', help='Dic of colors for the groups.\
+                        Dictionary passed as JSON string e.g:\
+                        \'{\"key1\":\"value1\", \"key2\": \"value2\"}\'',
+                        type=json.loads, default=None)
     args = parser.parse_args()
 
     main(somfile=args.somfile,
@@ -250,4 +256,5 @@ if __name__ == '__main__':
          clst=args.clst,
          unfold=args.unfold,
          plot_ext=args.plot_ext,
-         max_ppmd=args.max_ppmd)
+         max_ppmd=args.max_ppmd,
+         dic_colors=args.dic_colors)
