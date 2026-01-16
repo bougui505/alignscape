@@ -1,15 +1,17 @@
-import scipy
-import scipy.sparse.csgraph as csgraph
-import scipy.sparse
-import matplotlib.pyplot as plt
 import itertools
-import numpy as np
-from tqdm import tqdm
+
+import matplotlib.pyplot as plt
 import networkx as nx
+import numpy as np
+import scipy
+import scipy.sparse
+import scipy.sparse.csgraph as csgraph
 from skimage.feature import peak_local_max
 from sklearn.cluster import AgglomerativeClustering
-from alignscape.utils.Timer import Timer
+from tqdm import tqdm
+
 from alignscape.quicksom.utils import bmus_to_label
+from alignscape.utils.Timer import Timer
 
 TIMER = Timer(autoreset=True)
 
@@ -139,6 +141,7 @@ def get_unfold_umat(umat, adj, qbmus, mstree, offset=True):
             minindx = np.argmin(mstree_data)
         else:
             explored_indx = np.squeeze(dmstree_pairs)
+            # AI! np.in1d was deprecated in NumPy 1.25 and completely removed in NumPy 2.0. How to fix ?
             indxs0 = np.in1d(mstree_pairs[0], explored_indx).nonzero()[0]
             indxs1 = np.in1d(mstree_pairs[1], explored_indx).nonzero()[0]
             indxs = np.concatenate((indxs0, indxs1))
