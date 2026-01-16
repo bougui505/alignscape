@@ -7,3 +7,5 @@ data/T2SS/*
 data/PEFASES/*
 testout/*
 apptainer/alignscape.sif
+.del/
+.aider*
