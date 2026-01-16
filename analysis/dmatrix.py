@@ -225,6 +225,8 @@ class Dmatrix(object):
                     colors.append(labels_lut[subtype])
                 dfcolors = pd.DataFrame({'subtype': colors},
                                         index=self.columns)
+                # Fix for matplotlib layout engine error
+                plt.rcParams['figure.constrained_layout.use'] = False
                 cg = sns.clustermap(self.df, cmap="RdBu_r", linewidths=0.30,
                                     metric='cityblock', col_colors=dfcolors,
                                     row_colors=dfcolors, yticklabels=True,
@@ -237,6 +239,8 @@ class Dmatrix(object):
                                                 bbox_to_anchor=(0, 1.2),
                                                 ncol=1)
             else:
+                # Fix for matplotlib layout engine error
+                plt.rcParams['figure.constrained_layout.use'] = False
                 cg = sns.clustermap(self.df, cmap="RdBu_r", linewidths=0.30,
                                     metric='cityblock', yticklabels=True,
                                     xticklabels=True)
