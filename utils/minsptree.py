@@ -268,7 +268,7 @@ def get_clusterized_umat(umat, adj, somsize, min_distance=7):
     all_to_all_dist = csgraph.shortest_path(adj, directed=False)
     try:
         clustered_umat = clusterer.fit_predict(all_to_all_dist)
-    except:
+    except Exception as e:
         print(f'WARNING : The following error was catched : "{e}"\n'
               f'The clusterer yields zero clusters on the data.'
               ' You should train it more or gather more data')
