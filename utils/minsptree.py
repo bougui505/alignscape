@@ -142,8 +142,8 @@ def get_unfold_umat(umat, adj, qbmus, mstree, offset=True):
         else:
             explored_indx = np.squeeze(dmstree_pairs)
             # AI! np.in1d was deprecated in NumPy 1.25 and completely removed in NumPy 2.0. How to fix ?
-            indxs0 = np.in1d(mstree_pairs[0], explored_indx).nonzero()[0]
-            indxs1 = np.in1d(mstree_pairs[1], explored_indx).nonzero()[0]
+            indxs0 = np.isin(mstree_pairs[0], explored_indx).nonzero()[0]
+            indxs1 = np.isin(mstree_pairs[1], explored_indx).nonzero()[0]
             indxs = np.concatenate((indxs0, indxs1))
             minaux = np.inf
             for indx in indxs:
