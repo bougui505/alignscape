@@ -18,5 +18,5 @@ help:
 	@grep '^[[:alnum:]].*:' Makefile
 
 alignscape.sif: alignscape.def
-	mkdir tmp
+	mkdir -p tmp
 	APPTAINER_TMPDIR=$$(pwd)/tmp apptainer build --force $@ $^
