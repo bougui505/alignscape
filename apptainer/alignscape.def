@@ -10,6 +10,10 @@ apt-get install -y python3-pip python3-biopython python3-matplotlib python3-scip
                    git zsh
 ###############################################################################
 
+################################# NUMPY DOWNGRADE #################################
+pip3 install --break-system-packages numpy==1.26.4
+###########################################################################
+
 ################################# PYTORCH #################################
 pip3 install --break-system-packages torch torchvision torchaudio
 ###########################################################################
