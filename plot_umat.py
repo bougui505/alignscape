@@ -1,26 +1,33 @@
 #!/usr/bin/env python3
 
-import numpy as np
-import matplotlib.pyplot as plt
-import dill as pickle
 import functools
-from alignscape.align_scape import seqmetric
-from alignscape.align_scape import get_blosum62
-from alignscape.utils import minsptree
-from alignscape.utils import jax_imports
-from alignscape.utils.Timer import Timer
+import io
 import json
+
+import dill as pickle
+import matplotlib.pyplot as plt
+import numpy as np
+import torch
+from alignscape.align_scape import get_blosum62, seqmetric
+from alignscape.utils import jax_imports, minsptree
+from alignscape.utils.Timer import Timer
 
 timer = Timer(autoreset=True)
 
 
+class CPU_Unpickler(pickle.Unpickler):
+    def find_class(self, module, name):
+        if module == 'torch.storage' and name == '_load_from_bytes':
+            return lambda b: torch.load(io.BytesIO(b), map_location='cpu')
+        return super().find_class(module, name)
+
 def main(somfile, outname='umat', delimiter=None, hideSeqs=False,
          mst=False, clst=False, unfold=False, plot_ext='png', max_ppmd=None,
          dic_colors=None):
-
     # Load the data and parse it
     with open(somfile, 'rb') as somfileaux:
-        somobj = pickle.load(somfileaux)
+        #somobj = pickle.load(somfileaux)
+        somobj = CPU_Unpickler(somfileaux).load()
 
     b62 = get_blosum62()
     if somobj.jax:
