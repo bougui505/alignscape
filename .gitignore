@@ -9,3 +9,5 @@ testout/*
 apptainer/alignscape.sif
 .del/
 .aider*
+tmp/
+testout/
